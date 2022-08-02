@@ -47,9 +47,13 @@ echo $surveyhero->echoPhrase('Hello, Statikbe!');
 ``` mermaid
 erDiagram
 SURVEY {
+    num id
     num surveyhero_id
+    string name
+    
 }
 SURVEY_RESPONSE {
+    num id
     num surveyhero_id
     datetime survey_start_date
     datetime survey_end_date
@@ -57,17 +61,17 @@ SURVEY_RESPONSE {
     bool survey_completed
     num survey_id FK
 }
-QUESTION_RESPONSE {
+SURVEY_QUESTION_RESPONSE {
     num surveyhero_question_id
     num surveyhero_answer_id
     string surveyhero_answer_lbl
     string field
-    string computed_value_string
-    num computed_value_numeric
+    string converted_string_value
+    num converted_int_value
     num survey_response_id FK
 }
-SURVEY ||--o{ SURVEY_RESPONSE : parent
-SURVEY_RESPONSE ||--o{ QUESTION_RESPONSE : has
+SURVEY ||--o{ SURVEY_RESPONSE : contains
+SURVEY_RESPONSE ||--o{ SURVEY_QUESTION_RESPONSE : has
 ```
 
 ## Testing

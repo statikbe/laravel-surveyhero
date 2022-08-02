@@ -4,7 +4,8 @@
     "keywords": [
         "statikbe",
         "laravel",
-        "laravel-surveyhero"
+        "laravel-surveyhero",
+        "surveyhero"
     ],
     "homepage": "https://github.com/statikbe/laravel-surveyhero",
     "license": "MIT",

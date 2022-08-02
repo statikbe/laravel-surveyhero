@@ -1,0 +1,52 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class CreateSurveyheroTables extends Migration
+{
+    public function up()
+    {
+        Schema::create('surveys', function (Blueprint $table) {
+            $table->id();
+            $table->bigInteger('surveyhero_id');
+
+            $table->string('name');
+
+            $table->timestamps();
+        });
+
+        Schema::create('survey_responses', function (Blueprint $table) {
+            $table->id();
+            $table->bigInteger('surveyhero_id');
+
+            $table->datetime('survey_start_date')->nullable();
+            $table->datetime('survey_end_date')->nullable();
+            $table->string('survey_language');
+            $table->bool('survey_completed')->default(false);
+
+            $table->unsignedBigInteger('survey_id');
+            $table->foreign('survey_id')->references('id')->on('surveys');
+
+            $table->timestamps();
+        });
+
+        Schema::create('survey_question_responses', function (Blueprint $table) {
+            $table->id();
+            $table->bigInteger('surveyhero_question_id');
+            $table->bigInteger('surveyhero_answer_id');
+
+            $table->string('surveyhero_answer_lbl');
+            $table->string('field');
+            $table->string('converted_string_value')->nullable();
+            $table->int('converted_int_value')->nullable();
+
+            $table->unsignedBigInteger('survey_response_id');
+            $table->foreign('survey_response_id')->references('id')->on('survey_responses');
+
+            $table->timestamps();
+        });
+
+    }
+}

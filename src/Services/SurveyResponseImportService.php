@@ -57,7 +57,7 @@ class SurveyResponseImportService
 
                     foreach ($responseAnswers->answers as $answer) {
                         $questionMapping = $this->getQuestionMapping($answer->element_id);
-                        if ($questionMapping && count($questionMapping)) {
+                        if ($questionMapping && !empty($questionMapping)) {
                             $questionResponseCreator = $this->getQuestionResponseCreator($answer->type);
                             if ($questionResponseCreator) {
                                 try {

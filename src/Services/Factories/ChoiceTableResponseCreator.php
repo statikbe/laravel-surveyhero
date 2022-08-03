@@ -1,16 +1,18 @@
 <?php
 
-    namespace Statikbe\Surveyhero\Services\Factories;
+namespace Statikbe\Surveyhero\Services\Factories;
 
     use Statikbe\Surveyhero\Models\SurveyQuestionResponse;
     use Statikbe\Surveyhero\Models\SurveyResponse;
 
-    class ChoiceTableResponseCreator extends AbstractQuestionResponseCreator {
+    class ChoiceTableResponseCreator extends AbstractQuestionResponseCreator
+    {
         const TYPE = 'choice_table';
 
         public function updateOrCreateQuestionResponse(\stdClass $surveyheroQuestionResponse,
-                                                       SurveyResponse $response,
-                                                       array $questionMapping): SurveyQuestionResponse|array {
+            SurveyResponse $response,
+            array $questionMapping): SurveyQuestionResponse|array
+        {
             /* Config question_mapping data structure:
              * [
              *   'question_id' => 5410053,
@@ -72,9 +74,9 @@
 
             $responseList = [];
             //TODO remove deselected answers
-            foreach($surveyheroQuestionResponse->choice_table as $surveyheroChoiceQuestion) {
+            foreach ($surveyheroQuestionResponse->choice_table as $surveyheroChoiceQuestion) {
                 $subquestionMapping = $this->getSubquestionMapping($surveyheroChoiceQuestion->row_id, $questionMapping);
-                foreach($surveyheroChoiceQuestion->choices as $surveyheroChoice) {
+                foreach ($surveyheroChoiceQuestion->choices as $surveyheroChoice) {
                     $existingQuestionResponse = $this->findExistingQuestionResponse($subquestionMapping['question_id'], $response, $surveyheroChoice->choice_id);
                     $responseData = $this->createSurveyQuestionResponseData($surveyheroQuestionResponse, $response, $subquestionMapping['field']);
                     $mappedChoice = $this->getChoiceMapping($surveyheroChoice->choice_id, $questionMapping);
@@ -87,15 +89,17 @@
                     ], $responseData);
                 }
             }
+
             return $responseList;
         }
 
-        protected function getSubquestionMapping(string|int $questionId, array $questionMapping): int|string|null {
-            $questionMap = array_filter($questionMapping, function($question, $key) use ($questionId) {
+        protected function getSubquestionMapping(string|int $questionId, array $questionMapping): int|string|null
+        {
+            $questionMap = array_filter($questionMapping, function ($question, $key) use ($questionId) {
                 return $question['question_id'] == $questionId;
             });
 
-            if(count($questionMapping) > 0){
+            if (count($questionMapping) > 0) {
                 $questionMap = reset($questionMap);
             }
 

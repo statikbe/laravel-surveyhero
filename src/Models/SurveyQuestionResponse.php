@@ -10,7 +10,8 @@ class SurveyQuestionResponse extends Model
 {
     use HasFactory;
 
-    public function surveyResponse(): BelongsTo {
+    public function surveyResponse(): BelongsTo
+    {
         return $this->belongsTo(SurveyResponse::class);
     }
 }

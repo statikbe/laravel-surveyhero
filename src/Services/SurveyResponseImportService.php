@@ -115,7 +115,7 @@ class SurveyResponseImportService
         $foundQuestions = array_filter($this->questionMapping, function ($question, $key) use ($questionId) {
             return $question['question_id'] == $questionId;
         }, ARRAY_FILTER_USE_BOTH);
-        if (!empty($foundQuestions)) {
+        if (! empty($foundQuestions)) {
             return reset($foundQuestions);
         }
 

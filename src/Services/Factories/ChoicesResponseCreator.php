@@ -47,7 +47,7 @@ class ChoicesResponseCreator extends AbstractQuestionResponseCreator
             $responseData = $this->createSurveyQuestionResponseData($surveyheroQuestionResponse, $response, $questionMapping['field']);
             $mappedChoice = $this->getChoiceMapping($surveyheroChoice->choice_id, $questionMapping);
 
-            $this->setChoiceAndConvertToDataType($mappedChoice, $questionMapping['mapped_data_type'], $responseData);
+            $this->setChoiceAndConvertToDataType($mappedChoice, $questionMapping['mapped_data_type'], $responseData, $surveyheroChoice);
             $responseData['surveyhero_answer_lbl'] = $surveyheroChoice->label;
 
             $responseList[] = SurveyQuestionResponse::updateOrCreate([

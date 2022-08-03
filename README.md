@@ -18,14 +18,14 @@ composer require statikbe/laravel-surveyhero
 You can publish and run the migrations with:
 
 ```bash
-php artisan vendor:publish --tag="laravel-surveyhero-migrations"
+php artisan vendor:publish --tag="surveyhero-migrations"
 php artisan migrate
 ```
 
 You can publish the config file with:
 
 ```bash
-php artisan vendor:publish --tag="laravel-surveyhero-config"
+php artisan vendor:publish --tag="surveyhero-config"
 ```
 
 This is the contents of the published config file:
@@ -34,6 +34,8 @@ This is the contents of the published config file:
 return [
 ];
 ```
+
+https://api.surveyhero.com/v1/surveys/53635/elements
 
 ## Usage
 

@@ -6,9 +6,9 @@ use Illuminate\Console\Command;
 use Statikbe\Surveyhero\Models\Survey;
 use Statikbe\Surveyhero\Services\SurveyResponseImportService;
 
-class SurveyheroImportCommand extends Command
+class SurveyheroResponseImportCommand extends Command
 {
-    public $signature = 'surveyhero:import {--survey=all : The Surveyhero survey ID}';
+    public $signature = 'surveyhero:import-responses {--survey=all : The Surveyhero survey ID}';
 
     public $description = 'Retrieve survey responses from SurveyHero API and save in database.';
 
@@ -32,8 +32,19 @@ class SurveyheroImportCommand extends Command
         $surveys = $surveyQuery->get();
 
         foreach ($surveys as $survey) {
-            $this->importService->importSurveyResponses($survey);
-            $this->comment(sprintf('Survey "%s" imported!', $survey->name));
+            $notImported = $this->importService->importSurveyResponses($survey);
+
+            if(count($notImported['questions']) > 0) {
+                $this->info(sprintf('%d questions could not imported!', count($notImported['questions'])));
+                $this->table(['Surveyhero ID'], $notImported['questions']);
+            }
+
+            if(count($notImported['answers']) > 0){
+                $this->info("Not all answers are mapped:");
+                $this->table(['Surveyhero ID', 'Answer info'], $notImported['answers']);
+            }
+
+            $this->comment("Survey '$survey->name' imported!");
         }
 
         $this->comment(sprintf('Imported %d survey%s!', count($surveys), count($surveys) > 1 ? 's' : ''));

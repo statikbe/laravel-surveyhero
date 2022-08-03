@@ -3,6 +3,8 @@
 namespace Statikbe\Surveyhero\Services;
 
 use Illuminate\Support\Facades\DB;
+use JetBrains\PhpStorm\ArrayShape;
+use Statikbe\Surveyhero\Exceptions\AnswerNotMappedException;
 use Statikbe\Surveyhero\Exceptions\ResponseCreatorNotImplemented;
 use Statikbe\Surveyhero\Http\SurveyheroClient;
 use Statikbe\Surveyhero\Models\Survey;
@@ -27,8 +29,18 @@ class SurveyResponseImportService
         $this->questionMapping = config('surveyhero.question_mapping', []);
     }
 
-    public function importSurveyResponses(Survey $survey)
+    /**
+     * @param Survey $survey
+     * @return array        A list of surveyhero question ids that could not be imported.
+     * @throws ResponseCreatorNotImplemented
+     */
+    #[ArrayShape(['questions' => "array", 'answers' => "array"])]
+    public function importSurveyResponses(Survey $survey): array
     {
+        $notImported = [
+            'questions' => [],
+            'answers' => [],
+        ];
         try {
             DB::beginTransaction();
             $responses = $this->client->getSurveyResponses($survey->surveyhero_id);
@@ -40,17 +52,29 @@ class SurveyResponseImportService
                     break;
                 }
 
-                $responseData = $this->client->getSurveyResponseAnswers($survey->surveyhero_id, $response->response_id);
-                if ($responseData) {
-                    $surveyResponse = $this->createOrUpdateSurveyResponse($responseData, $survey, $existingResponseRecord);
+                $responseAnswers = $this->client->getSurveyResponseAnswers($survey->surveyhero_id, $response->response_id);
+                if ($responseAnswers) {
+                    $surveyResponse = $this->createOrUpdateSurveyResponse($responseAnswers, $survey, $existingResponseRecord);
 
-                    foreach ($response->answers as $answer) {
-                        $questionMapping = $this->getQuestionMapping($answer->question_id);
-                        $questionResponseCreator = $this->getQuestionResponseCreator($response->type);
-                        if ($questionResponseCreator) {
-                            $questionResponseCreator->updateOrCreateQuestionResponse($answer, $surveyResponse, $questionMapping);
-                        } else {
-                            throw new ResponseCreatorNotImplemented('There is no response creator implemented for surveyhero field type: '.$response->type);
+                    foreach ($responseAnswers->answers as $answer) {
+                        $questionMapping = $this->getQuestionMapping($answer->element_id);
+                        if($questionMapping && count($questionMapping) > 0) {
+                            $questionResponseCreator = $this->getQuestionResponseCreator($answer->type);
+                            if($questionResponseCreator) {
+                                try {
+                                    $questionResponseCreator->updateOrCreateQuestionResponse($answer, $surveyResponse, $questionMapping);
+                                }
+                                catch(AnswerNotMappedException $ex){
+                                    $notImported['answers'][] = [$ex->answerId, $ex->getMessage()];
+                                    //set survey response as incomplete, because we could not completely import it.
+                                    $this->setResponseAsIncomplete($surveyResponse);
+                                }
+                            } else {
+                                throw new ResponseCreatorNotImplemented('There is no response creator implemented for surveyhero field type: ' . $answer->type);
+                            }
+                        }
+                        else {
+                            $notImported['questions'][$answer->element_id] = [$answer->element_id];
                         }
                     }
                 }
@@ -60,9 +84,10 @@ class SurveyResponseImportService
             DB::rollBack();
             throw $exception;
         }
+        return $notImported;
     }
 
-    private function createOrUpdateSurveyResponse(\stdClass $surveyheroResponse, Survey $survey, SurveyResponse $existingResponse): SurveyResponse
+    private function createOrUpdateSurveyResponse(\stdClass $surveyheroResponse, Survey $survey, ?SurveyResponse $existingResponse): SurveyResponse
     {
         return SurveyResponse::updateOrCreate([
             'id' => $existingResponse->id ?? null,
@@ -91,11 +116,16 @@ class SurveyResponseImportService
     {
         $foundQuestions = array_filter($this->questionMapping, function ($question, $key) use ($questionId) {
             return $question['question_id'] == $questionId;
-        });
+        }, ARRAY_FILTER_USE_BOTH);
         if (count($foundQuestions) > 0) {
             return reset($foundQuestions);
         }
 
         return null;
+    }
+
+    private function setResponseAsIncomplete(SurveyResponse $surveyResponse): void {
+        $surveyResponse->survey_completed = false;
+        $surveyResponse->save();
     }
 }

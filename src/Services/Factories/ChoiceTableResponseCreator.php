@@ -81,7 +81,7 @@ class ChoiceTableResponseCreator extends AbstractQuestionResponseCreator
                 $responseData = $this->createSurveyQuestionResponseData($surveyheroQuestionResponse, $response, $subquestionMapping['field']);
                 $mappedChoice = $this->getChoiceMapping($surveyheroChoice->choice_id, $questionMapping);
 
-                $this->setChoiceAndConvertToDataType($mappedChoice, $questionMapping['mapped_data_type'], $responseData);
+                $this->setChoiceAndConvertToDataType($mappedChoice, $questionMapping['mapped_data_type'], $responseData, $surveyheroChoice);
                 $responseData['surveyhero_answer_lbl'] = $surveyheroChoice->label;
 
                 $responseList[] = SurveyQuestionResponse::updateOrCreate([
@@ -95,9 +95,9 @@ class ChoiceTableResponseCreator extends AbstractQuestionResponseCreator
 
     protected function getSubquestionMapping(string|int $questionId, array $questionMapping): array
     {
-        $questionMap = array_filter($questionMapping, function ($question, $key) use ($questionId) {
+        $questionMap = array_filter($questionMapping['subquestion_mapping'], function ($question, $key) use ($questionId) {
             return $question['question_id'] == $questionId;
-        });
+        }, ARRAY_FILTER_USE_BOTH);
 
         if (count($questionMapping) > 0) {
             $questionMap = reset($questionMap);

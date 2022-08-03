@@ -24,7 +24,7 @@ class CreateSurveyheroTables extends Migration
             $table->datetime('survey_start_date')->nullable();
             $table->datetime('survey_last_updated')->nullable();
             $table->string('survey_language');
-            $table->bool('survey_completed')->default(false);
+            $table->boolean('survey_completed')->default(false);
 
             $table->unsignedBigInteger('survey_id');
             $table->foreign('survey_id')->references('id')->on('surveys');
@@ -40,7 +40,7 @@ class CreateSurveyheroTables extends Migration
             $table->string('surveyhero_answer_lbl')->nullable();
             $table->string('field');
             $table->string('converted_string_value')->nullable();
-            $table->int('converted_int_value')->nullable();
+            $table->integer('converted_int_value')->nullable();
 
             $table->unsignedBigInteger('survey_response_id');
             $table->foreign('survey_response_id')->references('id')->on('survey_responses');

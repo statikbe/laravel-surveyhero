@@ -76,16 +76,16 @@ class SurveyResponseImportService
         ]);
     }
 
-        private function getQuestionResponseCreator(string $surveyheroFieldType): ?QuestionResponseCreator
-        {
-            return match ($surveyheroFieldType) {
-                TextResponseCreator::TYPE => new TextResponseCreator(),
-                NumberResponseCreator::TYPE => new NumberResponseCreator(),
-                ChoicesResponseCreator::TYPE => new ChoicesResponseCreator(),
-                ChoiceTableResponseCreator::TYPE => new ChoiceTableResponseCreator(),
-                default => null,
-            };
-        }
+    private function getQuestionResponseCreator(string $surveyheroFieldType): ?QuestionResponseCreator
+    {
+        return match ($surveyheroFieldType) {
+            TextResponseCreator::TYPE => new TextResponseCreator(),
+            NumberResponseCreator::TYPE => new NumberResponseCreator(),
+            ChoicesResponseCreator::TYPE => new ChoicesResponseCreator(),
+            ChoiceTableResponseCreator::TYPE => new ChoiceTableResponseCreator(),
+            default => null,
+        };
+    }
 
     private function getQuestionMapping(int|string $questionId): ?array
     {

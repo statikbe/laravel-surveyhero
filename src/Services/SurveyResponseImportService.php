@@ -57,7 +57,7 @@ class SurveyResponseImportService
 
                     foreach ($responseAnswers->answers as $answer) {
                         $questionMapping = $this->getQuestionMapping($answer->element_id);
-                        if ($questionMapping && count($questionMapping) > 0) {
+                        if ($questionMapping && count($questionMapping)) {
                             $questionResponseCreator = $this->getQuestionResponseCreator($answer->type);
                             if ($questionResponseCreator) {
                                 try {
@@ -68,7 +68,7 @@ class SurveyResponseImportService
                                     $this->setResponseAsIncomplete($surveyResponse);
                                 }
                             } else {
-                                throw new ResponseCreatorNotImplemented('There is no response creator implemented for surveyhero field type: '.$answer->type);
+                                throw new ResponseCreatorNotImplemented("There is no response creator implemented for surveyhero field type: $answer->type");
                             }
                         } else {
                             $notImported['questions'][$answer->element_id] = [$answer->element_id];

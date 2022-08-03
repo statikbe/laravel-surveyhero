@@ -99,7 +99,7 @@ class ChoiceTableResponseCreator extends AbstractQuestionResponseCreator
             return $question['question_id'] == $questionId;
         }, ARRAY_FILTER_USE_BOTH);
 
-        if (count($questionMapping) > 0) {
+        if (!empty($questionMapping)) {
             $questionMap = reset($questionMap);
         }
 

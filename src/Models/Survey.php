@@ -12,6 +12,8 @@ class Survey extends Model
 {
     use HasFactory;
 
+    protected $guarded = [];
+
     public function surveyResponses(): HasMany {
         return $this->hasMany(SurveyResponse::class);
     }

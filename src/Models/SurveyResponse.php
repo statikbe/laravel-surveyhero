@@ -11,6 +11,8 @@ class SurveyResponse extends Model
 {
     use HasFactory;
 
+    protected $guarded = [];
+
     protected $dates = [
         'survey_start_date',
         'survey_last_updated',

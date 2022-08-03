@@ -14,7 +14,8 @@ class SurveyheroImportCommand extends Command
 
     private SurveyResponseImportService $importService;
 
-    public function __construct(SurveyResponseImportService $surveyResponseImportService) {
+    public function __construct(SurveyResponseImportService $surveyResponseImportService)
+    {
         parent::__construct();
 
         $this->importService = $surveyResponseImportService;
@@ -25,12 +26,12 @@ class SurveyheroImportCommand extends Command
         $surveyId = trim($this->option('survey'));
 
         $surveyQuery = Survey::query();
-        if($surveyId !== 'all'){
+        if ($surveyId !== 'all') {
             $surveyQuery->where('surveyhero_id', $surveyId);
         }
         $surveys = $surveyQuery->get();
 
-        foreach($surveys as $survey){
+        foreach ($surveys as $survey) {
             $this->importService->importSurveyResponses($survey);
             $this->comment(sprintf('Survey "%s" imported!', $survey->name));
         }

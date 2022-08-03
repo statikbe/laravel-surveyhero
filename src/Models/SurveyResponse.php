@@ -18,11 +18,13 @@ class SurveyResponse extends Model
         'survey_last_updated',
     ];
 
-    public function survey(): BelongsTo {
+    public function survey(): BelongsTo
+    {
         return $this->belongsTo(Survey::class);
     }
 
-    public function surveyAnswerResponses(): HasMany {
+    public function surveyAnswerResponses(): HasMany
+    {
         return $this->hasMany(SurveyQuestionResponse::class);
     }
 }

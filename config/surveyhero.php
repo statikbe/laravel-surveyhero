@@ -67,6 +67,6 @@ return [
                 'field' => 'age',
                 'mapped_data_type' => 'int',
             ],
-        ]
-    ]
+        ],
+    ],
 ];

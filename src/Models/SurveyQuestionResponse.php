@@ -12,7 +12,8 @@ class SurveyQuestionResponse extends Model
 
     protected $guarded = [];
 
-    public function surveyResponse(): BelongsTo {
+    public function surveyResponse(): BelongsTo
+    {
         return $this->belongsTo(SurveyResponse::class);
     }
 }

@@ -3,7 +3,6 @@
 namespace Statikbe\Surveyhero\Services;
 
 use Illuminate\Support\Facades\DB;
-use JetBrains\PhpStorm\ArrayShape;
 use Statikbe\Surveyhero\Exceptions\AnswerNotMappedException;
 use Statikbe\Surveyhero\Exceptions\ResponseCreatorNotImplemented;
 use Statikbe\Surveyhero\Http\SurveyheroClient;
@@ -31,10 +30,9 @@ class SurveyResponseImportService
 
     /**
      * @param Survey $survey
-     * @return array        A list of surveyhero question ids that could not be imported.
+     * @return array{'questions': array, 'answers': array}        A list of surveyhero question ids that could not be imported.
      * @throws ResponseCreatorNotImplemented
      */
-    #[ArrayShape(['questions' => "array", 'answers' => "array"])]
     public function importSurveyResponses(Survey $survey): array
     {
         $notImported = [

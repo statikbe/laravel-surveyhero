@@ -56,7 +56,7 @@ SURVEY_RESPONSE {
     num id
     num surveyhero_id
     datetime survey_start_date
-    datetime survey_end_date
+    datetime survey_last_updated
     string survey_language
     bool survey_completed
     num survey_id FK

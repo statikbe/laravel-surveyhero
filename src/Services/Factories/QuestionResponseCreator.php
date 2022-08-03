@@ -13,6 +13,7 @@ interface QuestionResponseCreator
      * @param  SurveyResponse  $response
      * @param  array  $questionMapping
      * @return SurveyQuestionResponse|array<int, SurveyQuestionResponse>
+     *
      * @throws AnswerNotMappedException
      */
     public function updateOrCreateQuestionResponse(\stdClass $surveyheroQuestionResponse,

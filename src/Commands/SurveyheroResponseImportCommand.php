@@ -34,13 +34,13 @@ class SurveyheroResponseImportCommand extends Command
         foreach ($surveys as $survey) {
             $notImported = $this->importService->importSurveyResponses($survey);
 
-            if(count($notImported['questions']) > 0) {
+            if (count($notImported['questions']) > 0) {
                 $this->info(sprintf('%d questions could not imported!', count($notImported['questions'])));
                 $this->table(['Surveyhero ID'], $notImported['questions']);
             }
 
-            if(count($notImported['answers']) > 0){
-                $this->info("Not all answers are mapped:");
+            if (count($notImported['answers']) > 0) {
+                $this->info('Not all answers are mapped:');
                 $this->table(['Surveyhero ID', 'Answer info'], $notImported['answers']);
             }
 

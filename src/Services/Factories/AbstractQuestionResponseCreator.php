@@ -44,16 +44,14 @@ abstract class AbstractQuestionResponseCreator implements QuestionResponseCreato
     protected function setChoiceAndConvertToDataType(mixed $mappedChoice, string $dataType, array &$responseData, \stdClass $surveyheroChoice): void
     {
         //if the choice is not mapped try to set the label as string:
-        if(!$mappedChoice) {
-            if($dataType === 'string') {
+        if (! $mappedChoice) {
+            if ($dataType === 'string') {
                 $responseData['converted_string_value'] = $surveyheroChoice->label;
-            }
-            else {
+            } else {
                 throw AnswerNotMappedException::create($surveyheroChoice->choice_id, "The choice mapping could not be made for choice ID: $surveyheroChoice->choice_id");
             }
-        }
-        else {
-            switch($dataType) {
+        } else {
+            switch ($dataType) {
                 case 'int':
                     $responseData['converted_int_value'] = $mappedChoice;
                     break;

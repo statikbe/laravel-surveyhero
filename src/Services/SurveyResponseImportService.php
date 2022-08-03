@@ -3,6 +3,7 @@
 namespace Statikbe\Surveyhero\Services;
 
 use Illuminate\Support\Facades\DB;
+use JetBrains\PhpStorm\ArrayShape;
 use Statikbe\Surveyhero\Exceptions\AnswerNotMappedException;
 use Statikbe\Surveyhero\Exceptions\ResponseCreatorNotImplemented;
 use Statikbe\Surveyhero\Http\SurveyheroClient;
@@ -56,22 +57,20 @@ class SurveyResponseImportService
 
                     foreach ($responseAnswers->answers as $answer) {
                         $questionMapping = $this->getQuestionMapping($answer->element_id);
-                        if($questionMapping && count($questionMapping) > 0) {
+                        if ($questionMapping && count($questionMapping) > 0) {
                             $questionResponseCreator = $this->getQuestionResponseCreator($answer->type);
-                            if($questionResponseCreator) {
+                            if ($questionResponseCreator) {
                                 try {
                                     $questionResponseCreator->updateOrCreateQuestionResponse($answer, $surveyResponse, $questionMapping);
-                                }
-                                catch(AnswerNotMappedException $ex){
+                                } catch (AnswerNotMappedException $ex) {
                                     $notImported['answers'][] = [$ex->answerId, $ex->getMessage()];
                                     //set survey response as incomplete, because we could not completely import it.
                                     $this->setResponseAsIncomplete($surveyResponse);
                                 }
                             } else {
-                                throw new ResponseCreatorNotImplemented('There is no response creator implemented for surveyhero field type: ' . $answer->type);
+                                throw new ResponseCreatorNotImplemented('There is no response creator implemented for surveyhero field type: '.$answer->type);
                             }
-                        }
-                        else {
+                        } else {
                             $notImported['questions'][$answer->element_id] = [$answer->element_id];
                         }
                     }
@@ -82,6 +81,7 @@ class SurveyResponseImportService
             DB::rollBack();
             throw $exception;
         }
+
         return $notImported;
     }
 
@@ -122,7 +122,8 @@ class SurveyResponseImportService
         return null;
     }
 
-    private function setResponseAsIncomplete(SurveyResponse $surveyResponse): void {
+    private function setResponseAsIncomplete(SurveyResponse $surveyResponse): void
+    {
         $surveyResponse->survey_completed = false;
         $surveyResponse->save();
     }

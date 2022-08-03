@@ -93,7 +93,7 @@ namespace Statikbe\Surveyhero\Services\Factories;
             return $responseList;
         }
 
-        protected function getSubquestionMapping(string|int $questionId, array $questionMapping): int|string|null
+        protected function getSubquestionMapping(string|int $questionId, array $questionMapping): array
         {
             $questionMap = array_filter($questionMapping, function ($question, $key) use ($questionId) {
                 return $question['question_id'] == $questionId;

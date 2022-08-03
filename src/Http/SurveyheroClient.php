@@ -19,7 +19,7 @@ namespace Statikbe\Surveyhero\Http;
         {
             $answerData = $this->fetchFromSurveyHero(sprintf('surveys/%s/responses/%s', $surveyId, $responseId));
 
-            return $answerData ? json_decode($answerData->body()) : null;
+            return $answerData->successful() ? json_decode($answerData->body()) : null;
         }
 
         public function transformAPITimestamp(string $surveyheroTimestamp): Carbon

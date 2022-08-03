@@ -83,6 +83,7 @@ namespace Statikbe\Surveyhero\Services;
                 NumberResponseCreator::TYPE => new NumberResponseCreator(),
                 ChoicesResponseCreator::TYPE => new ChoicesResponseCreator(),
                 ChoiceTableResponseCreator::TYPE => new ChoiceTableResponseCreator(),
+                default => null,
             };
         }
 

@@ -2,6 +2,6 @@
 
 namespace Statikbe\Surveyhero\Exceptions;
 
-    class ResponseCreatorNotImplemented extends \Exception
-    {
-    }
+class ResponseCreatorNotImplemented extends \Exception
+{
+}

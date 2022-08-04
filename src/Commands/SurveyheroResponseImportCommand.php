@@ -47,10 +47,11 @@ class SurveyheroResponseImportCommand extends Command
                 $notImported = $this->importService->importSurveyResponses($survey);
             } catch (SurveyNotMappedException $exception) {
                 $this->error("{$exception->getMessage()} Survey '$survey->name' with Surveyhero ID $survey->surveyhero_id");
+
                 return self::FAILURE;
-            }
-            catch(ResponseCreatorNotImplemented $exception){
+            } catch (ResponseCreatorNotImplemented $exception) {
                 $this->error($exception->getMessage());
+
                 return self::FAILURE;
             }
 

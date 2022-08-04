@@ -9,14 +9,14 @@ use Statikbe\Surveyhero\Models\SurveyResponse;
 abstract class AbstractQuestionResponseCreator implements QuestionResponseCreator
 {
     /**
-     * @param string|int $surveyheroQuestionId
-     * @param SurveyResponse $response
-     * @param string|int|null $surveyheroAnswerId
+     * @param  string|int  $surveyheroQuestionId
+     * @param  SurveyResponse  $response
+     * @param  string|int|null  $surveyheroAnswerId
      * @return SurveyQuestionResponse|null
      */
-    protected function findExistingQuestionResponse(string|int     $surveyheroQuestionId,
-                                                    SurveyResponse $response,
-                                                    string|int     $surveyheroAnswerId = null): ?SurveyQuestionResponse
+    protected function findExistingQuestionResponse(string|int $surveyheroQuestionId,
+        SurveyResponse $response,
+        string|int $surveyheroAnswerId = null): ?SurveyQuestionResponse
     {
         $query = SurveyQuestionResponse::where('surveyhero_question_id', $surveyheroQuestionId)
             ->where('survey_response_id', $response->id);
@@ -28,14 +28,14 @@ abstract class AbstractQuestionResponseCreator implements QuestionResponseCreato
     }
 
     /**
-     * @param \stdClass $surveyheroQuestionResponse
-     * @param SurveyResponse $response
-     * @param string $field
+     * @param  \stdClass  $surveyheroQuestionResponse
+     * @param  SurveyResponse  $response
+     * @param  string  $field
      * @return array{ 'surveyhero_question_id': int, 'field': string, 'survey_response_id': int }
      */
-    protected function createSurveyQuestionResponseData(\stdClass      $surveyheroQuestionResponse,
-                                                        SurveyResponse $response,
-                                                        string         $field): array
+    protected function createSurveyQuestionResponseData(\stdClass $surveyheroQuestionResponse,
+        SurveyResponse $response,
+        string $field): array
     {
         return [
             'surveyhero_question_id' => $surveyheroQuestionResponse->element_id,
@@ -54,16 +54,17 @@ abstract class AbstractQuestionResponseCreator implements QuestionResponseCreato
     }
 
     /**
-     * @param mixed $mappedChoice
-     * @param string $dataType
-     * @param array $responseData
-     * @param \stdClass $surveyheroChoice
+     * @param  mixed  $mappedChoice
+     * @param  string  $dataType
+     * @param  array  $responseData
+     * @param  \stdClass  $surveyheroChoice
+     *
      * @throws AnswerNotMappedException
      */
     protected function setChoiceAndConvertToDataType(mixed $mappedChoice,
-                                                     string $dataType,
-                                                     array &$responseData,
-                                                     \stdClass $surveyheroChoice): void
+        string $dataType,
+        array &$responseData,
+        \stdClass $surveyheroChoice): void
     {
         //if the choice is not mapped try to set the label as string:
         if (! $mappedChoice) {

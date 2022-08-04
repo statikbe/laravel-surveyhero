@@ -30,7 +30,7 @@ class SurveyResponseImportService
     }
 
     /**
-     * @param Survey $survey
+     * @param  Survey  $survey
      * @return array{'questions': array, 'answers': array}        A list of surveyhero question ids that could not be imported.
      *
      * @throws ResponseCreatorNotImplemented
@@ -43,7 +43,7 @@ class SurveyResponseImportService
             'answers' => [],
         ];
         $surveyQuestionMapping = $this->getSurveyQuestionMapping($survey);
-        if(!$surveyQuestionMapping){
+        if (! $surveyQuestionMapping) {
             throw SurveyNotMappedException::create($survey, 'Survey has no question mapping in config.');
         }
 
@@ -106,8 +106,8 @@ class SurveyResponseImportService
 
         //map link parameters:
         $linkParametersConfig = config('surveyhero.surveyhero_link_parameters_mapping', []);
-        foreach($linkParametersConfig as $surveyheroLinkParameter => $dbColumn){
-            if(isset($surveyheroResponse->link_parameters->{$surveyheroLinkParameter})){
+        foreach ($linkParametersConfig as $surveyheroLinkParameter => $dbColumn) {
+            if (isset($surveyheroResponse->link_parameters->{$surveyheroLinkParameter})) {
                 $responseData[$dbColumn] = $surveyheroResponse->link_parameters->{$surveyheroLinkParameter};
             }
         }

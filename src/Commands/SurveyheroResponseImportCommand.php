@@ -29,7 +29,7 @@ class SurveyheroResponseImportCommand extends Command
     {
         $truncateResponses = $this->option('fresh', false);
 
-        if($truncateResponses){
+        if ($truncateResponses) {
             $this->deleteResponses();
         }
 
@@ -44,9 +44,9 @@ class SurveyheroResponseImportCommand extends Command
         foreach ($surveys as $survey) {
             try {
                 $notImported = $this->importService->importSurveyResponses($survey);
-            }
-            catch(SurveyNotMappedException $exception){
+            } catch (SurveyNotMappedException $exception) {
                 $this->error("There is no question mapping for the survey '$survey->name' with Surveyhero ID $survey->surveyhero_id");
+
                 return self::FAILURE;
             }
 
@@ -68,7 +68,8 @@ class SurveyheroResponseImportCommand extends Command
         return self::SUCCESS;
     }
 
-    private function deleteResponses() {
+    private function deleteResponses()
+    {
         Schema::disableForeignKeyConstraints();
         SurveyQuestionResponse::truncate();
         SurveyResponse::truncate();

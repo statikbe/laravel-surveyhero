@@ -144,21 +144,18 @@ class SurveyResponseImportService
             $foundSurveys = array_filter($this->questionMapping, function ($surveyMapping, $key) use ($survey) {
                 return $surveyMapping['survey_id'] == $survey->surveyhero_id;
             }, ARRAY_FILTER_USE_BOTH);
-        }
-        catch(\Exception $exception){
+        } catch (\Exception $exception) {
             throw SurveyNotMappedException::create($survey, 'The question mapping configuration is not well-formed.');
         }
 
         if (! empty($foundSurveys)) {
             $mapping = reset($foundSurveys);
-            if(array_key_exists('questions', $mapping)){
+            if (array_key_exists('questions', $mapping)) {
                 return $mapping['questions'];
-            }
-            else {
+            } else {
                 throw SurveyNotMappedException::create($survey, 'Survey mapping found but its question mapping configuration is not well-formed.');
             }
-        }
-        else {
+        } else {
             throw SurveyNotMappedException::create($survey, 'Survey has no question mapping in config.');
         }
     }

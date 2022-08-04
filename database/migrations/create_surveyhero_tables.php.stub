@@ -25,9 +25,13 @@ class CreateSurveyheroTables extends Migration
             $table->datetime('survey_last_updated')->nullable();
             $table->string('survey_language');
             $table->boolean('survey_completed')->default(false);
+            $table->json('surveyhero_link_parameters')->nullable();
 
             $table->unsignedBigInteger('survey_id');
-            $table->foreign('survey_id')->references('id')->on('surveys');
+            $table->foreign('survey_id')
+                ->references('id')
+                ->on('surveys')
+                ->onDelete('cascade');
 
             $table->timestamps();
         });
@@ -43,9 +47,14 @@ class CreateSurveyheroTables extends Migration
             $table->integer('converted_int_value')->nullable();
 
             $table->unsignedBigInteger('survey_response_id');
-            $table->foreign('survey_response_id')->references('id')->on('survey_responses');
+            $table->foreign('survey_response_id')
+                ->references('id')
+                ->on('survey_responses')
+                ->onDelete('cascade');
 
             $table->timestamps();
+
+            $table->index(['field']);
         });
 
     }

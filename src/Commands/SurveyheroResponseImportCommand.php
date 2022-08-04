@@ -3,12 +3,16 @@
 namespace Statikbe\Surveyhero\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Schema;
+use Statikbe\Surveyhero\Exceptions\SurveyNotMappedException;
 use Statikbe\Surveyhero\Models\Survey;
+use Statikbe\Surveyhero\Models\SurveyQuestionResponse;
+use Statikbe\Surveyhero\Models\SurveyResponse;
 use Statikbe\Surveyhero\Services\SurveyResponseImportService;
 
 class SurveyheroResponseImportCommand extends Command
 {
-    public $signature = 'surveyhero:import-responses {--survey=all : The Surveyhero survey ID}';
+    public $signature = 'surveyhero:import-responses {--survey=all : The Surveyhero survey ID} {--fresh : Delete ALL imported responses and re-import}';
 
     public $description = 'Retrieve survey responses from SurveyHero API and save in database.';
 
@@ -23,6 +27,12 @@ class SurveyheroResponseImportCommand extends Command
 
     public function handle(): int
     {
+        $truncateResponses = $this->option('fresh', false);
+
+        if($truncateResponses){
+            $this->deleteResponses();
+        }
+
         $surveyId = trim($this->option('survey'));
 
         $surveyQuery = Survey::query();
@@ -32,7 +42,13 @@ class SurveyheroResponseImportCommand extends Command
         $surveys = $surveyQuery->get();
 
         foreach ($surveys as $survey) {
-            $notImported = $this->importService->importSurveyResponses($survey);
+            try {
+                $notImported = $this->importService->importSurveyResponses($survey);
+            }
+            catch(SurveyNotMappedException $exception){
+                $this->error("There is no question mapping for the survey '$survey->name' with Surveyhero ID $survey->surveyhero_id");
+                return self::FAILURE;
+            }
 
             if (! empty($notImported['questions'])) {
                 $this->info(sprintf('%d questions could not imported!', count($notImported['questions'])));
@@ -50,5 +66,12 @@ class SurveyheroResponseImportCommand extends Command
         $this->comment(sprintf('Imported %d survey%s!', count($surveys), count($surveys) > 1 ? 's' : ''));
 
         return self::SUCCESS;
+    }
+
+    private function deleteResponses() {
+        Schema::disableForeignKeyConstraints();
+        SurveyQuestionResponse::truncate();
+        SurveyResponse::truncate();
+        Schema::enableForeignKeyConstraints();
     }
 }

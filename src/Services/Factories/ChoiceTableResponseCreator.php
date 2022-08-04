@@ -80,6 +80,7 @@ class ChoiceTableResponseCreator extends AbstractQuestionResponseCreator
                 $existingQuestionResponse = $this->findExistingQuestionResponse($subquestionMapping['question_id'], $response, $surveyheroChoice->choice_id);
                 $responseData = $this->createSurveyQuestionResponseData($surveyheroQuestionResponse, $response, $subquestionMapping['field']);
                 $mappedChoice = $this->getChoiceMapping($surveyheroChoice->choice_id, $questionMapping);
+                $responseData['surveyhero_answer_id'] = $surveyheroChoice->choice_id;
 
                 $this->setChoiceAndConvertToDataType($mappedChoice, $questionMapping['mapped_data_type'], $responseData, $surveyheroChoice);
                 $responseData['surveyhero_answer_lbl'] = $surveyheroChoice->label;

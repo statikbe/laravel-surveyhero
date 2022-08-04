@@ -5,6 +5,7 @@ namespace Statikbe\Surveyhero\Services;
 use Illuminate\Support\Facades\DB;
 use Statikbe\Surveyhero\Exceptions\AnswerNotMappedException;
 use Statikbe\Surveyhero\Exceptions\ResponseCreatorNotImplemented;
+use Statikbe\Surveyhero\Exceptions\SurveyNotMappedException;
 use Statikbe\Surveyhero\Http\SurveyheroClient;
 use Statikbe\Surveyhero\Models\Survey;
 use Statikbe\Surveyhero\Models\SurveyResponse;
@@ -29,10 +30,11 @@ class SurveyResponseImportService
     }
 
     /**
-     * @param  Survey  $survey
+     * @param Survey $survey
      * @return array{'questions': array, 'answers': array}        A list of surveyhero question ids that could not be imported.
      *
      * @throws ResponseCreatorNotImplemented
+     * @throws SurveyNotMappedException
      */
     public function importSurveyResponses(Survey $survey): array
     {
@@ -40,6 +42,11 @@ class SurveyResponseImportService
             'questions' => [],
             'answers' => [],
         ];
+        $surveyQuestionMapping = $this->getSurveyQuestionMapping($survey);
+        if(!$surveyQuestionMapping){
+            throw SurveyNotMappedException::create($survey, 'Survey has no question mapping in config.');
+        }
+
         try {
             DB::beginTransaction();
             $responses = $this->client->getSurveyResponses($survey->surveyhero_id);
@@ -56,7 +63,7 @@ class SurveyResponseImportService
                     $surveyResponse = $this->createOrUpdateSurveyResponse($responseAnswers, $survey, $existingResponseRecord);
 
                     foreach ($responseAnswers->answers as $answer) {
-                        $questionMapping = $this->getQuestionMapping($answer->element_id);
+                        $questionMapping = $this->getQuestionMapping($surveyQuestionMapping, $answer->element_id);
                         if (! empty($questionMapping)) {
                             $questionResponseCreator = $this->getQuestionResponseCreator($answer->type);
                             if ($questionResponseCreator) {
@@ -87,16 +94,27 @@ class SurveyResponseImportService
 
     private function createOrUpdateSurveyResponse(\stdClass $surveyheroResponse, Survey $survey, ?SurveyResponse $existingResponse): SurveyResponse
     {
-        return SurveyResponse::updateOrCreate([
-            'id' => $existingResponse->id ?? null,
-        ], [
+        $responseData = [
             'surveyhero_id' => $surveyheroResponse->response_id,
             'survey_id' => $survey->id,
             'survey_language' => $surveyheroResponse->language->code,
             'survey_completed' => $surveyheroResponse->status == self::SURVEYHERO_STATUS_COMPLETED,
             'survey_start_date' => $this->client->transformAPITimestamp($surveyheroResponse->started_on),
             'survey_last_updated' => $this->client->transformAPITimestamp($surveyheroResponse->last_updated_on),
-        ]);
+            'surveyhero_link_parameters' => json_encode($surveyheroResponse->link_parameters),
+        ];
+
+        //map link parameters:
+        $linkParametersConfig = config('surveyhero.surveyhero_link_parameters_mapping', []);
+        foreach($linkParametersConfig as $surveyheroLinkParameter => $dbColumn){
+            if(isset($surveyheroResponse->link_parameters->{$surveyheroLinkParameter})){
+                $responseData[$dbColumn] = $surveyheroResponse->link_parameters->{$surveyheroLinkParameter};
+            }
+        }
+
+        return SurveyResponse::updateOrCreate([
+            'id' => $existingResponse->id ?? null,
+        ], $responseData);
     }
 
     private function getQuestionResponseCreator(string $surveyheroFieldType): ?QuestionResponseCreator
@@ -110,13 +128,25 @@ class SurveyResponseImportService
         };
     }
 
-    private function getQuestionMapping(int|string $questionId): ?array
+    private function getQuestionMapping(array $surveyQuestionMapping, int|string $questionId): ?array
     {
-        $foundQuestions = array_filter($this->questionMapping, function ($question, $key) use ($questionId) {
+        $foundQuestions = array_filter($surveyQuestionMapping, function ($question, $key) use ($questionId) {
             return $question['question_id'] == $questionId;
         }, ARRAY_FILTER_USE_BOTH);
         if (! empty($foundQuestions)) {
             return reset($foundQuestions);
+        }
+
+        return null;
+    }
+
+    private function getSurveyQuestionMapping(Survey $survey): ?array
+    {
+        $foundSurveys = array_filter($this->questionMapping, function ($surveyMapping, $key) use ($survey) {
+            return $surveyMapping['survey_id'] == $survey->surveyhero_id;
+        }, ARRAY_FILTER_USE_BOTH);
+        if (! empty($foundSurveys)) {
+            return reset($foundSurveys);
         }
 
         return null;

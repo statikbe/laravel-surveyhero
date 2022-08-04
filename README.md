@@ -15,33 +15,17 @@ You can install the package via composer:
 composer require statikbe/laravel-surveyhero
 ```
 
-You can publish and run the migrations with:
+Please publish and run the migrations with:
 
 ```bash
 php artisan vendor:publish --tag="surveyhero-migrations"
 php artisan migrate
 ```
 
-You can publish the config file with:
+Please publish the config file with:
 
 ```bash
 php artisan vendor:publish --tag="surveyhero-config"
-```
-
-This is the contents of the published config file:
-
-```php
-return [
-];
-```
-
-https://api.surveyhero.com/v1/surveys/53635/elements
-
-## Usage
-
-```php
-$surveyhero = new Statikbe\Surveyhero();
-echo $surveyhero->echoPhrase('Hello, Statikbe!');
 ```
 
 ## Data model
@@ -61,6 +45,7 @@ SURVEY_RESPONSE {
     datetime survey_last_updated
     string survey_language
     bool survey_completed
+    json surveyhero_link_parameters
     num survey_id FK
 }
 SURVEY_QUESTION_RESPONSE {
@@ -76,7 +61,194 @@ SURVEY ||--o{ SURVEY_RESPONSE : contains
 SURVEY_RESPONSE ||--o{ SURVEY_QUESTION_RESPONSE : has
 ```
 
+When a user fills out a survey on Surveyhero, a survey response is available in the API, which contains all question 
+answers. The relational data model implements the same logic. To start importing Surveyhero responses, you should 
+create a Survey record with the survey ID from Surveyhero.
+
+Each response contains metadata about the submission and link parameters are stored in JSON but can be [mapped to custom
+data columns](#link-parameters-mapping). If the response is marked as completed by Surveyhero, we will skip the import.
+
+For each answer, the surveyhero question and answer ID's are stored. The field column is used to store a question 
+identifier to be able to more easily query the answers, e.g. to produce statistics. The answer can be converted to a
+new value. For instance, this is handy for Likert scales or dropdowns to map to a numeric value or standardised string 
+constants, to make postprocessing easier. Since most surveys are used to run statistics on, we have implemented 2 
+different column types for now: `integer` and `string` to be able to easily run SQL aggregates. 
+
+## Configuration
+
+Create an API user and password [on Surveyhero](https://developer.surveyhero.com/api/#authentication) and set this in the
+`.env` file:
+
+```
+SURVEYHERO_API_USERNAME=1234567890
+SURVEYHERO_API_PASSWORD=qwertyuiopasdfghjklzxcvbnm
+```
+
+### Question mapping
+
+Then you need to map the Surveyhero question IDs and the choice IDs to your question identifiers and choice values.
+The published configuration file contains an example mapping.
+
+You can check the structure of your survey by calling the Surveyhero API on the following URL (replace `[survey_id]` 
+with the ID of your survey):
+
+```
+https://api.surveyhero.com/v1/surveys/[survey_id]/elements
+```
+
+Each survey has a separate data structure in the `question_mapping` configuration variable:
+
+```php
+'question_mapping' => [
+    [
+        'survey_id' => 1234567,
+        'questions' => [
+            ... //see below
+        ]
+    ]
+];
+```
+
+It is used to identify which Surveyhero survey the mapping is for.
+
+Each question type has different specifications, so the mapping data structure is slightly different:
+
+#### Text input
+
+```php
+[
+    'question_id' => 1000005,
+    'type' => 'text',
+    'field' => 'question_5',
+],
+```
+
+The field is the identifier in your database to be able to more easily query the responses for a question.
+
+#### Numeric input
+
+```php
+[
+    'question_id' => 1000006,
+    'type' => 'number',
+    'field' => 'age',
+    'mapped_data_type' => 'int',
+],
+```
+
+Currently, only integer support is implemented.
+
+#### Choice list
+
+```php
+[
+    'question_id' => 1000002,
+    'type' => 'choices',
+    'field' => 'question_4',
+    'answer_mapping' => [
+        13509166 => 1,
+        13509167 => 2,
+        13509168 => 3,
+    ],
+    'mapped_data_type' => 'int',
+],
+```
+
+A choice list requires an `answer_mapping`, where you can map the Surveyhero choice ID's to the converted values that
+you want to use in your statistics. You should also set `mapped_data_type` to `int` or `string` depending on the values
+data type of `answer_mapping`.
+
+#### Choice table
+
+```php
+[
+    'question_id' => 1000001,
+    'type' => 'choice_table',
+    'subquestion_mapping' => [
+        [
+            'question_id' => 13509163,
+            'field' => 'question_1',
+        ],
+        [
+            'question_id' => 13509164,
+            'field' => 'question_2',
+        ],
+        [
+            'question_id' => 13509165,
+            'field' => 'question_3',
+        ],
+    ],
+    'answer_mapping' => [
+        13509163 => 1,
+        13509164 => 2,
+        13509165 => 3,
+    ],
+    'mapped_data_type' => 'int', //can also be string if the values are strings in answer_mapping
+]
+```
+
+A choice table is a Likert scale type of question with a set of rows or subquestions. You need to map each row to a 
+subquestion with its own `question_id` and `field`. So each subquestion will become a `SurveyQuestionResponse` record.
+The `answer_mapping` operates identically to [Choice List](#choice-list).
+
+### Link parameters mapping
+
+Surveyhero allows to pass parameters in the query string of the share URL, see 
+[docs](https://help.surveyhero.com/manual/collect-responses/how-to-add-parameters-to-your-online-survey-link/).
+
+These parameters are often used to send the same survey URL to different types or participants that you want to be 
+able to identify in your survey responses. Surveyhero returns these parameters as `link-parameters` through the response
+API. By default, the library stores the link parameters as JSON in the `surveyhero_link_parameters` column.
+
+The library also allows you to map these link parameters to variables on the `SurveyReponse` model. To do this you need 
+to create a new migration in your project to add the new columns to the `survey_response` table, and then configure
+`surveyhero_link_parameters_mapping` in the configuration file.
+
+```php 
+'surveyhero_link_parameters_mapping' => [
+    'survey-id' => 'survey_uuid',
+    'survey' => 'survey_uuid',
+    'uuid' => 'survey_uuid',
+    'org' => 'organisation',
+],
+```
+
+The key is the Surveyhero link parameter and the value is the database column. In the example we map multiple link 
+parameters on the same database column to fix changing usage in link parameters over time.
+
+## Commands
+
+### Import responses
+
+This command imports all survey responses for a given survey ID or all surveys. You can schedule this for continuous 
+updates.
+First you need to create at least one `Survey` record with a Surveyhero ID.
+
+```shell
+php artisan surveyhero:import-responses
+```
+
+You can configure a specific survey with the flag `--survey=22333`.
+If you want to reimport all survey responses you can wipe the SurveyResponses and SurveyQuestionResponses by using the
+flag `--fresh`.
+
+## Ideas for future improvements
+
+- Add more default indices to the migration.
+- Support more Surveyhero question types.
+- Support more converted value data types, e.g. double
+- A command to check the `question_mapping` configuration to validate if:
+  - there are no double field names
+  - there are no double question IDs.
+  - there are no double answer IDs.
+  - the data format for a question time is ok, i.e. are all fields there and are they the right type.
+  - all questions and answers are mapped by doing an API request.
+- A command to create a basic question_mapping configuration based on the [Surveyhero Element API](https://developer.surveyhero.com/api/#element-api)
+- A command to create all surveys in the Surveyhero account. 
+
 ## Testing
+
+Currently, no tests are implemented.
 
 ```bash
 composer test

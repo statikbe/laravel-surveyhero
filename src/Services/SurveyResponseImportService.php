@@ -43,9 +43,6 @@ class SurveyResponseImportService
             'answers' => [],
         ];
         $surveyQuestionMapping = $this->getSurveyQuestionMapping($survey);
-        if (! $surveyQuestionMapping) {
-            throw SurveyNotMappedException::create($survey, 'Survey has no question mapping in config.');
-        }
 
         try {
             DB::beginTransaction();
@@ -140,16 +137,30 @@ class SurveyResponseImportService
         return null;
     }
 
-    private function getSurveyQuestionMapping(Survey $survey): ?array
+    private function getSurveyQuestionMapping(Survey $survey): array
     {
-        $foundSurveys = array_filter($this->questionMapping, function ($surveyMapping, $key) use ($survey) {
-            return $surveyMapping['survey_id'] == $survey->surveyhero_id;
-        }, ARRAY_FILTER_USE_BOTH);
-        if (! empty($foundSurveys)) {
-            return reset($foundSurveys);
+        $foundSurveys = null;
+        try {
+            $foundSurveys = array_filter($this->questionMapping, function ($surveyMapping, $key) use ($survey) {
+                return $surveyMapping['survey_id'] == $survey->surveyhero_id;
+            }, ARRAY_FILTER_USE_BOTH);
+        }
+        catch(\Exception $exception){
+            throw SurveyNotMappedException::create($survey, 'The question mapping configuration is not well-formed.');
         }
 
-        return null;
+        if (! empty($foundSurveys)) {
+            $mapping = reset($foundSurveys);
+            if(array_key_exists('questions', $mapping)){
+                return $mapping['questions'];
+            }
+            else {
+                throw SurveyNotMappedException::create($survey, 'Survey mapping found but its question mapping configuration is not well-formed.');
+            }
+        }
+        else {
+            throw SurveyNotMappedException::create($survey, 'Survey has no question mapping in config.');
+        }
     }
 
     private function setResponseAsIncomplete(SurveyResponse $surveyResponse): void

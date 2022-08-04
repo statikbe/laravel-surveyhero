@@ -4,6 +4,7 @@ namespace Statikbe\Surveyhero\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Schema;
+use Statikbe\Surveyhero\Exceptions\ResponseCreatorNotImplemented;
 use Statikbe\Surveyhero\Exceptions\SurveyNotMappedException;
 use Statikbe\Surveyhero\Models\Survey;
 use Statikbe\Surveyhero\Models\SurveyQuestionResponse;
@@ -27,7 +28,7 @@ class SurveyheroResponseImportCommand extends Command
 
     public function handle(): int
     {
-        $truncateResponses = $this->option('fresh', false);
+        $truncateResponses = $this->option('fresh');
 
         if ($truncateResponses) {
             $this->deleteResponses();
@@ -46,7 +47,10 @@ class SurveyheroResponseImportCommand extends Command
                 $notImported = $this->importService->importSurveyResponses($survey);
             } catch (SurveyNotMappedException $exception) {
                 $this->error("There is no question mapping for the survey '$survey->name' with Surveyhero ID $survey->surveyhero_id");
-
+                return self::FAILURE;
+            }
+            catch(ResponseCreatorNotImplemented $exception){
+                $this->error($exception->getMessage());
                 return self::FAILURE;
             }
 

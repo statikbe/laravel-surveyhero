@@ -22,6 +22,22 @@ class SurveyheroClient
         return $answerData->successful() ? json_decode($answerData->body()) : null;
     }
 
+    public function getSurveyQuestions(string|int $surveyId, string $lang = null): array
+    {
+        $questionsData = $this->fetchFromSurveyHero(sprintf('surveys/%s/questions%s', $surveyId, $lang ? "?lang=" . $lang : null));
+        $questions = json_decode($questionsData->body());
+
+        return $questions ? $questions->elements : [];
+    }
+
+    public function getSurveyLanguages(string|int $surveyId): array
+    {
+        $questionsData = $this->fetchFromSurveyHero(sprintf('surveys/%s/languages', $surveyId));
+        $languages = json_decode($questionsData->body());
+
+        return $languages ? $languages->languages : [];
+    }
+
     public function transformAPITimestamp(string $surveyheroTimestamp): Carbon
     {
         return Carbon::createFromFormat('Y-m-d\TH:i:s',
@@ -30,6 +46,8 @@ class SurveyheroClient
 
     private function fetchFromSurveyHero(string $urlPath): \Illuminate\Http\Client\Response
     {
+        //Prevent API rate limiting
+        sleep(1);
         return Http::withBasicAuth(config('surveyhero.api_username'), config('surveyhero.api_password'))
             ->get(config('surveyhero.api_url').$urlPath);
     }

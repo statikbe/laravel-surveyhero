@@ -83,7 +83,7 @@ class ChoiceTableResponseCreator extends AbstractQuestionResponseCreator
                 $responseData['surveyhero_answer_id'] = $surveyheroChoice->choice_id;
 
                 $this->setChoiceAndConvertToDataType($mappedChoice, $questionMapping['mapped_data_type'], $responseData, $surveyheroChoice);
-                $responseData['surveyhero_answer_lbl'] = $surveyheroChoice->label;
+                //$responseData['surveyhero_answer_lbl'] = $surveyheroChoice->label;
 
                 $responseList[] = SurveyQuestionResponse::updateOrCreate([
                     'id' => $existingQuestionResponse->id ?? null,

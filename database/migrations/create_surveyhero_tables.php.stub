@@ -41,7 +41,6 @@ class CreateSurveyheroTables extends Migration
             $table->bigInteger('surveyhero_question_id');
             $table->bigInteger('surveyhero_answer_id')->nullable();
 
-            $table->string('surveyhero_answer_lbl')->nullable();
             $table->string('field');
             $table->string('converted_string_value')->nullable();
             $table->integer('converted_int_value')->nullable();
@@ -55,6 +54,22 @@ class CreateSurveyheroTables extends Migration
             $table->timestamps();
 
             $table->index(['field']);
+        });
+
+        Schema::create('survey_questions', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('survey_id')->constrained('surveys')->onDelete('cascade');
+            $table->bigInteger('surveyhero_question_id')->nullable();
+            $table->json('label');
+            $table->timestamps();
+        });
+
+        Schema::create('survey_answers', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('survey_question_id')->constrained('survey_questions')->onDelete('cascade');
+            $table->bigInteger('surveyhero_answer_id')->nullable();
+            $table->json('label');
+            $table->timestamps();
         });
 
     }

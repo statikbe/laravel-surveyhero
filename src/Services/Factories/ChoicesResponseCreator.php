@@ -9,7 +9,8 @@ class ChoicesResponseCreator extends AbstractQuestionResponseCreator
 {
     const TYPE = 'choices';
 
-    public function updateOrCreateQuestionResponse(\stdClass $surveyheroQuestionResponse,
+    public function updateOrCreateQuestionResponse(
+        \stdClass $surveyheroQuestionResponse,
         SurveyResponse $response,
         array $questionMapping): SurveyQuestionResponse|array
     {
@@ -49,7 +50,7 @@ class ChoicesResponseCreator extends AbstractQuestionResponseCreator
             $responseData['surveyhero_answer_id'] = $surveyheroChoice->choice_id;
 
             $this->setChoiceAndConvertToDataType($mappedChoice, $questionMapping['mapped_data_type'], $responseData, $surveyheroChoice);
-            $responseData['surveyhero_answer_lbl'] = $surveyheroChoice->label;
+            //$responseData['surveyhero_answer_lbl'] = $surveyheroChoice->label;
 
             $responseList[] = SurveyQuestionResponse::updateOrCreate([
                 'id' => $existingQuestionResponse->id ?? null,

@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $id
  * @property int $surveyhero_question_id
  * @property int $surveyhero_answer_id
- * @property string $surveyhero_answer_lbl
  * @property string $field
  * @property string $converted_string_value
  * @property string $converted_int_value

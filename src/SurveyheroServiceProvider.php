@@ -25,7 +25,7 @@ class SurveyheroServiceProvider extends PackageServiceProvider
             ->hasCommands([
                 SurveyheroResponseImportCommand::class,
                 SurveyheroQuestionsAndAnswersImportCommand::class,
-                SurveyheroMapperCommand::class
+                SurveyheroMapperCommand::class,
             ]);
     }
 }

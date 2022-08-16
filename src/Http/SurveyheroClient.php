@@ -24,7 +24,7 @@ class SurveyheroClient
 
     public function getSurveyQuestions(string|int $surveyId, string $lang = null): array
     {
-        $questionsData = $this->fetchFromSurveyHero(sprintf('surveys/%s/questions%s', $surveyId, $lang ? "?lang=" . $lang : null));
+        $questionsData = $this->fetchFromSurveyHero(sprintf('surveys/%s/questions%s', $surveyId, $lang ? '?lang='.$lang : null));
         $questions = json_decode($questionsData->body());
 
         return $questions ? $questions->elements : [];
@@ -48,6 +48,7 @@ class SurveyheroClient
     {
         //Prevent API rate limiting
         sleep(1);
+
         return Http::withBasicAuth(config('surveyhero.api_username'), config('surveyhero.api_password'))
             ->get(config('surveyhero.api_url').$urlPath);
     }

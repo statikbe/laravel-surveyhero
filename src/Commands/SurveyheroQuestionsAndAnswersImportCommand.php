@@ -4,15 +4,10 @@ namespace Statikbe\Surveyhero\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Schema;
-use Statikbe\Surveyhero\Exceptions\ResponseCreatorNotImplemented;
-use Statikbe\Surveyhero\Exceptions\SurveyNotMappedException;
 use Statikbe\Surveyhero\Models\Survey;
 use Statikbe\Surveyhero\Models\SurveyAnswer;
 use Statikbe\Surveyhero\Models\SurveyQuestion;
-use Statikbe\Surveyhero\Models\SurveyQuestionResponse;
-use Statikbe\Surveyhero\Models\SurveyResponse;
 use Statikbe\Surveyhero\Services\SurveyQuestionsAndAnswersImportService;
-use Statikbe\Surveyhero\Services\SurveyResponseImportService;
 
 class SurveyheroQuestionsAndAnswersImportCommand extends Command
 {
@@ -50,6 +45,7 @@ class SurveyheroQuestionsAndAnswersImportCommand extends Command
                 $notImported = $this->importService->importSurveyQuestionsAndAnswers($survey);
             } catch (\Exception $e) {
                 $this->error($e->getMessage());
+
                 return self::FAILURE;
             }
 

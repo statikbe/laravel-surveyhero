@@ -14,8 +14,6 @@ use Statikbe\Surveyhero\Services\Factories\ChoiceTableResponseCreator;
 use Statikbe\Surveyhero\Services\Factories\NumberResponseCreator;
 use Statikbe\Surveyhero\Services\Factories\QuestionResponseCreator;
 use Statikbe\Surveyhero\Services\Factories\TextResponseCreator;
-use Statikbe\Surveyhero\Models\SurveyAnswer;
-use Statikbe\Surveyhero\Models\SurveyQuestion;
 
 class SurveyResponseImportService
 {
@@ -64,7 +62,7 @@ class SurveyResponseImportService
 
     public function importSurveyResponse($response, Survey $survey, $surveyQuestionMapping = null): void
     {
-        if(!$surveyQuestionMapping) {
+        if (! $surveyQuestionMapping) {
             $surveyQuestionMapping = $this->getSurveyQuestionMapping($survey);
         }
 

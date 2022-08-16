@@ -95,7 +95,7 @@ class SurveyQuestionsAndAnswersImportService
             SurveyAnswer::updateOrCreate(
                 [
                     'survey_question_id' => $surveyQuestion->id,
-                    "surveyhero_answer_id" => $i
+                    'surveyhero_answer_id' => $i,
                 ],
                 [
                     'survey_question_id' => $surveyQuestion->id,

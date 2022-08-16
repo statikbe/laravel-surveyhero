@@ -28,6 +28,11 @@ class Survey extends Model
         return $this->hasMany(SurveyResponse::class);
     }
 
+    public function surveyQuestions(): HasMany
+    {
+        return $this->hasMany(SurveyQuestion::class);
+    }
+
     public function completedResponses(): Collection
     {
         return $this->surveyResponses()->where('survey_completed', 1)->get();

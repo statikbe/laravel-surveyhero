@@ -101,10 +101,13 @@ class SurveyQuestionsAndAnswersImportService
 
         for($i = $minValue; $i <= $maxValue; $i += $stepSize) {
             SurveyAnswer::updateOrCreate(
-                ['survey_question_id' => $surveyQuestion->id],
                 [
                     'survey_question_id' => $surveyQuestion->id,
-                    'surveyhero_answer_id' => null,
+                    "surveyhero_answer_id" => $i
+                ],
+                [
+                    'survey_question_id' => $surveyQuestion->id,
+                    'surveyhero_answer_id' => $i,
                     'label' => [
                         $lang->code => $i
                     ]

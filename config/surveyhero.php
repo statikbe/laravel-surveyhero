@@ -33,27 +33,26 @@ return [
      * 'field' represents the field from your model to store in de database
      */
     'surveyhero_link_parameters_mapping' => [
-        /**
-        * example 1:
-        *
-         * 'username' => [
-        *     'name' => 'user_name'                         (the target column name on the survey_response table)
-        * ],
-        */
+    /**
+     * example 1:
+     *
+     * 'username' => [
+     *     'name' => 'user_name'                         (the target column name on the survey_response table)
+     * ],
+     */
 
-        /**
-         * example 2:
-         * Behind the scenes this will save the result of
-         * \App\Models\User::where('uuid', $linkParameterValue)->first()->id to user_id on the survey_response table
-         *
-         * 'user_uuid' => [
-         *     'name' => 'user_id',                         (the target column name on the survey_response table)
-         *     'entity' => \App\Models\User::class,         (the model to query)
-         *     'value' => 'uuid',                           (the column on the entity to query)
-         *     'field' => 'id',                             (the column on the entity to select)
-         * ],
-         */
-
+    /**
+     * example 2:
+     * Behind the scenes this will save the result of
+     * \App\Models\User::where('uuid', $linkParameterValue)->first()->id to user_id on the survey_response table
+     *
+     * 'user_uuid' => [
+     *     'name' => 'user_id',                         (the target column name on the survey_response table)
+     *     'entity' => \App\Models\User::class,         (the model to query)
+     *     'value' => 'uuid',                           (the column on the entity to query)
+     *     'field' => 'id',                             (the column on the entity to select)
+     * ],
+     */
     ],
 
     /**

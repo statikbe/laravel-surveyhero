@@ -49,7 +49,7 @@ class SurveyResponseImportService
             $responses = $this->client->getSurveyResponses($survey->surveyhero_id);
 
             foreach ($responses as $response) {
-                $this->importSurveyResponse($response, $survey, $surveyQuestionMapping);
+                $this->importSurveyResponse($response->response_id, $survey, $surveyQuestionMapping);
             }
             DB::commit();
         } catch (\Exception $exception) {
@@ -60,19 +60,19 @@ class SurveyResponseImportService
         return $notImported;
     }
 
-    public function importSurveyResponse($response, Survey $survey, $surveyQuestionMapping = null): void
+    public function importSurveyResponse($responseId, Survey $survey, $surveyQuestionMapping = null): void
     {
         if (! $surveyQuestionMapping) {
             $surveyQuestionMapping = $this->getSurveyQuestionMapping($survey);
         }
 
         //do not import already imported data.
-        $existingResponseRecord = SurveyResponse::where('surveyhero_id', $response->response_id)->first();
+        $existingResponseRecord = SurveyResponse::where('surveyhero_id', $responseId)->first();
         if ($existingResponseRecord && $existingResponseRecord->survey_completed) {
             return;
         }
 
-        $responseAnswers = $this->client->getSurveyResponseAnswers($survey->surveyhero_id, $response->response_id);
+        $responseAnswers = $this->client->getSurveyResponseAnswers($survey->surveyhero_id, $responseId);
         if ($responseAnswers) {
             $surveyResponse = $this->createOrUpdateSurveyResponse($responseAnswers, $survey, $existingResponseRecord);
 

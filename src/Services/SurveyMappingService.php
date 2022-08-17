@@ -9,22 +9,19 @@ use Statikbe\Surveyhero\Models\Survey;
 
 class SurveyMappingService
 {
+    /**
+     * @var \Statikbe\Surveyhero\Http\SurveyheroClient
+     */
     private SurveyheroClient $client;
-
-    private array $questionMapping;
 
     public function __construct(SurveyheroClient $client)
     {
         $this->client = $client;
-        $this->questionMapping = config('surveyhero.question_mapping', []);
     }
 
     /**
-     * @param  Survey  $survey
-     * @return array{'questions': array, 'answers': array}        A list of surveyhero question ids that could not be imported.
-     *
-     * @throws ResponseCreatorNotImplemented
-     * @throws SurveyNotMappedException
+     * @param Survey $survey
+     * @return array
      */
     public function map(Survey $survey): array
     {

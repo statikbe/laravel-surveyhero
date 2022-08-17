@@ -12,7 +12,10 @@ class SurveyheroMapperCommand extends Command
 
     public $description = 'Map all questions and answers linked to configured surveys.';
 
-    private SurveyMappingService $surveyMappingService;
+    /**
+     * @var \Statikbe\Surveyhero\Services\SurveyMappingService
+     */
+    private SurveyMappingService $mappingService;
 
     public function __construct(SurveyMappingService $surveyMappingService)
     {
@@ -49,7 +52,7 @@ class SurveyheroMapperCommand extends Command
 
         $this->comment('Mapping complete! [mapping.txt]');
 
-        return true;
+        return self::SUCCESS;
     }
 
     private function var_export_short($data, $return = true)

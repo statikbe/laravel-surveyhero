@@ -2,8 +2,6 @@
 
 namespace Statikbe\Surveyhero\Services;
 
-use Statikbe\Surveyhero\Exceptions\ResponseCreatorNotImplemented;
-use Statikbe\Surveyhero\Exceptions\SurveyNotMappedException;
 use Statikbe\Surveyhero\Http\SurveyheroClient;
 use Statikbe\Surveyhero\Models\Survey;
 
@@ -20,7 +18,7 @@ class SurveyMappingService
     }
 
     /**
-     * @param Survey $survey
+     * @param  Survey  $survey
      * @return array
      */
     public function map(Survey $survey): array

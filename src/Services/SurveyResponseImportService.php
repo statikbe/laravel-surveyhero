@@ -112,9 +112,15 @@ class SurveyResponseImportService
 
         //map link parameters:
         $linkParametersConfig = config('surveyhero.surveyhero_link_parameters_mapping', []);
-        foreach ($linkParametersConfig as $surveyheroLinkParameter => $dbColumn) {
+        foreach ($linkParametersConfig as $surveyheroLinkParameter => $settings) {
             if (isset($surveyheroResponse->link_parameters->{$surveyheroLinkParameter})) {
-                $responseData[$dbColumn] = $surveyheroResponse->link_parameters->{$surveyheroLinkParameter};
+                if(isset($settings['entity']) && isset($settings['value']) && isset($settings['field'])) {
+                    //Map parameter to value of associated model
+                    $responseData[$settings['name']] = optional($settings['entity']::where($settings['value'], $surveyheroResponse->link_parameters->{$surveyheroLinkParameter})->first())->id;
+                } else {
+                    //map parameter directly to database column
+                    $responseData[$settings['name']] = $surveyheroResponse->link_parameters->{$surveyheroLinkParameter};
+                }
             }
         }
 

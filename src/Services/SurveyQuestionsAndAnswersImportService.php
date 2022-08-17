@@ -102,8 +102,8 @@ class SurveyQuestionsAndAnswersImportService
                     'surveyhero_answer_id' => $i,
                     'label' => [
                         $lang->code => $i,
-                    ],
-                ]);
+                ],
+            ]);
         }
     }
 }

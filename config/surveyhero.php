@@ -19,9 +19,41 @@ return [
      * The key is the name of the Surveyhero link parameter and the value is the database column in the SurveyResponse model.
      * e.g. 'organisation' => 'uuid',
      */
+
+    /**
+     * Here you can map the link_parameters response from Surveyhero to the database columns of the SurveyResponse model.
+     * You need to extend the SurveyResponse model with a migration to include the necessary fields.
+     *
+     * The key is the name of the Surveyhero link parameter
+     * 'name' represents the column in the survey_response table to which we save the field
+     *
+     * Following parameters are optional in case you want to evaluate the link_parameters value on the database
+     * 'entity' represents the model you're querying on
+     * 'value' represents the field you're comparing on your model
+     * 'field' represents the field from your model to store in de database
+     */
     'surveyhero_link_parameters_mapping' => [
-        //example:
-        //'survey-id' => 'survey_uuid',
+        /**
+        * example 1:
+        *
+         * 'username' => [
+        *     'name' => 'user_name'                         (the target column name on the survey_response table)
+        * ],
+        */
+
+        /**
+         * example 2:
+         * Behind the scenes this will save the result of
+         * \App\Models\User::where('uuid', $linkParameterValue)->first()->id to user_id on the survey_response table
+         *
+         * 'user_uuid' => [
+         *     'name' => 'user_id',                         (the target column name on the survey_response table)
+         *     'entity' => \App\Models\User::class,         (the model to query)
+         *     'value' => 'uuid',                           (the column on the entity to query)
+         *     'field' => 'id',                             (the column on the entity to select)
+         * ],
+         */
+
     ],
 
     /**

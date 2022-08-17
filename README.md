@@ -206,15 +206,25 @@ to create a new migration in your project to add the new columns to the `survey_
 
 ```php 
 'surveyhero_link_parameters_mapping' => [
-    'survey-id' => 'survey_uuid',
-    'survey' => 'survey_uuid',
-    'uuid' => 'survey_uuid',
-    'org' => 'organisation',
+     'username' => [
+         'name' => 'user_name'                        (the target column name on the survey_response table)
+     ],
+     'user_uuid' => [
+         'name' => 'user_id',                         (the target column name on the survey_response table)
+         'entity' => \App\Models\User::class,         (the model to query)
+         'value' => 'uuid',                           (the column on the entity to query)
+         'field' => 'id',                             (the column on the entity to select)
+     ],
 ],
 ```
 
-The key is the Surveyhero link parameter and the value is the database column. In the example we map multiple link 
-parameters on the same database column to fix changing usage in link parameters over time.
+ The key is the name of the Surveyhero link parameter
+ - 'name' represents the column in the survey_response table to which we save the field
+ 
+ Following parameters are optional in case you want to evaluate the link_parameters value on the database
+ - 'entity' represents the model you're querying on
+ - 'value' represents the field you're comparing on your model
+ - 'field' represents the field from your model to store in de database
 
 ## Commands
 
@@ -230,6 +240,19 @@ php artisan surveyhero:import-responses
 
 You can configure a specific survey with the flag `--survey=22333`.
 If you want to reimport all survey responses you can wipe the SurveyResponses and SurveyQuestionResponses by using the
+flag `--fresh`.
+
+### Import questions and answers
+
+This command imports all survey questions and answers associated with their (translated) label for a given survey ID or all surveys. You can schedule this for continuous
+updates.
+
+```shell
+php artisan surveyhero:import-questions-and-answers
+```
+
+You can configure a specific survey with the flag `--survey=22333`.
+If you want to reimport all survey responses you can wipe the SurveyQuestions and SurveyAnswers by using the
 flag `--fresh`.
 
 ## Ideas for future improvements

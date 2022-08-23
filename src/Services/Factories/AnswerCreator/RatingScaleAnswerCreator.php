@@ -2,11 +2,8 @@
 
 namespace Statikbe\Surveyhero\Services\Factories\AnswerCreator;
 
-use Statikbe\Surveyhero\Exceptions\AnswerNotImportedException;
 use Statikbe\Surveyhero\Models\SurveyAnswer;
 use Statikbe\Surveyhero\Models\SurveyQuestion;
-use Statikbe\Surveyhero\Models\SurveyQuestionResponse;
-use Statikbe\Surveyhero\Models\SurveyResponse;
 
 class RatingScaleAnswerCreator extends AbstractAnswerCreator
 {

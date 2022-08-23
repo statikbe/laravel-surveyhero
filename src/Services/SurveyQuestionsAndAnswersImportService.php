@@ -3,7 +3,6 @@
 namespace Statikbe\Surveyhero\Services;
 
 use Illuminate\Support\Facades\DB;
-use Statikbe\Surveyhero\Exceptions\AnswerNotMappedException;
 use Statikbe\Surveyhero\Http\SurveyheroClient;
 use Statikbe\Surveyhero\Models\Survey;
 use Statikbe\Surveyhero\Models\SurveyAnswer;

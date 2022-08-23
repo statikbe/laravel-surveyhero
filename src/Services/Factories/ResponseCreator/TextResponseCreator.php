@@ -32,8 +32,8 @@ class TextResponseCreator extends AbstractQuestionResponseCreator
                                     ->where('survey_question_id', $responseData['survey_question_id'])
                                     ->first();
 
-        if(!$surveyAnswer) {
-            throw AnswerNotImportedException::create(intval($surveyheroQuestionResponse->text),"Make sure to import survey answer with Surveyhero ID $surveyheroQuestionResponse->element_id in the survey_answers table");
+        if (! $surveyAnswer) {
+            throw AnswerNotImportedException::create(intval($surveyheroQuestionResponse->text), "Make sure to import survey answer with Surveyhero ID $surveyheroQuestionResponse->element_id in the survey_answers table");
         }
         $responseData['survey_answer_id'] = $surveyAnswer->id;
 

@@ -3,12 +3,6 @@
 namespace Statikbe\Surveyhero\Services\Factories\AnswerCreator;
 
 use Statikbe\Surveyhero\Exceptions\AnswerNotMappedException;
-use Statikbe\Surveyhero\Exceptions\QuestionNotImportedException;
-use Statikbe\Surveyhero\Http\SurveyheroClient;
-use Statikbe\Surveyhero\Models\SurveyQuestion;
-use Statikbe\Surveyhero\Models\SurveyQuestionResponse;
-use Statikbe\Surveyhero\Models\SurveyResponse;
-use Statikbe\Surveyhero\Services\SurveyMappingService;
 
 abstract class AbstractAnswerCreator implements AnswerCreator
 {

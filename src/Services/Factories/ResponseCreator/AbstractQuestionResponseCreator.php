@@ -20,12 +20,12 @@ abstract class AbstractQuestionResponseCreator implements QuestionResponseCreato
         SurveyResponse $response,
         string|int $surveyheroAnswerId = null): ?SurveyQuestionResponse
     {
-        $query = SurveyQuestionResponse::whereHas('surveyQuestion', function($q) use ($surveyheroQuestionId) {
-           $q->where('surveyhero_question_id', $surveyheroQuestionId);
+        $query = SurveyQuestionResponse::whereHas('surveyQuestion', function ($q) use ($surveyheroQuestionId) {
+            $q->where('surveyhero_question_id', $surveyheroQuestionId);
         })->where('survey_response_id', $response->id);
 
         if ($surveyheroAnswerId) {
-            $query->whereHas('surveyAnswer', function($q) use ($surveyheroAnswerId) {
+            $query->whereHas('surveyAnswer', function ($q) use ($surveyheroAnswerId) {
                 $q->where('surveyhero_answer_id', $surveyheroAnswerId);
             });
         }
@@ -34,10 +34,11 @@ abstract class AbstractQuestionResponseCreator implements QuestionResponseCreato
     }
 
     /**
-     * @param \stdClass $surveyheroQuestionResponse
-     * @param SurveyResponse $response
-     * @param string $field
+     * @param  \stdClass  $surveyheroQuestionResponse
+     * @param  SurveyResponse  $response
+     * @param  string  $field
      * @return array{ 'surveyhero_question_id': int, 'field': string, 'survey_response_id': int }
+     *
      * @throws \Statikbe\Surveyhero\Exceptions\QuestionNotImportedException
      */
     protected function createSurveyQuestionResponseData(\stdClass $surveyheroQuestionResponse,
@@ -46,8 +47,8 @@ abstract class AbstractQuestionResponseCreator implements QuestionResponseCreato
     {
         $surveyQuestion = SurveyQuestion::where('surveyhero_question_id', $surveyheroQuestionResponse->element_id)->first();
 
-        if(!$surveyQuestion) {
-            throw QuestionNotImportedException::create($surveyheroQuestionResponse->element_id,"Make sure to import survey question with Surveyhero ID $surveyheroQuestionResponse->element_id in the survey_questions table");
+        if (! $surveyQuestion) {
+            throw QuestionNotImportedException::create($surveyheroQuestionResponse->element_id, "Make sure to import survey question with Surveyhero ID $surveyheroQuestionResponse->element_id in the survey_questions table");
         }
 
         return [

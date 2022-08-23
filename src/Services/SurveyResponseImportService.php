@@ -72,7 +72,7 @@ class SurveyResponseImportService
     public function importSurveyResponse($responseId, Survey $survey, $surveyQuestionMapping = null): void
     {
         if (! $surveyQuestionMapping) {
-            $surveyQuestionMapping =  $this->surveyMappingService->getSurveyQuestionMapping($survey);
+            $surveyQuestionMapping = $this->surveyMappingService->getSurveyQuestionMapping($survey);
         }
 
         //do not import already imported data.
@@ -156,8 +156,6 @@ class SurveyResponseImportService
             default => null,
         };
     }
-
-
 
     private function setResponseAsIncomplete(SurveyResponse $surveyResponse): void
     {

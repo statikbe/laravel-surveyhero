@@ -89,8 +89,8 @@ class ChoiceTableResponseCreator extends AbstractQuestionResponseCreator
                 $mappedChoice = $this->getChoiceMapping($surveyheroChoice->choice_id, $questionMapping);
                 $surveyAnswer = SurveyAnswer::where('surveyhero_answer_id', $surveyheroChoice->choice_id)->first();
 
-                if(!$surveyAnswer) {
-                    throw AnswerNotImportedException::create($surveyheroChoice->choice_id,"Make sure to import survey answer with Surveyhero ID $surveyheroQuestionResponse->element_id in the survey_answers table");
+                if (! $surveyAnswer) {
+                    throw AnswerNotImportedException::create($surveyheroChoice->choice_id, "Make sure to import survey answer with Surveyhero ID $surveyheroQuestionResponse->element_id in the survey_answers table");
                 }
                 $responseData['survey_answer_id'] = $surveyAnswer->id;
 

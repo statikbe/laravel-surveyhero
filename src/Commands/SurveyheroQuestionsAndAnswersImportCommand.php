@@ -50,7 +50,7 @@ class SurveyheroQuestionsAndAnswersImportCommand extends Command
             }
 
             if (! empty($notImported['question'])) {
-                $this->info('Not all answers are mapped:');
+                $this->info('Not all question can be imported:');
                 $this->table(['Surveyhero ID', 'Answer info'], $notImported['question']);
             }
 

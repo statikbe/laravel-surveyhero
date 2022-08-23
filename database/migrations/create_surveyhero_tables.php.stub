@@ -36,14 +36,30 @@ class CreateSurveyheroTables extends Migration
             $table->timestamps();
         });
 
-        Schema::create('survey_question_responses', function (Blueprint $table) {
-            $table->id();
-            $table->bigInteger('surveyhero_question_id');
-            $table->bigInteger('surveyhero_answer_id')->nullable();
+        Schema::create('survey_questions', function (Blueprint $table) {
+                    $table->id();
+                    $table->foreignId('survey_id')->constrained('surveys')->onDelete('cascade');
+                    $table->bigInteger('surveyhero_question_id')->nullable();
+                    $table->json('label');
+                    $table->timestamps();
+                });
 
-            $table->string('field');
+        Schema::create('survey_answers', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('survey_question_id')->constrained('survey_questions')->onDelete('cascade');
+            $table->bigInteger('surveyhero_answer_id')->nullable();
             $table->string('converted_string_value')->nullable();
             $table->integer('converted_int_value')->nullable();
+            $table->json('label');
+            $table->timestamps();
+        });
+
+        Schema::create('survey_question_responses', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('survey_question_id')->constrained();
+            $table->foreignId('survey_answer_id')->nullable->constrained();
+
+            $table->string('field');
 
             $table->unsignedBigInteger('survey_response_id');
             $table->foreign('survey_response_id')
@@ -55,22 +71,5 @@ class CreateSurveyheroTables extends Migration
 
             $table->index(['field']);
         });
-
-        Schema::create('survey_questions', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('survey_id')->constrained('surveys')->onDelete('cascade');
-            $table->bigInteger('surveyhero_question_id')->nullable();
-            $table->json('label');
-            $table->timestamps();
-        });
-
-        Schema::create('survey_answers', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('survey_question_id')->constrained('survey_questions')->onDelete('cascade');
-            $table->bigInteger('surveyhero_answer_id')->nullable();
-            $table->json('label');
-            $table->timestamps();
-        });
-
     }
 }

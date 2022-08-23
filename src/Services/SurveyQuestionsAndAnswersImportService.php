@@ -3,10 +3,13 @@
 namespace Statikbe\Surveyhero\Services;
 
 use Illuminate\Support\Facades\DB;
+use Statikbe\Surveyhero\Exceptions\AnswerNotMappedException;
 use Statikbe\Surveyhero\Http\SurveyheroClient;
 use Statikbe\Surveyhero\Models\Survey;
 use Statikbe\Surveyhero\Models\SurveyAnswer;
 use Statikbe\Surveyhero\Models\SurveyQuestion;
+use Statikbe\Surveyhero\Services\Factories\AnswerCreator\ChoiceListAnswerCreator;
+use Statikbe\Surveyhero\Services\Factories\AnswerCreator\RatingScaleAnswerCreator;
 
 class SurveyQuestionsAndAnswersImportService
 {
@@ -36,10 +39,9 @@ class SurveyQuestionsAndAnswersImportService
 
                     $surveyQuestion = $this->updateOrCreateQuestion($question, $survey, $lang);
 
-                    if ($question->question->type == 'choice_list') {
-                        $this->updateOrCreateChoiceListAnswer($question->question, $surveyQuestion, $lang);
-                    } elseif ($question->question->type == 'rating_scale' && $question->question->rating_scale->style == 'numerical_scale') {
-                        $this->updateOrCreateNumericRatingScaleAnswer($question->question, $surveyQuestion, $lang);
+                    $answerCreator = $this->getAnswerCreator($question->question->type);
+                    if ($answerCreator) {
+                        $answerCreator->updateOrCreateAnswer($question, $surveyQuestion, $lang);
                     } else {
                         $notImported['question'][] = [$question->element_id, 'Question type not supported'];
                     }
@@ -68,23 +70,25 @@ class SurveyQuestionsAndAnswersImportService
             ]);
     }
 
-    private function updateOrCreateChoiceListAnswer($question, $surveyQuestion, $lang): void
+    /*private function updateOrCreateChoiceListAnswer($question, $surveyQuestion, $lang): void
     {
         foreach ($question->choice_list->choices as $choice) {
-            SurveyAnswer::updateOrCreate([
-                'survey_question_id' => $surveyQuestion->id,
-                'surveyhero_answer_id' => $choice->choice_id,
-            ], [
+            $responseData = [
                 'survey_question_id' => $surveyQuestion->id,
                 'surveyhero_answer_id' => $choice->choice_id,
                 'label' => [
                     $lang->code => $choice->label,
                 ],
-            ]);
-        }
-    }
+            ];
 
-    private function updateOrCreateNumericRatingScaleAnswer($question, $surveyQuestion, $lang): void
+            SurveyAnswer::updateOrCreate([
+                'survey_question_id' => $surveyQuestion->id,
+                'surveyhero_answer_id' => $choice->choice_id,
+            ], $responseData);
+        }
+    }*/
+
+    /*private function updateOrCreateNumericRatingScaleAnswer($question, $surveyQuestion, $lang): void
     {
         $ratingScale = $question->rating_scale;
         $minValue = $ratingScale->left->value;
@@ -95,15 +99,25 @@ class SurveyQuestionsAndAnswersImportService
             SurveyAnswer::updateOrCreate(
                 [
                     'survey_question_id' => $surveyQuestion->id,
-                    'surveyhero_answer_id' => $i,
+                    'converted_int_value' => $i,
                 ],
                 [
                     'survey_question_id' => $surveyQuestion->id,
-                    'surveyhero_answer_id' => $i,
+                    'surveyhero_answer_id' => null,
+                    'converted_int_value' => $i,
                     'label' => [
                         $lang->code => $i,
                     ],
                 ]);
         }
+    }*/
+
+    private function getAnswerCreator(string $surveyheroFieldType)
+    {
+        return match ($surveyheroFieldType) {
+            ChoiceListAnswerCreator::TYPE => new ChoiceListAnswerCreator(),
+            RatingScaleAnswerCreator::TYPE => new RatingScaleAnswerCreator(),
+            default => null,
+        };
     }
 }

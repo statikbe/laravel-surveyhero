@@ -29,4 +29,14 @@ class SurveyQuestionResponse extends Model
     {
         return $this->belongsTo(SurveyResponse::class);
     }
+
+    public function surveyQuestion(): BelongsTo
+    {
+        return $this->belongsTo(SurveyQuestion::class);
+    }
+
+    public function surveyAnswer(): BelongsTo
+    {
+        return $this->belongsTo(SurveyAnswer::class);
+    }
 }

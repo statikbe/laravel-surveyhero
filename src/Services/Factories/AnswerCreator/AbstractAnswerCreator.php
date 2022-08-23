@@ -1,49 +1,17 @@
 <?php
 
-namespace Statikbe\Surveyhero\Services\Factories;
+namespace Statikbe\Surveyhero\Services\Factories\AnswerCreator;
 
 use Statikbe\Surveyhero\Exceptions\AnswerNotMappedException;
+use Statikbe\Surveyhero\Exceptions\QuestionNotImportedException;
+use Statikbe\Surveyhero\Http\SurveyheroClient;
+use Statikbe\Surveyhero\Models\SurveyQuestion;
 use Statikbe\Surveyhero\Models\SurveyQuestionResponse;
 use Statikbe\Surveyhero\Models\SurveyResponse;
+use Statikbe\Surveyhero\Services\SurveyMappingService;
 
-abstract class AbstractQuestionResponseCreator implements QuestionResponseCreator
+abstract class AbstractAnswerCreator implements AnswerCreator
 {
-    /**
-     * @param  string|int  $surveyheroQuestionId
-     * @param  SurveyResponse  $response
-     * @param  string|int|null  $surveyheroAnswerId
-     * @return SurveyQuestionResponse|null
-     */
-    protected function findExistingQuestionResponse(string|int $surveyheroQuestionId,
-        SurveyResponse $response,
-        string|int $surveyheroAnswerId = null): ?SurveyQuestionResponse
-    {
-        $query = SurveyQuestionResponse::where('surveyhero_question_id', $surveyheroQuestionId)
-            ->where('survey_response_id', $response->id);
-        if ($surveyheroAnswerId) {
-            $query->where('surveyhero_answer_id', $surveyheroAnswerId);
-        }
-
-        return $query->first();
-    }
-
-    /**
-     * @param  \stdClass  $surveyheroQuestionResponse
-     * @param  SurveyResponse  $response
-     * @param  string  $field
-     * @return array{ 'surveyhero_question_id': int, 'field': string, 'survey_response_id': int }
-     */
-    protected function createSurveyQuestionResponseData(\stdClass $surveyheroQuestionResponse,
-        SurveyResponse $response,
-        string $field): array
-    {
-        return [
-            'surveyhero_question_id' => $surveyheroQuestionResponse->element_id,
-            'field' => $field,
-            'survey_response_id' => $response->id,
-        ];
-    }
-
     protected function getChoiceMapping(string|int $choiceId, array $questionMapping): int|string|null
     {
         if (array_key_exists($choiceId, $questionMapping['answer_mapping'])) {

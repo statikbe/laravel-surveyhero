@@ -1,6 +1,6 @@
 <?php
 
-namespace Statikbe\Surveyhero\Services\Factories;
+namespace Statikbe\Surveyhero\Services\Factories\ResponseCreator;
 
 use Statikbe\Surveyhero\Exceptions\AnswerNotMappedException;
 use Statikbe\Surveyhero\Models\SurveyQuestionResponse;

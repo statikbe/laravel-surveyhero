@@ -3,17 +3,19 @@
 namespace Statikbe\Surveyhero\Services;
 
 use Illuminate\Support\Facades\DB;
+use Statikbe\Surveyhero\Exceptions\AnswerNotImportedException;
 use Statikbe\Surveyhero\Exceptions\AnswerNotMappedException;
+use Statikbe\Surveyhero\Exceptions\QuestionNotImportedException;
 use Statikbe\Surveyhero\Exceptions\ResponseCreatorNotImplemented;
 use Statikbe\Surveyhero\Exceptions\SurveyNotMappedException;
 use Statikbe\Surveyhero\Http\SurveyheroClient;
 use Statikbe\Surveyhero\Models\Survey;
 use Statikbe\Surveyhero\Models\SurveyResponse;
-use Statikbe\Surveyhero\Services\Factories\ChoicesResponseCreator;
-use Statikbe\Surveyhero\Services\Factories\ChoiceTableResponseCreator;
-use Statikbe\Surveyhero\Services\Factories\NumberResponseCreator;
-use Statikbe\Surveyhero\Services\Factories\QuestionResponseCreator;
-use Statikbe\Surveyhero\Services\Factories\TextResponseCreator;
+use Statikbe\Surveyhero\Services\Factories\ResponseCreator\ChoicesResponseCreator;
+use Statikbe\Surveyhero\Services\Factories\ResponseCreator\ChoiceTableResponseCreator;
+use Statikbe\Surveyhero\Services\Factories\ResponseCreator\NumberResponseCreator;
+use Statikbe\Surveyhero\Services\Factories\ResponseCreator\QuestionResponseCreator;
+use Statikbe\Surveyhero\Services\Factories\ResponseCreator\TextResponseCreator;
 
 class SurveyResponseImportService
 {
@@ -21,12 +23,15 @@ class SurveyResponseImportService
 
     private SurveyheroClient $client;
 
-    private array $questionMapping;
+    /**
+     * @var \Statikbe\Surveyhero\Services\SurveyMappingService
+     */
+    private SurveyMappingService $surveyMappingService;
 
-    public function __construct(SurveyheroClient $client)
+    public function __construct(SurveyheroClient $client, SurveyMappingService $surveyMappingService)
     {
         $this->client = $client;
-        $this->questionMapping = config('surveyhero.question_mapping', []);
+        $this->surveyMappingService = $surveyMappingService;
     }
 
     /**
@@ -42,7 +47,7 @@ class SurveyResponseImportService
             'questions' => [],
             'answers' => [],
         ];
-        $surveyQuestionMapping = $this->getSurveyQuestionMapping($survey);
+        $surveyQuestionMapping = $this->surveyMappingService->getSurveyQuestionMapping($survey);
 
         try {
             DB::beginTransaction();
@@ -60,10 +65,14 @@ class SurveyResponseImportService
         return $notImported;
     }
 
+    /**
+     * @throws \Statikbe\Surveyhero\Exceptions\SurveyNotMappedException
+     * @throws \Statikbe\Surveyhero\Exceptions\ResponseCreatorNotImplemented
+     */
     public function importSurveyResponse($responseId, Survey $survey, $surveyQuestionMapping = null): void
     {
         if (! $surveyQuestionMapping) {
-            $surveyQuestionMapping = $this->getSurveyQuestionMapping($survey);
+            $surveyQuestionMapping =  $this->surveyMappingService->getSurveyQuestionMapping($survey);
         }
 
         //do not import already imported data.
@@ -77,7 +86,7 @@ class SurveyResponseImportService
             $surveyResponse = $this->createOrUpdateSurveyResponse($responseAnswers, $survey, $existingResponseRecord);
 
             foreach ($responseAnswers->answers as $answer) {
-                $questionMapping = $this->getQuestionMapping($surveyQuestionMapping, $answer->element_id);
+                $questionMapping = $this->surveyMappingService->getQuestionMapping($surveyQuestionMapping, $answer->element_id);
                 if (! empty($questionMapping)) {
                     $questionResponseCreator = $this->getQuestionResponseCreator($answer->type);
                     if ($questionResponseCreator) {
@@ -85,6 +94,14 @@ class SurveyResponseImportService
                             $questionResponseCreator->updateOrCreateQuestionResponse($answer, $surveyResponse, $questionMapping);
                         } catch (AnswerNotMappedException $ex) {
                             $notImported['answers'][] = [$ex->answerId, $ex->getMessage()];
+                            //set survey response as incomplete, because we could not completely import it.
+                            $this->setResponseAsIncomplete($surveyResponse);
+                        } catch (QuestionNotImportedException $ex) {
+                            $notImported['questions'][$answer->element_id] = [$answer->element_id];
+                            //set survey response as incomplete, because we could not completely import it.
+                            $this->setResponseAsIncomplete($surveyResponse);
+                        } catch (AnswerNotImportedException $ex) {
+                            $notImported['answers'][$answer->element_id] = [$answer->element_id];
                             //set survey response as incomplete, because we could not completely import it.
                             $this->setResponseAsIncomplete($surveyResponse);
                         }
@@ -140,40 +157,7 @@ class SurveyResponseImportService
         };
     }
 
-    private function getQuestionMapping(array $surveyQuestionMapping, int|string $questionId): ?array
-    {
-        $foundQuestions = array_filter($surveyQuestionMapping, function ($question, $key) use ($questionId) {
-            return $question['question_id'] == $questionId;
-        }, ARRAY_FILTER_USE_BOTH);
-        if (! empty($foundQuestions)) {
-            return reset($foundQuestions);
-        }
 
-        return null;
-    }
-
-    private function getSurveyQuestionMapping(Survey $survey): array
-    {
-        $foundSurveys = null;
-        try {
-            $foundSurveys = array_filter($this->questionMapping, function ($surveyMapping, $key) use ($survey) {
-                return $surveyMapping['survey_id'] == $survey->surveyhero_id;
-            }, ARRAY_FILTER_USE_BOTH);
-        } catch (\Exception $exception) {
-            throw SurveyNotMappedException::create($survey, 'The question mapping configuration is not well-formed.');
-        }
-
-        if (! empty($foundSurveys)) {
-            $mapping = reset($foundSurveys);
-            if (array_key_exists('questions', $mapping)) {
-                return $mapping['questions'];
-            } else {
-                throw SurveyNotMappedException::create($survey, 'Survey mapping found but its question mapping configuration is not well-formed.');
-            }
-        } else {
-            throw SurveyNotMappedException::create($survey, 'Survey has no question mapping in config.');
-        }
-    }
 
     private function setResponseAsIncomplete(SurveyResponse $surveyResponse): void
     {

@@ -1,7 +1,9 @@
 <?php
 
-namespace Statikbe\Surveyhero\Services\Factories;
+namespace Statikbe\Surveyhero\Services\Factories\ResponseCreator;
 
+use Statikbe\Surveyhero\Exceptions\AnswerNotImportedException;
+use Statikbe\Surveyhero\Models\SurveyAnswer;
 use Statikbe\Surveyhero\Models\SurveyQuestionResponse;
 use Statikbe\Surveyhero\Models\SurveyResponse;
 
@@ -9,6 +11,11 @@ class ChoicesResponseCreator extends AbstractQuestionResponseCreator
 {
     const TYPE = 'choices';
 
+    /**
+     * @throws \Statikbe\Surveyhero\Exceptions\AnswerNotMappedException
+     * @throws \Statikbe\Surveyhero\Exceptions\AnswerNotImportedException
+     * @throws \Statikbe\Surveyhero\Exceptions\QuestionNotImportedException
+     */
     public function updateOrCreateQuestionResponse(
         \stdClass $surveyheroQuestionResponse,
         SurveyResponse $response,
@@ -47,9 +54,14 @@ class ChoicesResponseCreator extends AbstractQuestionResponseCreator
             $existingQuestionResponse = $this->findExistingQuestionResponse($questionMapping['question_id'], $response, $surveyheroChoice->choice_id);
             $responseData = $this->createSurveyQuestionResponseData($surveyheroQuestionResponse, $response, $questionMapping['field']);
             $mappedChoice = $this->getChoiceMapping($surveyheroChoice->choice_id, $questionMapping);
-            $responseData['surveyhero_answer_id'] = $surveyheroChoice->choice_id;
+            $surveyAnswer = SurveyAnswer::where('surveyhero_answer_id', $surveyheroChoice->choice_id)->first();
 
-            $this->setChoiceAndConvertToDataType($mappedChoice, $questionMapping['mapped_data_type'], $responseData, $surveyheroChoice);
+            if(!$surveyAnswer) {
+                throw AnswerNotImportedException::create($surveyheroChoice->choice_id,"Make sure to import survey answer with Surveyhero ID $surveyheroQuestionResponse->element_id in the survey_answers table");
+            }
+            $responseData['survey_answer_id'] = $surveyAnswer->id;
+
+            //$this->setChoiceAndConvertToDataType($mappedChoice, $questionMapping['mapped_data_type'], $responseData, $surveyheroChoice);
             //$responseData['surveyhero_answer_lbl'] = $surveyheroChoice->label;
 
             $responseList[] = SurveyQuestionResponse::updateOrCreate([

@@ -21,7 +21,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property bool $survey_completed
  * @property int $survey_id
  * @property Survey $survey
- * @property Collection $surveyAnswerResponses
+ * @property Collection surveyQuestionResponses
  */
 class SurveyResponse extends Model
 {
@@ -39,7 +39,7 @@ class SurveyResponse extends Model
         return $this->belongsTo(Survey::class);
     }
 
-    public function surveyAnswerResponses(): HasMany
+    public function surveyQuestionResponses(): HasMany
     {
         return $this->hasMany(SurveyQuestionResponse::class);
     }

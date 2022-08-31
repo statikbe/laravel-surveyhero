@@ -5,7 +5,10 @@
         "statikbe",
         "laravel",
         "laravel-surveyhero",
-        "surveyhero"
+        "surveyhero",
+        "survey",
+        "questionnaire",
+        "import"
     ],
     "homepage": "https://github.com/statikbe/laravel-surveyhero",
     "license": "MIT",

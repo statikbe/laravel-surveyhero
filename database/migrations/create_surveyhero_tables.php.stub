@@ -57,7 +57,7 @@ class CreateSurveyheroTables extends Migration
         Schema::create('survey_question_responses', function (Blueprint $table) {
             $table->id();
             $table->foreignId('survey_question_id')->constrained();
-            $table->foreignId('survey_answer_id')->nullable->constrained();
+            $table->foreignId('survey_answer_id')->nullable()->constrained();
 
             $table->string('field');
 

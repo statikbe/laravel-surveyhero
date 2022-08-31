@@ -38,6 +38,23 @@ SURVEY {
     string name
     
 }
+
+SURVEY_QUESTIONS {
+    num id		
+    num survey_id FK
+    num surveyhero_question_id			
+    json label			
+}
+
+SURVEY_ANSWERS {
+    num id		
+    num survey_question_id FK
+    num surveyhero_answer_id			
+    string converted_string_value			
+    num converted_int_value			
+    json label			
+}
+
 SURVEY_RESPONSE {
     num id
     num surveyhero_id
@@ -48,22 +65,24 @@ SURVEY_RESPONSE {
     json surveyhero_link_parameters
     num survey_id FK
 }
-SURVEY_QUESTION_RESPONSE {
-    num surveyhero_question_id
-    num surveyhero_answer_id
-    string surveyhero_answer_lbl
-    string field
-    string converted_string_value
-    num converted_int_value
+SURVEY_QUESTION_RESPONSE {	
+    num id
+    num surveyhero_question_id FK
+    num survey_answer_id FK
     num survey_response_id FK
+    string field
 }
+SURVEY ||--o{ SURVEY_QUESTIONS : contains
 SURVEY ||--o{ SURVEY_RESPONSE : contains
-SURVEY_RESPONSE ||--o{ SURVEY_QUESTION_RESPONSE : has
+SURVEY_QUESTIONS ||--o{ SURVEY_ANSWERS : contains
+SURVEY_QUESTION_RESPONSE ||--o{ SURVEY_ANSWERS : has
+SURVEY_QUESTION_RESPONSE ||--o{ SURVEY_RESPONSE : has
 ```
 
 When a user fills out a survey on Surveyhero, a survey response is available in the API, which contains all question 
 answers. The relational data model implements the same logic. To start importing Surveyhero responses, you should 
-create a Survey record with the survey ID from Surveyhero.
+create a Survey record with the survey ID from Surveyhero. The questions and answers (i.e. for multiple choice) with 
+their translated labels can be imported.
 
 Each response contains metadata about the submission and link parameters are stored in JSON but can be [mapped to custom
 data columns](#link-parameters-mapping). If the response is marked as completed by Surveyhero, we will skip the import.

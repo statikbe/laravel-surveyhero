@@ -42,7 +42,7 @@ class SurveyQuestionsAndAnswersImportService
                     if ($answerCreator) {
                         $answerCreator->updateOrCreateAnswer($question, $surveyQuestion, $lang);
                     } else {
-                        $notImported['question'][] = [$question->element_id, 'Question type not supported'];
+                        $notImported['question'][] = [$question->element_id, "Question type {$question->question->type} not supported"];
                     }
 
                     DB::commit();

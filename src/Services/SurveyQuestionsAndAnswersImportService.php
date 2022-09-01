@@ -7,8 +7,11 @@ use Statikbe\Surveyhero\Http\SurveyheroClient;
 use Statikbe\Surveyhero\Models\Survey;
 use Statikbe\Surveyhero\Models\SurveyAnswer;
 use Statikbe\Surveyhero\Models\SurveyQuestion;
-use Statikbe\Surveyhero\Services\Factories\AnswerCreator\ChoiceListAnswerCreator;
-use Statikbe\Surveyhero\Services\Factories\AnswerCreator\RatingScaleAnswerCreator;
+use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\ChoiceListQuestionAndAnswerCreator;
+use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\ChoiceTableQuestionAndAnswerCreator;
+use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\QuestionAndAnswerCreator;
+use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\RatingScaleQuestionAndAnswerCreator;
+use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\InputQuestionAndAnswerCreator;
 
 class SurveyQuestionsAndAnswersImportService
 {
@@ -36,11 +39,9 @@ class SurveyQuestionsAndAnswersImportService
                 try {
                     DB::beginTransaction();
 
-                    $surveyQuestion = $this->updateOrCreateQuestion($question, $survey, $lang);
-
-                    $answerCreator = $this->getAnswerCreator($question->question->type);
-                    if ($answerCreator) {
-                        $answerCreator->updateOrCreateAnswer($question, $surveyQuestion, $lang);
+                    $QAndACreator = $this->getQuestionAndAnswerCreator($question->question->type);
+                    if ($QAndACreator) {
+                        $QAndACreator->updateOrCreateQuestionAndAnswer($question, $survey, $lang->code);
                     } else {
                         $notImported['question'][] = [$question->element_id, "Question type {$question->question->type} not supported"];
                     }
@@ -54,19 +55,6 @@ class SurveyQuestionsAndAnswersImportService
         }
 
         return $notImported;
-    }
-
-    private function updateOrCreateQuestion($question, $survey, $lang)
-    {
-        return SurveyQuestion::updateOrCreate(
-            ['surveyhero_question_id' => $question->element_id],
-            [
-                'survey_id' => $survey->id,
-                'surveyhero_question_id' => $question->element_id,
-                'label' => [
-                    $lang->code => $question->question->question_text ?? '',
-                ],
-            ]);
     }
 
     /*private function updateOrCreateChoiceListAnswer($question, $surveyQuestion, $lang): void
@@ -111,11 +99,13 @@ class SurveyQuestionsAndAnswersImportService
         }
     }*/
 
-    private function getAnswerCreator(string $surveyheroFieldType)
+    private function getQuestionAndAnswerCreator(string $surveyheroFieldType): QuestionAndAnswerCreator|null
     {
         return match ($surveyheroFieldType) {
-            ChoiceListAnswerCreator::TYPE => new ChoiceListAnswerCreator(),
-            RatingScaleAnswerCreator::TYPE => new RatingScaleAnswerCreator(),
+            ChoiceListQuestionAndAnswerCreator::TYPE => new ChoiceListQuestionAndAnswerCreator(),
+            ChoiceTableQuestionAndAnswerCreator::TYPE => new ChoiceTableQuestionAndAnswerCreator(),
+            RatingScaleQuestionAndAnswerCreator::TYPE => new RatingScaleQuestionAndAnswerCreator(),
+            InputQuestionAndAnswerCreator::TYPE => new InputQuestionAndAnswerCreator(),
             default => null,
         };
     }

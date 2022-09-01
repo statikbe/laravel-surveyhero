@@ -54,7 +54,7 @@ class SurveyheroQuestionsAndAnswersImportCommand extends Command
                 $this->table(['Surveyhero ID', 'Answer info'], $notImported['question']);
             }
 
-            $this->comment("Questions and answers for survey'$survey->name' imported!");
+            $this->comment("Questions and answers for survey '$survey->name' imported!");
         }
 
         $this->comment(sprintf('Imported questions and answers for %d survey%s!', count($surveys), count($surveys) > 1 ? 's' : ''));

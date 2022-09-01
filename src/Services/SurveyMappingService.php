@@ -22,6 +22,8 @@ class SurveyMappingService
     }
 
     /**
+     * Creates a basic question mapping based on the API to kickstart the configuration.
+     * @see SurveyheroMapperCommand
      * @param  Survey  $survey
      * @return array
      */
@@ -52,6 +54,12 @@ class SurveyMappingService
         return $mapping;
     }
 
+    /**
+     * Returns the question mapping from the configuration for the given survey
+     * @param Survey $survey
+     * @return array
+     * @throws SurveyNotMappedException
+     */
     public function getSurveyQuestionMapping(Survey $survey): array
     {
         $foundSurveys = null;
@@ -75,6 +83,27 @@ class SurveyMappingService
         }
     }
 
+    /**
+     * Returns the question mapping from the configuration for a given survey and question ID.
+     * @param Survey $survey
+     * @param int|string $questionId
+     * @return array|null
+     * @throws SurveyNotMappedException
+     */
+    public function getQuestionMappingForSurvey(Survey $survey, int|string $questionId): ?array {
+        $surveyQuestionMapping = $this->getSurveyQuestionMapping($survey);
+        if($surveyQuestionMapping) {
+            return $this->getQuestionMapping($surveyQuestionMapping, $questionId);
+        }
+        else return null;
+    }
+
+    /**
+     * Returns the question mapping based on all question mappings for a survey and the question ID.
+     * @param array $surveyQuestionMapping
+     * @param int|string $questionId
+     * @return array|null
+     */
     public function getQuestionMapping(array $surveyQuestionMapping, int|string $questionId): ?array
     {
         $foundQuestions = array_filter($surveyQuestionMapping, function ($question, $key) use ($questionId) {

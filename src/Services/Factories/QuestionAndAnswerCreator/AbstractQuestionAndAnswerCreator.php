@@ -1,11 +1,27 @@
 <?php
 
-namespace Statikbe\Surveyhero\Services\Factories\AnswerCreator;
+namespace Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator;
 
 use Statikbe\Surveyhero\Exceptions\AnswerNotMappedException;
+use Statikbe\Surveyhero\Models\Survey;
+use Statikbe\Surveyhero\Models\SurveyQuestion;
 
-abstract class AbstractAnswerCreator implements AnswerCreator
+abstract class AbstractQuestionAndAnswerCreator implements QuestionAndAnswerCreator
 {
+    public function updateOrCreateQuestion(\stdClass $question, Survey $survey, string $lang): SurveyQuestion
+    {
+        return SurveyQuestion::updateOrCreate(
+            [
+                'surveyhero_question_id' => $question->element_id,
+                'survey_id' => $survey->id,
+            ],
+            [
+                'label' => [
+                    $lang => $question->question->question_text ?? '',
+                ],
+            ]);
+    }
+
     protected function getChoiceMapping(string|int $choiceId, array $questionMapping): int|string|null
     {
         if (array_key_exists($choiceId, $questionMapping['answer_mapping'])) {

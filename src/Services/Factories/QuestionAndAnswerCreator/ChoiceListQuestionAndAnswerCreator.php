@@ -1,12 +1,13 @@
 <?php
 
-namespace Statikbe\Surveyhero\Services\Factories\AnswerCreator;
+namespace Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator;
 
+use Statikbe\Surveyhero\Models\Survey;
 use Statikbe\Surveyhero\Models\SurveyAnswer;
 use Statikbe\Surveyhero\Models\SurveyQuestion;
 use Statikbe\Surveyhero\Services\SurveyMappingService;
 
-class ChoiceListAnswerCreator extends AbstractAnswerCreator
+class ChoiceListQuestionAndAnswerCreator extends AbstractQuestionAndAnswerCreator
 {
     const TYPE = 'choice_list';
 
@@ -15,19 +16,20 @@ class ChoiceListAnswerCreator extends AbstractAnswerCreator
      * @throws \Statikbe\Surveyhero\Exceptions\AnswerNotImportedException
      * @throws \Statikbe\Surveyhero\Exceptions\QuestionNotImportedException|\Statikbe\Surveyhero\Exceptions\SurveyNotMappedException
      */
-    public function updateOrCreateAnswer(\stdClass $question, SurveyQuestion $surveyQuestion, \stdClass $lang)
+    public function updateOrCreateQuestionAndAnswer(\stdClass $question, Survey $survey, string $lang): SurveyQuestion|array
     {
+        $surveyQuestion = $this->updateOrCreateQuestion($question, $survey, $lang);
+
         foreach ($question->question->choice_list->choices as $choice) {
             $responseData = [
                 'survey_question_id' => $surveyQuestion->id,
                 'surveyhero_answer_id' => $choice->choice_id,
                 'label' => [
-                    $lang->code => $choice->label,
+                    $lang => $choice->label,
                 ],
             ];
 
-            $surveyQuestionMapping = (new SurveyMappingService())->getSurveyQuestionMapping($surveyQuestion->survey);
-            $questionMapping = (new SurveyMappingService())->getQuestionMapping($surveyQuestionMapping, $question->element_id);
+            $questionMapping = (new SurveyMappingService())->getQuestionMappingForSurvey($survey, $question->element_id);
             $mappedChoice = $this->getChoiceMapping($choice->choice_id, $questionMapping);
 
             $this->setChoiceAndConvertToDataType($mappedChoice, $questionMapping['mapped_data_type'], $responseData, $choice);
@@ -37,5 +39,7 @@ class ChoiceListAnswerCreator extends AbstractAnswerCreator
                 'surveyhero_answer_id' => $choice->choice_id,
             ], $responseData);
         }
+
+        return $surveyQuestion;
     }
 }

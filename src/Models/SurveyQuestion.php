@@ -12,6 +12,7 @@ use Spatie\Translatable\HasTranslations;
  * @property int $id
  * @property Survey $survey_id
  * @property int $surveyhero_question_id
+ * @property string $field
  * @property string $label
  */
 class SurveyQuestion extends Model

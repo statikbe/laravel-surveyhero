@@ -37,7 +37,7 @@ abstract class AbstractQuestionResponseCreator implements QuestionResponseCreato
      * @param  \stdClass  $surveyheroQuestionResponse
      * @param  SurveyResponse  $response
      * @param  string  $field
-     * @return array{ 'surveyhero_question_id': int, 'field': string, 'survey_response_id': int }
+     * @return array{ 'survey_question_id': int, 'field': string, 'survey_response_id': int }
      *
      * @throws \Statikbe\Surveyhero\Exceptions\QuestionNotImportedException
      */

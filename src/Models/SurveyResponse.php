@@ -21,7 +21,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property bool $survey_completed
  * @property int $survey_id
  * @property Survey $survey
- * @property Collection surveyQuestionResponses
+ * @property Collection $surveyQuestionResponses
  */
 class SurveyResponse extends Model
 {

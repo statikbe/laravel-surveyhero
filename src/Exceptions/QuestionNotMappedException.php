@@ -2,15 +2,15 @@
 
 namespace Statikbe\Surveyhero\Exceptions;
 
-    class QuestionNotMappedException extends \Exception
+class QuestionNotMappedException extends \Exception
+{
+    public int $questionId;
+
+    public static function create(int $questionId, string $message): self
     {
-        public int $questionId;
+        $ex = new self($message);
+        $ex->questionId = $questionId;
 
-        public static function create(int $questionId, string $message): self
-        {
-            $ex = new self($message);
-            $ex->questionId = $questionId;
-
-            return $ex;
-        }
+        return $ex;
     }
+}

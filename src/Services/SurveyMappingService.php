@@ -2,7 +2,6 @@
 
 namespace Statikbe\Surveyhero\Services;
 
-use Pest\Support\Arr;
 use Statikbe\Surveyhero\Exceptions\QuestionNotMappedException;
 use Statikbe\Surveyhero\Exceptions\SurveyNotMappedException;
 use Statikbe\Surveyhero\Http\SurveyheroClient;
@@ -25,7 +24,9 @@ class SurveyMappingService
 
     /**
      * Creates a basic question mapping based on the API to kickstart the configuration.
+     *
      * @see SurveyheroMapperCommand
+     *
      * @param  Survey  $survey
      * @return array
      */
@@ -58,8 +59,10 @@ class SurveyMappingService
 
     /**
      * Returns the question mapping from the configuration for the given survey
-     * @param Survey $survey
+     *
+     * @param  Survey  $survey
      * @return array
+     *
      * @throws SurveyNotMappedException
      */
     public function getSurveyQuestionMapping(Survey $survey): array
@@ -87,23 +90,28 @@ class SurveyMappingService
 
     /**
      * Returns the question mapping from the configuration for a given survey and question ID.
-     * @param Survey $survey
-     * @param int|string $questionId
+     *
+     * @param  Survey  $survey
+     * @param  int|string  $questionId
      * @return array|null
+     *
      * @throws SurveyNotMappedException
      */
-    public function getQuestionMappingForSurvey(Survey $survey, int|string $questionId): ?array {
+    public function getQuestionMappingForSurvey(Survey $survey, int|string $questionId): ?array
+    {
         $surveyQuestionMapping = $this->getSurveyQuestionMapping($survey);
-        if($surveyQuestionMapping) {
+        if ($surveyQuestionMapping) {
             return $this->getQuestionMapping($surveyQuestionMapping, $questionId);
+        } else {
+            return null;
         }
-        else return null;
     }
 
     /**
      * Returns the question mapping based on all question mappings for a survey and the question ID.
-     * @param array $surveyQuestionMapping
-     * @param int|string $questionId
+     *
+     * @param  array  $surveyQuestionMapping
+     * @param  int|string  $questionId
      * @return array|null
      */
     public function getQuestionMapping(array $surveyQuestionMapping, int|string $questionId): ?array
@@ -119,28 +127,29 @@ class SurveyMappingService
     }
 
     /**
-     * @param Survey $survey
-     * @param string $questionId
-     * @param string|null $subquestionId
+     * @param  Survey  $survey
+     * @param  string  $questionId
+     * @param  string|null  $subquestionId
      * @return string
+     *
      * @throws QuestionNotMappedException
      * @throws SurveyNotMappedException
      */
-    public function findQuestionField(Survey $survey, string $questionId, ?string $subquestionId=null): string {
+    public function findQuestionField(Survey $survey, string $questionId, ?string $subquestionId = null): string
+    {
         $questionMapping = $this->getQuestionMappingForSurvey($survey, $questionId);
-        if(isset($questionMapping['field'])){
+        if (isset($questionMapping['field'])) {
             return $questionMapping['field'];
-        }
-        else if($subquestionId && isset($questionMapping['subquestion_mapping'])){
-            $foundSubquestions = array_filter($questionMapping['subquestion_mapping'], function($question, $key) use ($subquestionId) {
+        } elseif ($subquestionId && isset($questionMapping['subquestion_mapping'])) {
+            $foundSubquestions = array_filter($questionMapping['subquestion_mapping'], function ($question, $key) use ($subquestionId) {
                 return $question['question_id'] == $subquestionId;
             }, ARRAY_FILTER_USE_BOTH);
             $foundSubquestion = reset($foundSubquestions);
-            if($foundSubquestion && isset($foundSubquestion['field'])){
+            if ($foundSubquestion && isset($foundSubquestion['field'])) {
                 return $foundSubquestion['field'];
             }
         }
         //in case nothing is found there is no mapping for the question -> throw error
-        throw QuestionNotMappedException::create($subquestionId ?? $questionId, "The question mapping has no field");
+        throw QuestionNotMappedException::create($subquestionId ?? $questionId, 'The question mapping has no field');
     }
 }

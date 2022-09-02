@@ -10,8 +10,8 @@ interface QuestionAndAnswerCreator
 {
     /**
      * @param  \stdClass  $question
-     * @param Survey $survey
-     * @param string $lang
+     * @param  Survey  $survey
+     * @param  string  $lang
      *
      * @throws AnswerNotMappedException
      */

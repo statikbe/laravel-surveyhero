@@ -1,14 +1,14 @@
 <?php
 
-    namespace Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator;
+namespace Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator;
 
-    use Statikbe\Surveyhero\Exceptions\AnswerNotMappedException;
     use Statikbe\Surveyhero\Models\Survey;
     use Statikbe\Surveyhero\Models\SurveyAnswer;
     use Statikbe\Surveyhero\Models\SurveyQuestion;
     use Statikbe\Surveyhero\Services\SurveyMappingService;
 
-    class ChoiceTableQuestionAndAnswerCreator extends AbstractQuestionAndAnswerCreator {
+    class ChoiceTableQuestionAndAnswerCreator extends AbstractQuestionAndAnswerCreator
+    {
         const TYPE = 'choice_table';
 
         public function updateOrCreateQuestionAndAnswer(\stdClass $question, Survey $survey, string $lang): SurveyQuestion|array
@@ -39,6 +39,7 @@
 
                 $questions[] = $surveyQuestion;
             }
+
             return $questions;
         }
     }

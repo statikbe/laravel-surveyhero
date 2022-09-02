@@ -6,12 +6,11 @@ use Illuminate\Support\Facades\DB;
 use Statikbe\Surveyhero\Http\SurveyheroClient;
 use Statikbe\Surveyhero\Models\Survey;
 use Statikbe\Surveyhero\Models\SurveyAnswer;
-use Statikbe\Surveyhero\Models\SurveyQuestion;
 use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\ChoiceListQuestionAndAnswerCreator;
 use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\ChoiceTableQuestionAndAnswerCreator;
+use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\InputQuestionAndAnswerCreator;
 use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\QuestionAndAnswerCreator;
 use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\RatingScaleQuestionAndAnswerCreator;
-use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\InputQuestionAndAnswerCreator;
 
 class SurveyQuestionsAndAnswersImportService
 {

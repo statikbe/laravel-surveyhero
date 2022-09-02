@@ -1,6 +1,6 @@
 <?php
 
-    namespace Statikbe\Surveyhero\Exceptions;
+namespace Statikbe\Surveyhero\Exceptions;
 
     class QuestionNotMappedException extends \Exception
     {

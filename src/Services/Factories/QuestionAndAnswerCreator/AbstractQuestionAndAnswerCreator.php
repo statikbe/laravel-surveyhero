@@ -13,7 +13,7 @@ abstract class AbstractQuestionAndAnswerCreator implements QuestionAndAnswerCrea
      * @throws \Statikbe\Surveyhero\Exceptions\SurveyNotMappedException
      * @throws \Statikbe\Surveyhero\Exceptions\QuestionNotMappedException
      */
-    public function updateOrCreateQuestion(Survey $survey, string $lang, string $questionId, string $label, ?string $subquestionId=null): SurveyQuestion
+    public function updateOrCreateQuestion(Survey $survey, string $lang, string $questionId, string $label, ?string $subquestionId = null): SurveyQuestion
     {
         return SurveyQuestion::updateOrCreate(
             [

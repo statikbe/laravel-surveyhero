@@ -2,8 +2,8 @@
 
 namespace Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator;
 
-use Statikbe\Surveyhero\Models\SurveyAnswer;
 use Statikbe\Surveyhero\Models\Survey;
+use Statikbe\Surveyhero\Models\SurveyAnswer;
 use Statikbe\Surveyhero\Models\SurveyQuestion;
 
 class RatingScaleQuestionAndAnswerCreator extends AbstractQuestionAndAnswerCreator
@@ -38,6 +38,7 @@ class RatingScaleQuestionAndAnswerCreator extends AbstractQuestionAndAnswerCreat
                     ],
                 ]);
         }
+
         return $surveyQuestion;
     }
 }

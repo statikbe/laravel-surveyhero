@@ -5,20 +5,26 @@ namespace Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator;
 use Statikbe\Surveyhero\Exceptions\AnswerNotMappedException;
 use Statikbe\Surveyhero\Models\Survey;
 use Statikbe\Surveyhero\Models\SurveyQuestion;
+use Statikbe\Surveyhero\Services\SurveyMappingService;
 
 abstract class AbstractQuestionAndAnswerCreator implements QuestionAndAnswerCreator
 {
-    public function updateOrCreateQuestion(\stdClass $question, Survey $survey, string $lang): SurveyQuestion
+    /**
+     * @throws \Statikbe\Surveyhero\Exceptions\SurveyNotMappedException
+     * @throws \Statikbe\Surveyhero\Exceptions\QuestionNotMappedException
+     */
+    public function updateOrCreateQuestion(Survey $survey, string $lang, string $questionId, string $label, ?string $subquestionId=null): SurveyQuestion
     {
         return SurveyQuestion::updateOrCreate(
             [
-                'surveyhero_question_id' => $question->element_id,
+                'surveyhero_question_id' => $subquestionId ?? $questionId,
                 'survey_id' => $survey->id,
             ],
             [
                 'label' => [
-                    $lang => $question->question->question_text ?? '',
+                    $lang => $label ?? '',
                 ],
+                'field' => (new SurveyMappingService())->findQuestionField($survey, $questionId, $subquestionId),
             ]);
     }
 

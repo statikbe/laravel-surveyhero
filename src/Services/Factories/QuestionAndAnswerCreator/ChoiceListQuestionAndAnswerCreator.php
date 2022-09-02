@@ -15,10 +15,11 @@ class ChoiceListQuestionAndAnswerCreator extends AbstractQuestionAndAnswerCreato
      * @throws \Statikbe\Surveyhero\Exceptions\AnswerNotMappedException
      * @throws \Statikbe\Surveyhero\Exceptions\AnswerNotImportedException
      * @throws \Statikbe\Surveyhero\Exceptions\QuestionNotImportedException|\Statikbe\Surveyhero\Exceptions\SurveyNotMappedException
+     * @throws \Statikbe\Surveyhero\Exceptions\QuestionNotMappedException
      */
     public function updateOrCreateQuestionAndAnswer(\stdClass $question, Survey $survey, string $lang): SurveyQuestion|array
     {
-        $surveyQuestion = $this->updateOrCreateQuestion($question, $survey, $lang);
+        $surveyQuestion = $this->updateOrCreateQuestion($survey, $lang, $question->element_id, $question->question->question_text);
 
         foreach ($question->question->choice_list->choices as $choice) {
             $responseData = [

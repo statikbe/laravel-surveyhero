@@ -42,8 +42,9 @@ SURVEY {
 SURVEY_QUESTIONS {
     num id		
     num survey_id FK
-    num surveyhero_question_id			
-    json label			
+    num surveyhero_question_id
+    string field			
+    json label		
 }
 
 SURVEY_ANSWERS {
@@ -70,7 +71,6 @@ SURVEY_QUESTION_RESPONSE {
     num surveyhero_question_id FK
     num survey_answer_id FK
     num survey_response_id FK
-    string field
 }
 SURVEY ||--o{ SURVEY_QUESTIONS : contains
 SURVEY ||--o{ SURVEY_RESPONSE : contains
@@ -236,14 +236,19 @@ to create a new migration in your project to add the new columns to the `survey_
      ],
 ],
 ```
+There are 2 options to map link parameters.
 
- The key is the name of the Surveyhero link parameter
- - 'name' represents the column in the survey_response table to which we save the field
+#### Option 1: Map directly to a database column
+
+The key is the name of the Surveyhero link parameter
+ - `name` represents the column in the survey_response table to which we save the field
  
- Following parameters are optional in case you want to evaluate the link_parameters value on the database
- - 'entity' represents the model you're querying on
- - 'value' represents the field you're comparing on your model
- - 'field' represents the field from your model to store in de database
+#### Option 2: Map to the foreign key of a model
+
+Following parameters are optional in case you want to evaluate the link_parameters value on the database
+ - `entity` represents the model you're querying on
+ - `value` represents the field you're comparing on your model
+ - `field` represents the field from your model to store in de database
 
 ## Commands
 
@@ -306,8 +311,8 @@ You can post an issue and provide a pull request. Thanks!
 
 ## Credits
 
-- [Sten Govaerts](https://github.com/statikbe)
-- [All Contributors](../../contributors)
+- [Sten Govaerts](https://github.com/sten)
+- [All Contributors](https://github.com/statikbe/laravel-surveyhero/graphs/contributors)
 
 ## License
 

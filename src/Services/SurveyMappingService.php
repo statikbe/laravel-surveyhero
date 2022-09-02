@@ -2,6 +2,8 @@
 
 namespace Statikbe\Surveyhero\Services;
 
+use Pest\Support\Arr;
+use Statikbe\Surveyhero\Exceptions\QuestionNotMappedException;
 use Statikbe\Surveyhero\Exceptions\SurveyNotMappedException;
 use Statikbe\Surveyhero\Http\SurveyheroClient;
 use Statikbe\Surveyhero\Models\Survey;
@@ -114,5 +116,31 @@ class SurveyMappingService
         }
 
         return null;
+    }
+
+    /**
+     * @param Survey $survey
+     * @param string $questionId
+     * @param string|null $subquestionId
+     * @return string
+     * @throws QuestionNotMappedException
+     * @throws SurveyNotMappedException
+     */
+    public function findQuestionField(Survey $survey, string $questionId, ?string $subquestionId=null): string {
+        $questionMapping = $this->getQuestionMappingForSurvey($survey, $questionId);
+        if(isset($questionMapping['field'])){
+            return $questionMapping['field'];
+        }
+        else if($subquestionId && isset($questionMapping['subquestion_mapping'])){
+            $foundSubquestions = array_filter($questionMapping['subquestion_mapping'], function($question, $key) use ($subquestionId) {
+                return $question['question_id'] == $subquestionId;
+            }, ARRAY_FILTER_USE_BOTH);
+            $foundSubquestion = reset($foundSubquestions);
+            if($foundSubquestion && isset($foundSubquestion['field'])){
+                return $foundSubquestion['field'];
+            }
+        }
+        //in case nothing is found there is no mapping for the question -> throw error
+        throw QuestionNotMappedException::create($subquestionId ?? $questionId, "The question mapping has no field");
     }
 }

@@ -15,16 +15,7 @@
         {
             $questions = [];
             foreach ($question->question->choice_table->rows as $rowQuestion) {
-                $surveyQuestion = SurveyQuestion::updateOrCreate(
-                    [
-                        'surveyhero_question_id' => $rowQuestion->row_id,
-                        'survey_id' => $survey->id,
-                    ],
-                    [
-                        'label' => [
-                            $lang => $rowQuestion->label ?? '',
-                        ],
-                    ]);
+                $surveyQuestion = $this->updateOrCreateQuestion($survey, $lang, $question->element_id, $rowQuestion->label, $rowQuestion->row_id);
 
                 foreach ($question->question->choice_table->choices as $choice) {
                     $responseData = [

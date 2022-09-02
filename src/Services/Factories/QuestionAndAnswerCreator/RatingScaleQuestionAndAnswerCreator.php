@@ -10,9 +10,13 @@ class RatingScaleQuestionAndAnswerCreator extends AbstractQuestionAndAnswerCreat
 {
     const TYPE = 'rating_scale';
 
+    /**
+     * @throws \Statikbe\Surveyhero\Exceptions\SurveyNotMappedException
+     * @throws \Statikbe\Surveyhero\Exceptions\QuestionNotMappedException
+     */
     public function updateOrCreateQuestionAndAnswer(\stdClass $question, Survey $survey, string $lang): SurveyQuestion|array
     {
-        $surveyQuestion = $this->updateOrCreateQuestion($question, $survey, $lang);
+        $surveyQuestion = $this->updateOrCreateQuestion($survey, $lang, $question->element_id, $question->question->question_text);
 
         $ratingScale = $question->question->rating_scale;
         $minValue = $ratingScale->left->value;

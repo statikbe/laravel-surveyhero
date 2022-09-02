@@ -37,12 +37,15 @@ class CreateSurveyheroTables extends Migration
         });
 
         Schema::create('survey_questions', function (Blueprint $table) {
-                    $table->id();
-                    $table->foreignId('survey_id')->constrained('surveys')->onDelete('cascade');
-                    $table->bigInteger('surveyhero_question_id')->nullable();
-                    $table->json('label');
-                    $table->timestamps();
-                });
+            $table->id();
+            $table->foreignId('survey_id')->constrained('surveys')->onDelete('cascade');
+            $table->bigInteger('surveyhero_question_id')->nullable();
+            $table->string('field');
+            $table->json('label');
+            $table->timestamps();
+
+            $table->index(['field']);
+        });
 
         Schema::create('survey_answers', function (Blueprint $table) {
             $table->id();
@@ -59,8 +62,6 @@ class CreateSurveyheroTables extends Migration
             $table->foreignId('survey_question_id')->constrained();
             $table->foreignId('survey_answer_id')->nullable()->constrained();
 
-            $table->string('field');
-
             $table->unsignedBigInteger('survey_response_id');
             $table->foreign('survey_response_id')
                 ->references('id')
@@ -68,8 +69,6 @@ class CreateSurveyheroTables extends Migration
                 ->onDelete('cascade');
 
             $table->timestamps();
-
-            $table->index(['field']);
         });
     }
 }

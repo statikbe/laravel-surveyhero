@@ -4,12 +4,12 @@ namespace Statikbe\Surveyhero\Exceptions;
 
 class QuestionNotImportedException extends \Exception
 {
-    public int $answerId;
+    public int $questionId;
 
-    public static function create(int $answerId, string $message): self
+    public static function create(int $questionId, string $message): self
     {
         $ex = new self($message);
-        $ex->answerId = $answerId;
+        $ex->questionId = $questionId;
 
         return $ex;
     }

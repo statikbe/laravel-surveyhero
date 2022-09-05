@@ -3,7 +3,9 @@
 namespace Statikbe\Surveyhero\Services\Factories\ResponseCreator;
 
 use Statikbe\Surveyhero\Exceptions\AnswerNotImportedException;
+use Statikbe\Surveyhero\Exceptions\QuestionNotImportedException;
 use Statikbe\Surveyhero\Models\SurveyAnswer;
+use Statikbe\Surveyhero\Models\SurveyQuestion;
 use Statikbe\Surveyhero\Models\SurveyQuestionResponse;
 use Statikbe\Surveyhero\Models\SurveyResponse;
 
@@ -52,21 +54,14 @@ class ChoicesResponseCreator extends AbstractQuestionResponseCreator
         //TODO remove deselected answers
         foreach ($surveyheroQuestionResponse->choices as $surveyheroChoice) {
             $existingQuestionResponse = $this->findExistingQuestionResponse($questionMapping['question_id'], $response, $surveyheroChoice->choice_id);
-            $responseData = $this->createSurveyQuestionResponseData($surveyheroQuestionResponse, $response, $questionMapping['field']);
-            $mappedChoice = $this->getChoiceMapping($surveyheroChoice->choice_id, $questionMapping);
-            $surveyAnswer = SurveyAnswer::where('surveyhero_answer_id', $surveyheroChoice->choice_id)->first();
+            $surveyQuestion = $this->findSurveyQuestion($surveyheroQuestionResponse->element_id);
+            $surveyAnswer = $this->findSurveyAnswer($surveyQuestion, $surveyheroChoice->choice_id);
 
-            if (! $surveyAnswer) {
-                throw AnswerNotImportedException::create($surveyheroChoice->choice_id, "Make sure to import survey answer with Surveyhero ID $surveyheroQuestionResponse->element_id in the survey_answers table");
-            }
-            $responseData['survey_answer_id'] = $surveyAnswer->id;
-
-            //$this->setChoiceAndConvertToDataType($mappedChoice, $questionMapping['mapped_data_type'], $responseData, $surveyheroChoice);
-            //$responseData['surveyhero_answer_lbl'] = $surveyheroChoice->label;
+            $responseData = $this->createSurveyQuestionResponseData($surveyQuestion, $response, $surveyAnswer);
 
             $responseList[] = SurveyQuestionResponse::updateOrCreate([
-                'id' => $existingQuestionResponse->id ?? null,
-            ], $responseData);
+                    'id' => $existingQuestionResponse->id ?? null,
+                ], $responseData);
         }
 
         return $responseList;

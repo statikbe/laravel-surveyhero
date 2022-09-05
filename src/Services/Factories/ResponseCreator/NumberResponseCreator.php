@@ -21,22 +21,23 @@ class NumberResponseCreator extends AbstractQuestionResponseCreator
          *   'type' => 'number',
          *   'field' => 'age',
          * ],
+         *
+         * Surveyhero API response:
+         * {
+         *  "element_id": 6059049,
+         *  "question_text": "Your age",
+         *  "type": "number",
+         *  "number": 5
+         * }
          */
 
         $existingQuestionResponse = $this->findExistingQuestionResponse($questionMapping['question_id'], $response);
+        $surveyQuestion = $this->findSurveyQuestion($surveyheroQuestionResponse->element_id);
+        $surveyAnswer = $this->fetchOrCreateInputAnswer($surveyQuestion,
+            $questionMapping['mapped_data_type'] ?? SurveyAnswer::CONVERTED_TYPE_INT,
+            $surveyheroQuestionResponse->number);
 
-        $responseData = $this->createSurveyQuestionResponseData($surveyheroQuestionResponse, $response, $questionMapping['field']);
-        //if later other numeric types are needed, this should decide in which column to store and format the value accordingly:
-        //$responseData['converted_int_value'] = intval($surveyheroQuestionResponse->number);
-
-        $surveyAnswer = SurveyAnswer::where('converted_int_value', intval($surveyheroQuestionResponse->number))
-                                    ->where('survey_question_id', $responseData['survey_question_id'])
-                                    ->first();
-
-        if (! $surveyAnswer) {
-            throw AnswerNotImportedException::create(intval($surveyheroQuestionResponse->number), "Make sure to import survey answer with Surveyhero ID $surveyheroQuestionResponse->element_id in the survey_answers table");
-        }
-        $responseData['survey_answer_id'] = $surveyAnswer->id;
+        $responseData = $this->createSurveyQuestionResponseData($surveyQuestion, $response, $surveyAnswer);
 
         return SurveyQuestionResponse::updateOrCreate([
             'id' => $existingQuestionResponse->id ?? null,

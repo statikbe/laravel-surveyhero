@@ -46,16 +46,18 @@ class SurveyheroMapperCommand extends Command
             $this->comment("Mapping for survey '$survey->name' completed!");
         }
 
-        $myfile = fopen('mapping.txt', 'w') or exit('Unable to open file!');
-        fwrite($myfile, $this->var_export_short($mapping, true));
+        $fileName = 'surveyhero_mapping.php';
+        $myfile = fopen($fileName, 'w') or exit('Unable to open file!');
+
+        fwrite($myfile, "<?php \n\n" . $this->var_export_short($mapping) . "; \n");
         fclose($myfile);
 
-        $this->comment('Mapping complete! [mapping.txt]');
+        $this->comment("Mapping complete! [$fileName]");
 
         return self::SUCCESS;
     }
 
-    private function var_export_short($data, $return = true)
+    private function var_export_short($data): string
     {
         $dump = var_export($data, true);
 
@@ -70,10 +72,6 @@ class SurveyheroMapperCommand extends Command
             $dump = preg_replace('#\)$#', ']', $dump);
         }
 
-        if ($return === true) {
-            return $dump;
-        } else {
-            echo $dump;
-        }
+        return $dump;
     }
 }

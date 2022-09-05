@@ -4,6 +4,7 @@ namespace Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator;
 
 use Statikbe\Surveyhero\Exceptions\AnswerNotMappedException;
 use Statikbe\Surveyhero\Models\Survey;
+use Statikbe\Surveyhero\Models\SurveyAnswer;
 use Statikbe\Surveyhero\Models\SurveyQuestion;
 use Statikbe\Surveyhero\Services\SurveyMappingService;
 
@@ -52,17 +53,17 @@ abstract class AbstractQuestionAndAnswerCreator implements QuestionAndAnswerCrea
     {
         //if the choice is not mapped try to set the label as string:
         if (! $mappedChoice) {
-            if ($dataType === 'string') {
+            if ($dataType === SurveyAnswer::CONVERTED_TYPE_STRING) {
                 $responseData['converted_string_value'] = $surveyheroChoice->label;
             } else {
                 throw AnswerNotMappedException::create($surveyheroChoice->choice_id, "The choice mapping could not be made for choice ID: $surveyheroChoice->choice_id");
             }
         } else {
             switch ($dataType) {
-                case 'int':
+                case SurveyAnswer::CONVERTED_TYPE_INT:
                     $responseData['converted_int_value'] = $mappedChoice;
                     break;
-                case 'string':
+                case SurveyAnswer::CONVERTED_TYPE_STRING:
                     $responseData['converted_string_value'] = $mappedChoice;
                     break;
             }

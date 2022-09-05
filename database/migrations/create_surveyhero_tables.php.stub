@@ -53,7 +53,7 @@ class CreateSurveyheroTables extends Migration
             $table->bigInteger('surveyhero_answer_id')->nullable();
             $table->string('converted_string_value')->nullable();
             $table->integer('converted_int_value')->nullable();
-            $table->json('label');
+            $table->json('label')->nullable();
             $table->timestamps();
         });
 

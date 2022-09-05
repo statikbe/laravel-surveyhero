@@ -2,8 +2,10 @@
 
 namespace Statikbe\Surveyhero\Services\Factories\ResponseCreator;
 
+use Statikbe\Surveyhero\Exceptions\AnswerNotImportedException;
 use Statikbe\Surveyhero\Exceptions\AnswerNotMappedException;
 use Statikbe\Surveyhero\Exceptions\QuestionNotImportedException;
+use Statikbe\Surveyhero\Models\SurveyAnswer;
 use Statikbe\Surveyhero\Models\SurveyQuestion;
 use Statikbe\Surveyhero\Models\SurveyQuestionResponse;
 use Statikbe\Surveyhero\Models\SurveyResponse;
@@ -34,27 +36,43 @@ abstract class AbstractQuestionResponseCreator implements QuestionResponseCreato
     }
 
     /**
-     * @param  \stdClass  $surveyheroQuestionResponse
-     * @param  SurveyResponse  $response
-     * @param  string  $field
-     * @return array{ 'survey_question_id': int, 'field': string, 'survey_response_id': int }
-     *
-     * @throws \Statikbe\Surveyhero\Exceptions\QuestionNotImportedException
+     * @param string $surveyheroQuestionId
+     * @return SurveyQuestion
+     * @throws QuestionNotImportedException
      */
-    protected function createSurveyQuestionResponseData(\stdClass $surveyheroQuestionResponse,
-        SurveyResponse $response,
-        string $field): array
-    {
-        $surveyQuestion = SurveyQuestion::where('surveyhero_question_id', $surveyheroQuestionResponse->element_id)->first();
-
-        if (! $surveyQuestion) {
-            throw QuestionNotImportedException::create($surveyheroQuestionResponse->element_id, "Make sure to import survey question with Surveyhero ID $surveyheroQuestionResponse->element_id in the survey_questions table");
+    protected function findSurveyQuestion(string $surveyheroQuestionId): SurveyQuestion {
+        $surveyQuestion = SurveyQuestion::where('surveyhero_question_id', $surveyheroQuestionId)->first();
+        if(!$surveyQuestion){
+            throw QuestionNotImportedException::create($surveyheroQuestionId, 'The question is not imported');
         }
+        else return $surveyQuestion;
+    }
 
+    protected function findSurveyAnswer(SurveyQuestion $question, string $surveyheroAnswerId): SurveyAnswer {
+        $surveyAnswer = SurveyAnswer::where('survey_question_id', $question->id)
+            ->where('surveyhero_answer_id', $surveyheroAnswerId)
+            ->first();
+
+        if (! $surveyAnswer) {
+            throw AnswerNotImportedException::create($surveyheroAnswerId, "Make sure to import survey answer with Surveyhero ID $surveyheroAnswerId in the survey_answers table");
+        }
+        else return $surveyAnswer;
+    }
+
+    /**
+     * @param SurveyQuestion $question
+     * @param SurveyResponse $response
+     * @param SurveyAnswer|null $answer
+     * @return array{ 'survey_question_id': int, 'survey_response_id': int }
+     */
+    protected function createSurveyQuestionResponseData(SurveyQuestion $question,
+                                                        SurveyResponse $response,
+                                                        ?SurveyAnswer $answer): array
+    {
         return [
-            'survey_question_id' => $surveyQuestion->id,
-            'field' => $field,
+            'survey_question_id' => $question->id,
             'survey_response_id' => $response->id,
+            'survey_answer_id' => $answer ? $answer->id : null,
         ];
     }
 
@@ -71,31 +89,67 @@ abstract class AbstractQuestionResponseCreator implements QuestionResponseCreato
      * @param  mixed  $mappedChoice
      * @param  string  $dataType
      * @param  array  $responseData
-     * @param  \stdClass  $surveyheroChoice
+     * @param  \stdClass|null  $surveyheroChoice
      *
      * @throws AnswerNotMappedException
      */
     protected function setChoiceAndConvertToDataType(mixed $mappedChoice,
         string $dataType,
         array &$responseData,
-        \stdClass $surveyheroChoice): void
+        ?\stdClass $surveyheroChoice): void
     {
         //if the choice is not mapped try to set the label as string:
-        if (! $mappedChoice) {
-            if ($dataType === 'string') {
+        if (! $mappedChoice && $surveyheroChoice) {
+            if ($dataType === SurveyAnswer::CONVERTED_TYPE_STRING) {
                 $responseData['converted_string_value'] = $surveyheroChoice->label;
             } else {
                 throw AnswerNotMappedException::create($surveyheroChoice->choice_id, "The choice mapping could not be made for choice ID: $surveyheroChoice->choice_id");
             }
         } else {
             switch ($dataType) {
-                case 'int':
+                case SurveyAnswer::CONVERTED_TYPE_INT:
                     $responseData['converted_int_value'] = $mappedChoice;
                     break;
-                case 'string':
+                case SurveyAnswer::CONVERTED_TYPE_STRING:
                     $responseData['converted_string_value'] = $mappedChoice;
                     break;
             }
+        }
+    }
+
+    protected function fetchOrCreateInputAnswer(SurveyQuestion $surveyQuestion, string $answerDataType, mixed $inputAnswer): SurveyAnswer {
+        //fetch or create answer:
+        $answerData = [];
+        $this->setChoiceAndConvertToDataType($this->transformInputToDataType($inputAnswer, $answerDataType),
+                                             $answerDataType,
+                                $answerData,
+                              null);
+        $surveyAnswerQuery = SurveyAnswer::where('survey_question_id', $surveyQuestion->id);
+        if(isset($answerData['converted_int_value'])){
+            $surveyAnswerQuery->where('converted_int_value', $answerData['converted_int_value']);
+        }
+        else if(isset($answerData['converted_string_value'])){
+            $surveyAnswerQuery->where('converted_string_value', $answerData['converted_string_value']);
+        }
+        $surveyAnswer = $surveyAnswerQuery->first();
+
+        if (! $surveyAnswer) {
+            $answerData['survey_question_id'] = $surveyQuestion->id;
+            $answerData['surveyhero_answer_id'] = null;
+            $surveyAnswer = SurveyAnswer::create($answerData);
+        }
+
+        return $surveyAnswer;
+    }
+
+    protected function transformInputToDataType(mixed $input, string $dataType){
+        switch($dataType){
+            case SurveyAnswer::CONVERTED_TYPE_INT:
+                return intval($input);
+            case SurveyAnswer::CONVERTED_TYPE_STRING:
+                return strval($input);
+            default:
+                return $input;
         }
     }
 }

@@ -85,16 +85,10 @@ class ChoiceTableResponseCreator extends AbstractQuestionResponseCreator
             $subquestionMapping = $this->getSubquestionMapping($surveyheroChoiceQuestion->row_id, $questionMapping);
             foreach ($surveyheroChoiceQuestion->choices as $surveyheroChoice) {
                 $existingQuestionResponse = $this->findExistingQuestionResponse($subquestionMapping['question_id'], $response, $surveyheroChoice->choice_id);
-                $responseData = $this->createSurveyQuestionResponseData($surveyheroQuestionResponse, $response, $subquestionMapping['field']);
-                $mappedChoice = $this->getChoiceMapping($surveyheroChoice->choice_id, $questionMapping);
-                $surveyAnswer = SurveyAnswer::where('surveyhero_answer_id', $surveyheroChoice->choice_id)->first();
+                $surveyQuestion = $this->findSurveyQuestion($surveyheroChoiceQuestion->row_id);
+                $surveyAnswer = $this->findSurveyAnswer($surveyQuestion, $surveyheroChoice->choice_id);
 
-                if (! $surveyAnswer) {
-                    throw AnswerNotImportedException::create($surveyheroChoice->choice_id, "Make sure to import survey answer with Surveyhero ID $surveyheroQuestionResponse->element_id in the survey_answers table");
-                }
-                $responseData['survey_answer_id'] = $surveyAnswer->id;
-
-                //$this->setChoiceAndConvertToDataType($mappedChoice, $questionMapping['mapped_data_type'], $responseData, $surveyheroChoice);
+                $responseData = $this->createSurveyQuestionResponseData($surveyQuestion, $response, $surveyAnswer);
 
                 $responseList[] = SurveyQuestionResponse::updateOrCreate([
                     'id' => $existingQuestionResponse->id ?? null,

@@ -2,10 +2,25 @@
 
 namespace Statikbe\Surveyhero\Services;
 
+use Statikbe\Surveyhero\Exceptions\QuestionMapperNotImplementedException;
 use Statikbe\Surveyhero\Exceptions\QuestionNotMappedException;
 use Statikbe\Surveyhero\Exceptions\SurveyNotMappedException;
 use Statikbe\Surveyhero\Http\SurveyheroClient;
 use Statikbe\Surveyhero\Models\Survey;
+use Statikbe\Surveyhero\Models\SurveyAnswer;
+use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\ChoiceListQuestionAndAnswerCreator;
+use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\ChoiceTableQuestionAndAnswerCreator;
+use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\RatingScaleQuestionAndAnswerCreator;
+use Statikbe\Surveyhero\Services\Factories\QuestionMapper\ChoiceListQuestionMapper;
+use Statikbe\Surveyhero\Services\Factories\QuestionMapper\ChoiceTableQuestionMapper;
+use Statikbe\Surveyhero\Services\Factories\QuestionMapper\InputQuestionMapper;
+use Statikbe\Surveyhero\Services\Factories\QuestionMapper\QuestionMapper;
+use Statikbe\Surveyhero\Services\Factories\QuestionMapper\RatingScaleQuestionMapper;
+use Statikbe\Surveyhero\Services\Factories\ResponseCreator\ChoicesResponseCreator;
+use Statikbe\Surveyhero\Services\Factories\ResponseCreator\ChoiceTableResponseCreator;
+use Statikbe\Surveyhero\Services\Factories\ResponseCreator\NumberResponseCreator;
+use Statikbe\Surveyhero\Services\Factories\ResponseCreator\QuestionResponseCreator;
+use Statikbe\Surveyhero\Services\Factories\ResponseCreator\TextResponseCreator;
 
 class SurveyMappingService
 {
@@ -33,24 +48,31 @@ class SurveyMappingService
     public function map(Survey $survey): array
     {
         $questions = $this->client->getSurveyQuestions($survey->surveyhero_id);
-        $mapping['survey_id'] = (int) $survey->surveyhero_id;
-        foreach ($questions as $index => $question) {
-            $mapping['questions'][$index]['question_id'] = $question->element_id;
-            $mapping['questions'][$index]['type'] = $question->question->type;
-            $mapping['questions'][$index]['field'] = 'READABLE_NAME';
-            $mapping['questions'][$index]['mapped_data_type'] = null;
+        $mapping = [
+            'survey_id' => (int) $survey->surveyhero_id,
+            'questions' => [],
+        ];
+        $questionCounter = 1;
+        foreach ($questions as $question) {
+            $mapper = $this->getQuestionMapper($question->question->type);
 
-            if ($question->question->type == 'choice_list') {
-                foreach ($question->question->choice_list->choices as $choiceKey => $choice) {
-                    $mapping['questions'][$index]['answer_mapping'][$choice->choice_id] = $choiceKey + 1;
+            if($mapper) {
+                //a mapper can return one question or multiple.
+                $mappedQuestions = $mapper->mapQuestion($question, $questionCounter);
+                if(!empty($mappedQuestions)){
+                    if(is_array(array_values($mappedQuestions)[0])){
+                        //multiple questions mapped:
+                        $mapping['questions'] = array_merge($mapping['questions'], $mappedQuestions);
+                    }
                 }
-                $mapping['questions'][$index]['mapped_data_type'] = 'int';
+                else {
+                    //only one question mapped:
+                    $mapping['questions'][] = $mappedQuestions;
+                }
+                $questionCounter++;
             }
-
-            if ($question->question->type == 'rating_scale') {
-                if ($question->question->rating_scale->style == 'numerical_scale') {
-                    $mapping['questions'][$index]['mapped_data_type'] = 'int';
-                }
+            else {
+                throw QuestionMapperNotImplementedException::create($question->question->type);
             }
         }
 
@@ -151,5 +173,16 @@ class SurveyMappingService
         }
         //in case nothing is found there is no mapping for the question -> throw error
         throw QuestionNotMappedException::create($subquestionId ?? $questionId, 'The question mapping has no field');
+    }
+
+    private function getQuestionMapper(string $surveyheroFieldType): ?QuestionMapper
+    {
+        return match ($surveyheroFieldType) {
+            InputQuestionMapper::TYPE => new InputQuestionMapper(),
+            RatingScaleQuestionMapper::TYPE => new RatingScaleQuestionMapper(),
+            ChoiceListQuestionMapper::TYPE => new ChoiceListQuestionMapper(),
+            ChoiceTableQuestionMapper::TYPE => new ChoiceTableQuestionMapper(),
+            default => null,
+        };
     }
 }

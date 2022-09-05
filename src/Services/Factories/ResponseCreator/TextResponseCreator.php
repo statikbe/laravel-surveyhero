@@ -24,18 +24,12 @@ class TextResponseCreator extends AbstractQuestionResponseCreator
          */
 
         $existingQuestionResponse = $this->findExistingQuestionResponse($questionMapping['question_id'], $response);
+        $surveyQuestion = $this->findSurveyQuestion($surveyheroQuestionResponse->element_id);
+        $surveyAnswer = $this->fetchOrCreateInputAnswer($surveyQuestion,
+            $questionMapping['mapped_data_type'] ?? SurveyAnswer::CONVERTED_TYPE_STRING,
+            $surveyheroQuestionResponse->text);
 
-        $responseData = $this->createSurveyQuestionResponseData($surveyheroQuestionResponse, $response, $questionMapping['field']);
-        //$responseData['converted_string_value'] = $surveyheroQuestionResponse->text;
-
-        $surveyAnswer = SurveyAnswer::where('converted_string_value', $surveyheroQuestionResponse->text)
-                                    ->where('survey_question_id', $responseData['survey_question_id'])
-                                    ->first();
-
-        if (! $surveyAnswer) {
-            throw AnswerNotImportedException::create(intval($surveyheroQuestionResponse->text), "Make sure to import survey answer with Surveyhero ID $surveyheroQuestionResponse->element_id in the survey_answers table");
-        }
-        $responseData['survey_answer_id'] = $surveyAnswer->id;
+        $responseData = $this->createSurveyQuestionResponseData($surveyQuestion, $response, $surveyAnswer);
 
         return SurveyQuestionResponse::updateOrCreate([
             'id' => $existingQuestionResponse->id ?? null,

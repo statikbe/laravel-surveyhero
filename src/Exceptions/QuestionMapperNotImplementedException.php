@@ -2,15 +2,15 @@
 
 namespace Statikbe\Surveyhero\Exceptions;
 
-    class QuestionMapperNotImplementedException extends \Exception
+class QuestionMapperNotImplementedException extends \Exception
+{
+    public string $questionType;
+
+    public static function create(string $questionType): self
     {
-        public string $questionType;
+        $ex = new self("There is no mapper implementation for question type: $questionType");
+        $ex->questionType = $questionType;
 
-        public static function create(string $questionType): self
-        {
-            $ex = new self("There is no mapper implementation for question type: $questionType");
-            $ex->questionType = $questionType;
-
-            return $ex;
-        }
+        return $ex;
     }
+}

@@ -7,20 +7,11 @@ use Statikbe\Surveyhero\Exceptions\QuestionNotMappedException;
 use Statikbe\Surveyhero\Exceptions\SurveyNotMappedException;
 use Statikbe\Surveyhero\Http\SurveyheroClient;
 use Statikbe\Surveyhero\Models\Survey;
-use Statikbe\Surveyhero\Models\SurveyAnswer;
-use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\ChoiceListQuestionAndAnswerCreator;
-use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\ChoiceTableQuestionAndAnswerCreator;
-use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\RatingScaleQuestionAndAnswerCreator;
 use Statikbe\Surveyhero\Services\Factories\QuestionMapper\ChoiceListQuestionMapper;
 use Statikbe\Surveyhero\Services\Factories\QuestionMapper\ChoiceTableQuestionMapper;
 use Statikbe\Surveyhero\Services\Factories\QuestionMapper\InputQuestionMapper;
 use Statikbe\Surveyhero\Services\Factories\QuestionMapper\QuestionMapper;
 use Statikbe\Surveyhero\Services\Factories\QuestionMapper\RatingScaleQuestionMapper;
-use Statikbe\Surveyhero\Services\Factories\ResponseCreator\ChoicesResponseCreator;
-use Statikbe\Surveyhero\Services\Factories\ResponseCreator\ChoiceTableResponseCreator;
-use Statikbe\Surveyhero\Services\Factories\ResponseCreator\NumberResponseCreator;
-use Statikbe\Surveyhero\Services\Factories\ResponseCreator\QuestionResponseCreator;
-use Statikbe\Surveyhero\Services\Factories\ResponseCreator\TextResponseCreator;
 
 class SurveyMappingService
 {
@@ -56,22 +47,20 @@ class SurveyMappingService
         foreach ($questions as $question) {
             $mapper = $this->getQuestionMapper($question->question->type);
 
-            if($mapper) {
+            if ($mapper) {
                 //a mapper can return one question or multiple.
                 $mappedQuestions = $mapper->mapQuestion($question, $questionCounter);
-                if(!empty($mappedQuestions)){
-                    if(is_array(array_values($mappedQuestions)[0])){
+                if (! empty($mappedQuestions)) {
+                    if (is_array(array_values($mappedQuestions)[0])) {
                         //multiple questions mapped:
                         $mapping['questions'] = array_merge($mapping['questions'], $mappedQuestions);
                     }
-                }
-                else {
+                } else {
                     //only one question mapped:
                     $mapping['questions'][] = $mappedQuestions;
                 }
                 $questionCounter++;
-            }
-            else {
+            } else {
                 throw QuestionMapperNotImplementedException::create($question->question->type);
             }
         }

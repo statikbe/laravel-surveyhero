@@ -21,6 +21,7 @@ class SurveyAnswer extends Model
     use HasTranslations;
 
     const CONVERTED_TYPE_INT = 'int';
+
     const CONVERTED_TYPE_STRING = 'string';
 
     protected $translatable = ['label'];

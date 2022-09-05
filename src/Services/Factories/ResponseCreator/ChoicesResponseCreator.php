@@ -2,10 +2,6 @@
 
 namespace Statikbe\Surveyhero\Services\Factories\ResponseCreator;
 
-use Statikbe\Surveyhero\Exceptions\AnswerNotImportedException;
-use Statikbe\Surveyhero\Exceptions\QuestionNotImportedException;
-use Statikbe\Surveyhero\Models\SurveyAnswer;
-use Statikbe\Surveyhero\Models\SurveyQuestion;
 use Statikbe\Surveyhero\Models\SurveyQuestionResponse;
 use Statikbe\Surveyhero\Models\SurveyResponse;
 
@@ -60,8 +56,8 @@ class ChoicesResponseCreator extends AbstractQuestionResponseCreator
             $responseData = $this->createSurveyQuestionResponseData($surveyQuestion, $response, $surveyAnswer);
 
             $responseList[] = SurveyQuestionResponse::updateOrCreate([
-                    'id' => $existingQuestionResponse->id ?? null,
-                ], $responseData);
+                'id' => $existingQuestionResponse->id ?? null,
+            ], $responseData);
         }
 
         return $responseList;

@@ -49,7 +49,7 @@ class SurveyheroMapperCommand extends Command
         $fileName = 'surveyhero_mapping.php';
         $myfile = fopen($fileName, 'w') or exit('Unable to open file!');
 
-        fwrite($myfile, "<?php \n\n" . $this->var_export_short($mapping) . "; \n");
+        fwrite($myfile, "<?php \n\n".$this->var_export_short($mapping)."; \n");
         fclose($myfile);
 
         $this->comment("Mapping complete! [$fileName]");

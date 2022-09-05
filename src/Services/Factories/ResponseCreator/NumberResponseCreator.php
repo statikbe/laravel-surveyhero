@@ -2,7 +2,6 @@
 
 namespace Statikbe\Surveyhero\Services\Factories\ResponseCreator;
 
-use Statikbe\Surveyhero\Exceptions\AnswerNotImportedException;
 use Statikbe\Surveyhero\Models\SurveyAnswer;
 use Statikbe\Surveyhero\Models\SurveyQuestionResponse;
 use Statikbe\Surveyhero\Models\SurveyResponse;

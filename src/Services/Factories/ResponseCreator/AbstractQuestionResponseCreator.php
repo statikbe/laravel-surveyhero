@@ -36,33 +36,38 @@ abstract class AbstractQuestionResponseCreator implements QuestionResponseCreato
     }
 
     /**
-     * @param string $surveyheroQuestionId
+     * @param  string  $surveyheroQuestionId
      * @return SurveyQuestion
+     *
      * @throws QuestionNotImportedException
      */
-    protected function findSurveyQuestion(string $surveyheroQuestionId): SurveyQuestion {
+    protected function findSurveyQuestion(string $surveyheroQuestionId): SurveyQuestion
+    {
         $surveyQuestion = SurveyQuestion::where('surveyhero_question_id', $surveyheroQuestionId)->first();
-        if(!$surveyQuestion){
+        if (! $surveyQuestion) {
             throw QuestionNotImportedException::create($surveyheroQuestionId, 'The question is not imported');
+        } else {
+            return $surveyQuestion;
         }
-        else return $surveyQuestion;
     }
 
-    protected function findSurveyAnswer(SurveyQuestion $question, string $surveyheroAnswerId): SurveyAnswer {
+    protected function findSurveyAnswer(SurveyQuestion $question, string $surveyheroAnswerId): SurveyAnswer
+    {
         $surveyAnswer = SurveyAnswer::where('survey_question_id', $question->id)
             ->where('surveyhero_answer_id', $surveyheroAnswerId)
             ->first();
 
         if (! $surveyAnswer) {
             throw AnswerNotImportedException::create($surveyheroAnswerId, "Make sure to import survey answer with Surveyhero ID $surveyheroAnswerId in the survey_answers table");
+        } else {
+            return $surveyAnswer;
         }
-        else return $surveyAnswer;
     }
 
     /**
-     * @param SurveyQuestion $question
-     * @param SurveyResponse $response
-     * @param SurveyAnswer|null $answer
+     * @param  SurveyQuestion  $question
+     * @param  SurveyResponse  $response
+     * @param  SurveyAnswer|null  $answer
      * @return array{ 'survey_question_id': int, 'survey_response_id': int }
      */
     protected function createSurveyQuestionResponseData(SurveyQuestion $question,
@@ -117,18 +122,18 @@ abstract class AbstractQuestionResponseCreator implements QuestionResponseCreato
         }
     }
 
-    protected function fetchOrCreateInputAnswer(SurveyQuestion $surveyQuestion, string $answerDataType, mixed $inputAnswer): SurveyAnswer {
+    protected function fetchOrCreateInputAnswer(SurveyQuestion $surveyQuestion, string $answerDataType, mixed $inputAnswer): SurveyAnswer
+    {
         //fetch or create answer:
         $answerData = [];
         $this->setChoiceAndConvertToDataType($this->transformInputToDataType($inputAnswer, $answerDataType),
-                                             $answerDataType,
-                                $answerData,
-                              null);
+            $answerDataType,
+            $answerData,
+            null);
         $surveyAnswerQuery = SurveyAnswer::where('survey_question_id', $surveyQuestion->id);
-        if(isset($answerData['converted_int_value'])){
+        if (isset($answerData['converted_int_value'])) {
             $surveyAnswerQuery->where('converted_int_value', $answerData['converted_int_value']);
-        }
-        else if(isset($answerData['converted_string_value'])){
+        } elseif (isset($answerData['converted_string_value'])) {
             $surveyAnswerQuery->where('converted_string_value', $answerData['converted_string_value']);
         }
         $surveyAnswer = $surveyAnswerQuery->first();
@@ -142,8 +147,9 @@ abstract class AbstractQuestionResponseCreator implements QuestionResponseCreato
         return $surveyAnswer;
     }
 
-    protected function transformInputToDataType(mixed $input, string $dataType){
-        switch($dataType){
+    protected function transformInputToDataType(mixed $input, string $dataType)
+    {
+        switch($dataType) {
             case SurveyAnswer::CONVERTED_TYPE_INT:
                 return intval($input);
             case SurveyAnswer::CONVERTED_TYPE_STRING:

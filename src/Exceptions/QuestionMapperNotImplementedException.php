@@ -1,8 +1,9 @@
 <?php
 
-    namespace Statikbe\Surveyhero\Exceptions;
+namespace Statikbe\Surveyhero\Exceptions;
 
-    class QuestionMapperNotImplementedException extends \Exception {
+    class QuestionMapperNotImplementedException extends \Exception
+    {
         public string $questionType;
 
         public static function create(string $questionType): self

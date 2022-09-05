@@ -56,6 +56,10 @@ class SurveyResponseImportService
             foreach ($responses as $response) {
                 $this->importSurveyResponse($response->response_id, $survey, $surveyQuestionMapping);
             }
+
+            //update new survey last updated timestamp:
+            $survey->save();
+
             DB::commit();
         } catch (\Exception $exception) {
             DB::rollBack();
@@ -75,14 +79,15 @@ class SurveyResponseImportService
             $surveyQuestionMapping = $this->surveyMappingService->getSurveyQuestionMapping($survey);
         }
 
-        //do not import already imported data.
-        $existingResponseRecord = SurveyResponse::where('surveyhero_id', $responseId)->first();
-        if ($existingResponseRecord && $existingResponseRecord->survey_completed) {
-            return;
-        }
-
         $responseAnswers = $this->client->getSurveyResponseAnswers($survey->surveyhero_id, $responseId);
         if ($responseAnswers) {
+            //do not import already imported data that is not updated.
+            /* @var SurveyResponse $existingResponseRecord */
+            $existingResponseRecord = SurveyResponse::where('surveyhero_id', $responseId)->first();
+            if ($existingResponseRecord && ($existingResponseRecord->survey_completed || $existingResponseRecord->survey_last_updated->lte($survey->survey_last_updated))) {
+                return;
+            }
+
             $surveyResponse = $this->createOrUpdateSurveyResponse($responseAnswers, $survey, $existingResponseRecord);
 
             foreach ($responseAnswers->answers as $answer) {
@@ -111,6 +116,12 @@ class SurveyResponseImportService
                 } else {
                     $notImported['questions'][$answer->element_id] = [$answer->element_id];
                 }
+            }
+
+            //increase survey last updated timestamp:
+            $responseLastUpdatedOn = $this->client->transformAPITimestamp($responseAnswers->last_updated_on);
+            if(!$survey->survey_last_updated || $responseLastUpdatedOn->gt($survey->survey_last_updated)){
+                $survey->survey_last_updated = $responseLastUpdatedOn;
             }
         }
     }

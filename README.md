@@ -36,7 +36,7 @@ SURVEY {
     num id
     num surveyhero_id
     string name
-    
+    datetime survey_last_updated
 }
 
 SURVEY_QUESTIONS {

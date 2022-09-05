@@ -13,6 +13,7 @@ class CreateSurveyheroTables extends Migration
             $table->bigInteger('surveyhero_id');
 
             $table->string('name');
+            $table->datetime('survey_last_updated')->nullable();
 
             $table->timestamps();
         });

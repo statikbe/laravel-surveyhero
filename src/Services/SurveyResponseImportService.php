@@ -120,7 +120,7 @@ class SurveyResponseImportService
 
             //increase survey last updated timestamp:
             $responseLastUpdatedOn = $this->client->transformAPITimestamp($responseAnswers->last_updated_on);
-            if(is_null($survey->survey_last_updated) || $responseLastUpdatedOn->gt($survey->survey_last_updated)) {
+            if (is_null($survey->survey_last_updated) || $responseLastUpdatedOn->gt($survey->survey_last_updated)) {
                 $survey->survey_last_updated = $responseLastUpdatedOn;
             }
         }

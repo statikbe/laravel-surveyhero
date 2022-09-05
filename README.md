@@ -279,6 +279,16 @@ You can configure a specific survey with the flag `--survey=22333`.
 If you want to reimport all survey responses you can wipe the SurveyQuestions and SurveyAnswers by using the
 flag `--fresh`.
 
+### Generate configuration question mapping
+
+You can generate the `question_mapping` variable for the configuration file. The command generates `surveyhero_mapping.php` 
+in the project root. This file contains the PHP array that you can copy-paste into your configuration file and further
+adjust there. You can use this as a starting point to create the question mapping. Run:
+
+```shell
+php artisan surveyhero:map
+ ```
+
 ## Ideas for future improvements
 
 - Add more default indices to the migration.
@@ -295,7 +305,7 @@ flag `--fresh`.
 
 ## Testing
 
-Currently, no tests are implemented.
+Currently, no tests are implemented :-(.
 
 ```bash
 composer test
@@ -312,6 +322,8 @@ You can post an issue and provide a pull request. Thanks!
 ## Credits
 
 - [Sten Govaerts](https://github.com/sten)
+- [Robbe Reygel](https://github.com/RobbeStatik)
+- [Marie Drieghe](https://github.com/madriegh)
 - [All Contributors](https://github.com/statikbe/laravel-surveyhero/graphs/contributors)
 
 ## License

@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-surveyhero` will be documented in this file.
 
+## v1.1.2 - 2022-09-05
+
+Fix PHPstan errors
+
 ## v1.1.1 - 2022-09-05
 
 - Avoid re-importing unupdated responses

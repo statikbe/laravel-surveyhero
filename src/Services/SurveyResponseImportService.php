@@ -84,7 +84,7 @@ class SurveyResponseImportService
             //do not import already imported data that is not updated.
             /* @var SurveyResponse $existingResponseRecord */
             $existingResponseRecord = SurveyResponse::where('surveyhero_id', $responseId)->first();
-            if ($existingResponseRecord && ($existingResponseRecord->survey_completed || $existingResponseRecord->survey_last_updated->lte($survey->survey_last_updated))) {
+            if ($existingResponseRecord && ($existingResponseRecord->survey_completed || $existingResponseRecord->survey_last_updated->lte($survey->survey_last_imported))) {
                 return;
             }
 
@@ -120,8 +120,8 @@ class SurveyResponseImportService
 
             //increase survey last updated timestamp:
             $responseLastUpdatedOn = $this->client->transformAPITimestamp($responseAnswers->last_updated_on);
-            if (is_null($survey->survey_last_updated) || $responseLastUpdatedOn->gt($survey->survey_last_updated)) {
-                $survey->survey_last_updated = $responseLastUpdatedOn;
+            if (is_null($survey->survey_last_imported) || $responseLastUpdatedOn->gt($survey->survey_last_imported)) {
+                $survey->survey_last_imported = $responseLastUpdatedOn;
             }
         }
     }

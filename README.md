@@ -36,7 +36,7 @@ SURVEY {
     num id
     num surveyhero_id
     string name
-    datetime survey_last_updated
+    datetime survey_last_imported
 }
 
 SURVEY_QUESTIONS {
@@ -293,14 +293,16 @@ php artisan surveyhero:map
 
 - Add more default indices to the migration.
 - Support more Surveyhero question types.
-- Support more converted value data types, e.g. double
+- Support more converted value data types, e.g. double.
 - A command to check the `question_mapping` configuration to validate if:
   - there are no double field names
   - there are no double question IDs.
   - there are no double answer IDs.
   - the data format for a question time is ok, i.e. are all fields there and are they the right type.
   - all questions and answers are mapped by doing an API request.
-- A command to create a basic question_mapping configuration based on the [Surveyhero Element API](https://developer.surveyhero.com/api/#element-api)
+- Export survey responses to CSV and Excel
+- Statistics calculator service to quickly query aggregates of responses of questions.
+- ~~A command to create a basic question_mapping configuration based on the [Surveyhero Element API](https://developer.surveyhero.com/api/#element-api)~~
 - A command to create all surveys in the Surveyhero account. 
 
 ## Testing

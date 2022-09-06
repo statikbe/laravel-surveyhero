@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-surveyhero` will be documented in this file.
 
+## v1.1.3 - 2022-09-06
+
+Renaming survey->survey_last_updated to survey_last_imported
+
 ## v1.1.2 - 2022-09-05
 
 Fix PHPstan errors

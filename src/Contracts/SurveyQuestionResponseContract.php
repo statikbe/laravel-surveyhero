@@ -1,10 +1,11 @@
 <?php
 
-    namespace Statikbe\Surveyhero\Contracts;
+namespace Statikbe\Surveyhero\Contracts;
 
     use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-    interface SurveyQuestionResponseContract {
+    interface SurveyQuestionResponseContract
+    {
         public function surveyResponse(): BelongsTo;
 
         public function surveyQuestion(): BelongsTo;

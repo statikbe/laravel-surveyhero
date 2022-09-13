@@ -33,8 +33,8 @@ class SurveyMappingService
      *
      * @param  SurveyContract  $survey
      * @return array
-     * @see SurveyheroMapperCommand
      *
+     * @see SurveyheroMapperCommand
      */
     public function map(SurveyContract $survey): array
     {
@@ -71,7 +71,7 @@ class SurveyMappingService
     /**
      * Returns the question mapping from the configuration for the given survey
      *
-     * @param  SurveyContract $survey
+     * @param  SurveyContract  $survey
      * @return array
      *
      * @throws SurveyNotMappedException
@@ -102,7 +102,7 @@ class SurveyMappingService
     /**
      * Returns the question mapping from the configuration for a given survey and question ID.
      *
-     * @param  SurveyContract $survey
+     * @param  SurveyContract  $survey
      * @param  int|string  $questionId
      * @return array|null
      *
@@ -138,7 +138,7 @@ class SurveyMappingService
     }
 
     /**
-     * @param  SurveyContract $survey
+     * @param  SurveyContract  $survey
      * @param  string  $questionId
      * @param  string|null  $subquestionId
      * @return string

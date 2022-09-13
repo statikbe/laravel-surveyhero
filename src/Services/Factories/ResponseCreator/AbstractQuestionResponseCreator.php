@@ -19,9 +19,9 @@ abstract class AbstractQuestionResponseCreator implements QuestionResponseCreato
      * @param  string|int|null  $surveyheroAnswerId
      * @return SurveyQuestionResponseContract|null
      */
-    protected function findExistingQuestionResponse(string|int     $surveyheroQuestionId,
+    protected function findExistingQuestionResponse(string|int $surveyheroQuestionId,
                                                     SurveyResponseContract $response,
-                                                    string|int     $surveyheroAnswerId = null): ?SurveyQuestionResponseContract
+                                                    string|int $surveyheroAnswerId = null): ?SurveyQuestionResponseContract
     {
         $query = app(SurveyheroRegistrar::class)->getSurveyQuestionResponseClass()::whereHas('surveyQuestion', function ($q) use ($surveyheroQuestionId) {
             $q->where('surveyhero_question_id', $surveyheroQuestionId);
@@ -73,7 +73,7 @@ abstract class AbstractQuestionResponseCreator implements QuestionResponseCreato
      */
     protected function createSurveyQuestionResponseData(SurveyQuestionContract $question,
                                                         SurveyResponseContract $response,
-                                                        ?SurveyAnswerContract  $answer): array
+                                                        ?SurveyAnswerContract $answer): array
     {
         return [
             'survey_question_id' => $question->id,

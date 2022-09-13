@@ -12,11 +12,11 @@ class TextResponseCreator extends AbstractQuestionResponseCreator
     const TYPE = 'text';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function updateOrCreateQuestionResponse(\stdClass      $surveyheroQuestionResponse,
+    public function updateOrCreateQuestionResponse(\stdClass $surveyheroQuestionResponse,
                                                    SurveyResponseContract $response,
-                                                   array          $questionMapping): SurveyQuestionResponseContract|array
+                                                   array $questionMapping): SurveyQuestionResponseContract|array
     {
         /* Config question_mapping data structure:
          * [

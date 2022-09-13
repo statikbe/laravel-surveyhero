@@ -29,7 +29,8 @@ class SurveyheroServiceProvider extends PackageServiceProvider
             ]);
     }
 
-    public function packageBooted() {
+    public function packageBooted()
+    {
         parent::packageBooted();
 
         $this->app->singleton(SurveyheroRegistrar::class, function ($app) {

@@ -1,11 +1,12 @@
 <?php
 
-    namespace Statikbe\Surveyhero\Contracts;
+namespace Statikbe\Surveyhero\Contracts;
 
     use Illuminate\Database\Eloquent\Collection;
     use Illuminate\Database\Eloquent\Relations\HasMany;
 
-    interface SurveyContract {
+    interface SurveyContract
+    {
         public function surveyResponses(): HasMany;
 
         public function surveyQuestions(): HasMany;

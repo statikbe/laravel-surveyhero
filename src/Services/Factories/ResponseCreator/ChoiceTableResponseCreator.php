@@ -2,7 +2,6 @@
 
 namespace Statikbe\Surveyhero\Services\Factories\ResponseCreator;
 
-
 use Statikbe\Surveyhero\Contracts\SurveyQuestionResponseContract;
 use Statikbe\Surveyhero\Contracts\SurveyResponseContract;
 use Statikbe\Surveyhero\SurveyheroRegistrar;
@@ -12,11 +11,11 @@ class ChoiceTableResponseCreator extends AbstractQuestionResponseCreator
     const TYPE = 'choice_table';
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function updateOrCreateQuestionResponse(\stdClass      $surveyheroQuestionResponse,
+    public function updateOrCreateQuestionResponse(\stdClass $surveyheroQuestionResponse,
                                                    SurveyResponseContract $response,
-                                                   array          $questionMapping): SurveyQuestionResponseContract|array
+                                                   array $questionMapping): SurveyQuestionResponseContract|array
     {
         /* Config question_mapping data structure:
          * [

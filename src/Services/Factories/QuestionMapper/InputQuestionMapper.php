@@ -2,7 +2,7 @@
 
 namespace Statikbe\Surveyhero\Services\Factories\QuestionMapper;
 
-use Statikbe\Surveyhero\Models\SurveyAnswer;
+use Statikbe\Surveyhero\Contracts\SurveyAnswerContract;
 
 class InputQuestionMapper extends AbstractQuestionMapper
 {
@@ -12,7 +12,7 @@ class InputQuestionMapper extends AbstractQuestionMapper
     {
         $questionData = $this->createQuestionMap($question->element_id,
             $question->question->type,
-            SurveyAnswer::CONVERTED_TYPE_STRING,
+            SurveyAnswerContract::CONVERTED_TYPE_STRING,
             $questionCounter);
 
         return $questionData;

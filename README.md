@@ -291,6 +291,7 @@ php artisan surveyhero:map
 
 ## Ideas for future improvements
 
+- Add support for response filters in the API client to filter out responses from collectors and use last updated at filters.
 - Add more default indices to the migration.
 - Support more Surveyhero question types.
 - Support more converted value data types, e.g. double.
@@ -300,7 +301,7 @@ php artisan surveyhero:map
   - there are no double answer IDs.
   - the data format for a question time is ok, i.e. are all fields there and are they the right type.
   - all questions and answers are mapped by doing an API request.
-- Export survey responses to CSV and Excel
+- Export survey responses to CSV and Excel.
 - Statistics calculator service to quickly query aggregates of responses of questions.
 - ~~A command to create a basic question_mapping configuration based on the [Surveyhero Element API](https://developer.surveyhero.com/api/#element-api)~~
 - A command to create all surveys in the Surveyhero account. 

@@ -2,13 +2,13 @@
 
 namespace Statikbe\Surveyhero\Exceptions;
 
-use Statikbe\Surveyhero\Models\Survey;
+use Statikbe\Surveyhero\Contracts\SurveyContract;
 
 class SurveyNotMappedException extends \Exception
 {
-    public Survey $survey;
+    public SurveyContract $survey;
 
-    public static function create(Survey $survey, ?string $message): self
+    public static function create(SurveyContract $survey, ?string $message): self
     {
         $ex = new self($message);
         $ex->survey = $survey;

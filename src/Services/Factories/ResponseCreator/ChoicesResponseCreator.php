@@ -2,22 +2,22 @@
 
 namespace Statikbe\Surveyhero\Services\Factories\ResponseCreator;
 
-use Statikbe\Surveyhero\Models\SurveyQuestionResponse;
-use Statikbe\Surveyhero\Models\SurveyResponse;
+
+use Statikbe\Surveyhero\Contracts\SurveyQuestionResponseContract;
+use Statikbe\Surveyhero\Contracts\SurveyResponseContract;
+use Statikbe\Surveyhero\SurveyheroRegistrar;
 
 class ChoicesResponseCreator extends AbstractQuestionResponseCreator
 {
     const TYPE = 'choices';
 
     /**
-     * @throws \Statikbe\Surveyhero\Exceptions\AnswerNotMappedException
-     * @throws \Statikbe\Surveyhero\Exceptions\AnswerNotImportedException
-     * @throws \Statikbe\Surveyhero\Exceptions\QuestionNotImportedException
+     * @inheritDoc
      */
     public function updateOrCreateQuestionResponse(
-        \stdClass $surveyheroQuestionResponse,
-        SurveyResponse $response,
-        array $questionMapping): SurveyQuestionResponse|array
+        \stdClass      $surveyheroQuestionResponse,
+        SurveyResponseContract $response,
+        array          $questionMapping): SurveyQuestionResponseContract|array
     {
         /* Config question_mapping data structure:
          * [
@@ -55,7 +55,7 @@ class ChoicesResponseCreator extends AbstractQuestionResponseCreator
 
             $responseData = $this->createSurveyQuestionResponseData($surveyQuestion, $response, $surveyAnswer);
 
-            $responseList[] = SurveyQuestionResponse::updateOrCreate([
+            $responseList[] = app(SurveyheroRegistrar::class)->getSurveyQuestionResponseClass()::updateOrCreate([
                 'id' => $existingQuestionResponse->id ?? null,
             ], $responseData);
         }

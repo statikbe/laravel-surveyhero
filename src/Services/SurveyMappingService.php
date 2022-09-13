@@ -2,11 +2,11 @@
 
 namespace Statikbe\Surveyhero\Services;
 
+use Statikbe\Surveyhero\Contracts\SurveyContract;
 use Statikbe\Surveyhero\Exceptions\QuestionMapperNotImplementedException;
 use Statikbe\Surveyhero\Exceptions\QuestionNotMappedException;
 use Statikbe\Surveyhero\Exceptions\SurveyNotMappedException;
 use Statikbe\Surveyhero\Http\SurveyheroClient;
-use Statikbe\Surveyhero\Models\Survey;
 use Statikbe\Surveyhero\Services\Factories\QuestionMapper\ChoiceListQuestionMapper;
 use Statikbe\Surveyhero\Services\Factories\QuestionMapper\ChoiceTableQuestionMapper;
 use Statikbe\Surveyhero\Services\Factories\QuestionMapper\InputQuestionMapper;
@@ -31,12 +31,12 @@ class SurveyMappingService
     /**
      * Creates a basic question mapping based on the API to kickstart the configuration.
      *
+     * @param  SurveyContract  $survey
+     * @return array
      * @see SurveyheroMapperCommand
      *
-     * @param  Survey  $survey
-     * @return array
      */
-    public function map(Survey $survey): array
+    public function map(SurveyContract $survey): array
     {
         $questions = $this->client->getSurveyQuestions($survey->surveyhero_id);
         $mapping = [
@@ -71,12 +71,12 @@ class SurveyMappingService
     /**
      * Returns the question mapping from the configuration for the given survey
      *
-     * @param  Survey  $survey
+     * @param  SurveyContract $survey
      * @return array
      *
      * @throws SurveyNotMappedException
      */
-    public function getSurveyQuestionMapping(Survey $survey): array
+    public function getSurveyQuestionMapping(SurveyContract $survey): array
     {
         $foundSurveys = null;
         try {
@@ -102,13 +102,13 @@ class SurveyMappingService
     /**
      * Returns the question mapping from the configuration for a given survey and question ID.
      *
-     * @param  Survey  $survey
+     * @param  SurveyContract $survey
      * @param  int|string  $questionId
      * @return array|null
      *
      * @throws SurveyNotMappedException
      */
-    public function getQuestionMappingForSurvey(Survey $survey, int|string $questionId): ?array
+    public function getQuestionMappingForSurvey(SurveyContract $survey, int|string $questionId): ?array
     {
         $surveyQuestionMapping = $this->getSurveyQuestionMapping($survey);
         if ($surveyQuestionMapping) {
@@ -138,7 +138,7 @@ class SurveyMappingService
     }
 
     /**
-     * @param  Survey  $survey
+     * @param  SurveyContract $survey
      * @param  string  $questionId
      * @param  string|null  $subquestionId
      * @return string
@@ -146,7 +146,7 @@ class SurveyMappingService
      * @throws QuestionNotMappedException
      * @throws SurveyNotMappedException
      */
-    public function findQuestionField(Survey $survey, string $questionId, ?string $subquestionId = null): string
+    public function findQuestionField(SurveyContract $survey, string $questionId, ?string $subquestionId = null): string
     {
         $questionMapping = $this->getQuestionMappingForSurvey($survey, $questionId);
         if (isset($questionMapping['field'])) {

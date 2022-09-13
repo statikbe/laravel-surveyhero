@@ -6,10 +6,8 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Schema;
 use Statikbe\Surveyhero\Exceptions\ResponseCreatorNotImplemented;
 use Statikbe\Surveyhero\Exceptions\SurveyNotMappedException;
-use Statikbe\Surveyhero\Models\Survey;
-use Statikbe\Surveyhero\Models\SurveyQuestionResponse;
-use Statikbe\Surveyhero\Models\SurveyResponse;
 use Statikbe\Surveyhero\Services\SurveyResponseImportService;
+use Statikbe\Surveyhero\SurveyheroRegistrar;
 
 class SurveyheroResponseImportCommand extends Command
 {
@@ -39,7 +37,7 @@ class SurveyheroResponseImportCommand extends Command
 
         $surveyId = trim($this->option('survey'));
 
-        $surveyQuery = Survey::query();
+        $surveyQuery = app(SurveyheroRegistrar::class)->getSurveyClass()::query();
         if ($surveyId !== 'all') {
             $surveyQuery->where('surveyhero_id', $surveyId);
         }
@@ -79,8 +77,8 @@ class SurveyheroResponseImportCommand extends Command
     private function deleteResponses()
     {
         Schema::disableForeignKeyConstraints();
-        SurveyQuestionResponse::truncate();
-        SurveyResponse::truncate();
+        app(SurveyheroRegistrar::class)->getSurveyQuestionResponseClass()::truncate();
+        app(SurveyheroRegistrar::class)->getSurveyResponseClass()::truncate();
         Schema::enableForeignKeyConstraints();
     }
 }

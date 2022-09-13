@@ -2,22 +2,25 @@
 
 namespace Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator;
 
-use Statikbe\Surveyhero\Models\Survey;
-use Statikbe\Surveyhero\Models\SurveyAnswer;
-use Statikbe\Surveyhero\Models\SurveyQuestion;
+use Statikbe\Surveyhero\Contracts\SurveyContract;
+use Statikbe\Surveyhero\Contracts\SurveyQuestionContract;
 use Statikbe\Surveyhero\Services\SurveyMappingService;
+use Statikbe\Surveyhero\SurveyheroRegistrar;
 
 class ChoiceListQuestionAndAnswerCreator extends AbstractQuestionAndAnswerCreator
 {
     const TYPE = 'choice_list';
 
     /**
+     * @param \stdClass $question
+     * @param SurveyContract $survey
+     * @param string $lang
+     * @return SurveyQuestionContract|array
      * @throws \Statikbe\Surveyhero\Exceptions\AnswerNotMappedException
-     * @throws \Statikbe\Surveyhero\Exceptions\AnswerNotImportedException
-     * @throws \Statikbe\Surveyhero\Exceptions\QuestionNotImportedException|\Statikbe\Surveyhero\Exceptions\SurveyNotMappedException
      * @throws \Statikbe\Surveyhero\Exceptions\QuestionNotMappedException
+     * @throws \Statikbe\Surveyhero\Exceptions\SurveyNotMappedException
      */
-    public function updateOrCreateQuestionAndAnswer(\stdClass $question, Survey $survey, string $lang): SurveyQuestion|array
+    public function updateOrCreateQuestionAndAnswer(\stdClass $question, SurveyContract $survey, string $lang): SurveyQuestionContract|array
     {
         $surveyQuestion = $this->updateOrCreateQuestion($survey, $lang, $question->element_id, $question->question->question_text);
 
@@ -35,7 +38,7 @@ class ChoiceListQuestionAndAnswerCreator extends AbstractQuestionAndAnswerCreato
 
             $this->setChoiceAndConvertToDataType($mappedChoice, $questionMapping['mapped_data_type'], $responseData, $choice);
 
-            SurveyAnswer::updateOrCreate([
+            app(SurveyheroRegistrar::class)->getSurveyAnswerClass()::updateOrCreate([
                 'survey_question_id' => $surveyQuestion->id,
                 'surveyhero_answer_id' => $choice->choice_id,
             ], $responseData);

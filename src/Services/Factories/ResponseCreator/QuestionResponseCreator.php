@@ -2,22 +2,22 @@
 
 namespace Statikbe\Surveyhero\Services\Factories\ResponseCreator;
 
-use Statikbe\Surveyhero\Models\SurveyQuestionResponse;
-use Statikbe\Surveyhero\Models\SurveyResponse;
+use Statikbe\Surveyhero\Contracts\SurveyQuestionResponseContract;
+use Statikbe\Surveyhero\Contracts\SurveyResponseContract;
 
 interface QuestionResponseCreator
 {
     /**
      * @param  \stdClass  $surveyheroQuestionResponse
-     * @param  SurveyResponse  $response
+     * @param  SurveyResponseContract  $response
      * @param  array  $questionMapping
-     * @return SurveyQuestionResponse|array<int, SurveyQuestionResponse>
+     * @return SurveyQuestionResponseContract|array<int, SurveyQuestionResponseContract>
      *
      * @throws \Statikbe\Surveyhero\Exceptions\AnswerNotImportedException
      * @throws \Statikbe\Surveyhero\Exceptions\AnswerNotMappedException
      * @throws \Statikbe\Surveyhero\Exceptions\QuestionNotImportedException
      */
-    public function updateOrCreateQuestionResponse(\stdClass $surveyheroQuestionResponse,
-        SurveyResponse $response,
-        array $questionMapping): SurveyQuestionResponse|array;
+    public function updateOrCreateQuestionResponse(\stdClass      $surveyheroQuestionResponse,
+                                                   SurveyResponseContract $response,
+                                                   array          $questionMapping): SurveyQuestionResponseContract|array;
 }

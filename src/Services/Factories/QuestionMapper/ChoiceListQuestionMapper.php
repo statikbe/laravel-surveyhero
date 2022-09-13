@@ -2,7 +2,7 @@
 
 namespace Statikbe\Surveyhero\Services\Factories\QuestionMapper;
 
-use Statikbe\Surveyhero\Models\SurveyAnswer;
+use Statikbe\Surveyhero\Contracts\SurveyAnswerContract;
 
 class ChoiceListQuestionMapper extends AbstractQuestionMapper
 {
@@ -12,7 +12,7 @@ class ChoiceListQuestionMapper extends AbstractQuestionMapper
     {
         $questionData = $this->createQuestionMap($question->element_id,
             $question->question->type,
-            SurveyAnswer::CONVERTED_TYPE_INT,
+            SurveyAnswerContract::CONVERTED_TYPE_INT,
             $questionCounter);
 
         foreach ($question->question->choice_list->choices as $choiceKey => $choice) {

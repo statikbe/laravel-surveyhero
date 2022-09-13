@@ -28,4 +28,12 @@ class SurveyheroServiceProvider extends PackageServiceProvider
                 SurveyheroMapperCommand::class,
             ]);
     }
+
+    public function packageBooted() {
+        parent::packageBooted();
+
+        $this->app->singleton(SurveyheroRegistrar::class, function ($app) {
+            return new SurveyheroRegistrar();
+        });
+    }
 }

@@ -4,10 +4,8 @@ namespace Statikbe\Surveyhero\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Schema;
-use Statikbe\Surveyhero\Models\Survey;
-use Statikbe\Surveyhero\Models\SurveyAnswer;
-use Statikbe\Surveyhero\Models\SurveyQuestion;
 use Statikbe\Surveyhero\Services\SurveyQuestionsAndAnswersImportService;
+use Statikbe\Surveyhero\SurveyheroRegistrar;
 
 class SurveyheroQuestionsAndAnswersImportCommand extends Command
 {
@@ -34,7 +32,7 @@ class SurveyheroQuestionsAndAnswersImportCommand extends Command
 
         $surveyId = trim($this->option('survey'));
 
-        $surveyQuery = Survey::query();
+        $surveyQuery = app(SurveyheroRegistrar::class)->getSurveyClass()::query();
         if ($surveyId !== 'all') {
             $surveyQuery->where('surveyhero_id', $surveyId);
         }
@@ -65,8 +63,8 @@ class SurveyheroQuestionsAndAnswersImportCommand extends Command
     private function deleteResponses()
     {
         Schema::disableForeignKeyConstraints();
-        SurveyQuestion::truncate();
-        SurveyAnswer::truncate();
+        app(SurveyheroRegistrar::class)->getSurveyQuestionClass()::truncate();
+        app(SurveyheroRegistrar::class)->getSurveyAnswerClass()::truncate();
         Schema::enableForeignKeyConstraints();
     }
 }

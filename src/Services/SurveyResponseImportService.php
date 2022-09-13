@@ -3,19 +3,20 @@
 namespace Statikbe\Surveyhero\Services;
 
 use Illuminate\Support\Facades\DB;
+use Statikbe\Surveyhero\Contracts\SurveyContract;
+use Statikbe\Surveyhero\Contracts\SurveyResponseContract;
 use Statikbe\Surveyhero\Exceptions\AnswerNotImportedException;
 use Statikbe\Surveyhero\Exceptions\AnswerNotMappedException;
 use Statikbe\Surveyhero\Exceptions\QuestionNotImportedException;
 use Statikbe\Surveyhero\Exceptions\ResponseCreatorNotImplemented;
 use Statikbe\Surveyhero\Exceptions\SurveyNotMappedException;
 use Statikbe\Surveyhero\Http\SurveyheroClient;
-use Statikbe\Surveyhero\Models\Survey;
-use Statikbe\Surveyhero\Models\SurveyResponse;
 use Statikbe\Surveyhero\Services\Factories\ResponseCreator\ChoicesResponseCreator;
 use Statikbe\Surveyhero\Services\Factories\ResponseCreator\ChoiceTableResponseCreator;
 use Statikbe\Surveyhero\Services\Factories\ResponseCreator\NumberResponseCreator;
 use Statikbe\Surveyhero\Services\Factories\ResponseCreator\QuestionResponseCreator;
 use Statikbe\Surveyhero\Services\Factories\ResponseCreator\TextResponseCreator;
+use Statikbe\Surveyhero\SurveyheroRegistrar;
 
 class SurveyResponseImportService
 {
@@ -35,13 +36,13 @@ class SurveyResponseImportService
     }
 
     /**
-     * @param  Survey  $survey
+     * @param  SurveyContract  $survey
      * @return array{'questions': array, 'answers': array}        A list of surveyhero question ids that could not be imported.
      *
      * @throws ResponseCreatorNotImplemented
      * @throws SurveyNotMappedException
      */
-    public function importSurveyResponses(Survey $survey): array
+    public function importSurveyResponses(SurveyContract $survey): array
     {
         $notImported = [
             'questions' => [],
@@ -70,10 +71,13 @@ class SurveyResponseImportService
     }
 
     /**
-     * @throws \Statikbe\Surveyhero\Exceptions\SurveyNotMappedException
-     * @throws \Statikbe\Surveyhero\Exceptions\ResponseCreatorNotImplemented
+     * @param $responseId
+     * @param SurveyContract $survey
+     * @param null $surveyQuestionMapping
+     * @throws ResponseCreatorNotImplemented
+     * @throws SurveyNotMappedException
      */
-    public function importSurveyResponse($responseId, Survey $survey, $surveyQuestionMapping = null): void
+    public function importSurveyResponse($responseId, SurveyContract $survey, $surveyQuestionMapping = null): void
     {
         if (! $surveyQuestionMapping) {
             $surveyQuestionMapping = $this->surveyMappingService->getSurveyQuestionMapping($survey);
@@ -82,8 +86,8 @@ class SurveyResponseImportService
         $responseAnswers = $this->client->getSurveyResponseAnswers($survey->surveyhero_id, $responseId);
         if ($responseAnswers) {
             //do not import already imported data that is not updated.
-            /* @var SurveyResponse $existingResponseRecord */
-            $existingResponseRecord = SurveyResponse::where('surveyhero_id', $responseId)->first();
+            /* @var SurveyResponseContract $existingResponseRecord */
+            $existingResponseRecord = app(SurveyheroRegistrar::class)->getSurveyResponseClass()::where('surveyhero_id', $responseId)->first();
             if ($existingResponseRecord && ($existingResponseRecord->survey_completed || $existingResponseRecord->survey_last_updated->lte($survey->survey_last_imported))) {
                 return;
             }
@@ -126,7 +130,7 @@ class SurveyResponseImportService
         }
     }
 
-    private function createOrUpdateSurveyResponse(\stdClass $surveyheroResponse, Survey $survey, ?SurveyResponse $existingResponse): SurveyResponse
+    private function createOrUpdateSurveyResponse(\stdClass $surveyheroResponse, SurveyContract $survey, ?SurveyResponseContract $existingResponse): SurveyResponseContract
     {
         $responseData = [
             'surveyhero_id' => $surveyheroResponse->response_id,
@@ -154,7 +158,7 @@ class SurveyResponseImportService
             }
         }
 
-        return SurveyResponse::updateOrCreate([
+        return app(SurveyheroRegistrar::class)->getSurveyResponseClass()::updateOrCreate([
             'id' => $existingResponse->id ?? null,
         ], $responseData);
     }
@@ -170,7 +174,7 @@ class SurveyResponseImportService
         };
     }
 
-    private function setResponseAsIncomplete(SurveyResponse $surveyResponse): void
+    private function setResponseAsIncomplete(SurveyResponseContract $surveyResponse): void
     {
         $surveyResponse->survey_completed = false;
         $surveyResponse->save();

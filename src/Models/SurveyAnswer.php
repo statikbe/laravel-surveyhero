@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\Translatable\HasTranslations;
+use Statikbe\Surveyhero\Contracts\SurveyAnswerContract;
+use Statikbe\Surveyhero\SurveyheroRegistrar;
 
 /**
  * @property int $id
@@ -15,21 +17,22 @@ use Spatie\Translatable\HasTranslations;
  * @property string $converted_string_value
  * @property string $label
  */
-class SurveyAnswer extends Model
+class SurveyAnswer extends Model implements SurveyAnswerContract
 {
     use HasFactory;
     use HasTranslations;
-
-    const CONVERTED_TYPE_INT = 'int';
-
-    const CONVERTED_TYPE_STRING = 'string';
 
     protected $translatable = ['label'];
 
     protected $guarded = [];
 
+    public function getTable(): string
+    {
+        return config('surveyhero.table_names.survey_answers', parent::getTable());
+    }
+
     public function surveyQuestion(): BelongsTo
     {
-        return $this->belongsTo(SurveyQuestion::class);
+        return $this->belongsTo(app(SurveyheroRegistrar::class)->getSurveyQuestionClass());
     }
 }

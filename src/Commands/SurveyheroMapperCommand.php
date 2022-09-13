@@ -3,8 +3,8 @@
 namespace Statikbe\Surveyhero\Commands;
 
 use Illuminate\Console\Command;
-use Statikbe\Surveyhero\Models\Survey;
 use Statikbe\Surveyhero\Services\SurveyMappingService;
+use Statikbe\Surveyhero\SurveyheroRegistrar;
 
 class SurveyheroMapperCommand extends Command
 {
@@ -28,7 +28,7 @@ class SurveyheroMapperCommand extends Command
     {
         $surveyId = trim($this->option('survey'));
 
-        $surveyQuery = Survey::query();
+        $surveyQuery = app(SurveyheroRegistrar::class)->getSurveyClass()::query();
         if ($surveyId !== 'all') {
             $surveyQuery->where('surveyhero_id', $surveyId);
         }

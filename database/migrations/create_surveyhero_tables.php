@@ -8,7 +8,13 @@ class CreateSurveyheroTables extends Migration
 {
     public function up()
     {
-        Schema::create('surveys', function (Blueprint $table) {
+        $tableNames = config('surveyhero.table_names');
+
+        if (empty($tableNames)) {
+            throw new \Exception('Error: config/surveyhero.php not loaded. Check your config file, run [php artisan config:clear] and try again.');
+        }
+
+        Schema::create($tableNames['surveys'], function (Blueprint $table) {
             $table->id();
             $table->bigInteger('surveyhero_id');
 
@@ -18,7 +24,7 @@ class CreateSurveyheroTables extends Migration
             $table->timestamps();
         });
 
-        Schema::create('survey_responses', function (Blueprint $table) {
+        Schema::create($tableNames['survey_responses'], function (Blueprint $table) use ($tableNames) {
             $table->id();
             $table->bigInteger('surveyhero_id');
 
@@ -31,15 +37,17 @@ class CreateSurveyheroTables extends Migration
             $table->unsignedBigInteger('survey_id');
             $table->foreign('survey_id')
                 ->references('id')
-                ->on('surveys')
+                ->on($tableNames['surveys'])
                 ->onDelete('cascade');
 
             $table->timestamps();
         });
 
-        Schema::create('survey_questions', function (Blueprint $table) {
+        Schema::create($tableNames['survey_questions'], function (Blueprint $table) use ($tableNames) {
             $table->id();
-            $table->foreignId('survey_id')->constrained('surveys')->onDelete('cascade');
+            $table->foreignId('survey_id')
+                ->constrained($tableNames['surveys'])
+                ->onDelete('cascade');
             $table->bigInteger('surveyhero_question_id')->nullable();
             $table->string('field');
             $table->json('label');
@@ -48,9 +56,11 @@ class CreateSurveyheroTables extends Migration
             $table->index(['field']);
         });
 
-        Schema::create('survey_answers', function (Blueprint $table) {
+        Schema::create($tableNames['survey_answers'], function (Blueprint $table) use ($tableNames) {
             $table->id();
-            $table->foreignId('survey_question_id')->constrained('survey_questions')->onDelete('cascade');
+            $table->foreignId('survey_question_id')
+                ->constrained($tableNames['survey_questions'])
+                ->onDelete('cascade');
             $table->bigInteger('surveyhero_answer_id')->nullable();
             $table->string('converted_string_value')->nullable();
             $table->integer('converted_int_value')->nullable();
@@ -58,15 +68,15 @@ class CreateSurveyheroTables extends Migration
             $table->timestamps();
         });
 
-        Schema::create('survey_question_responses', function (Blueprint $table) {
+        Schema::create($tableNames['survey_question_responses'], function (Blueprint $table) use ($tableNames) {
             $table->id();
             $table->foreignId('survey_question_id')->constrained();
-            $table->foreignId('survey_answer_id')->nullable()->constrained();
+            $table->foreignId('survey_answer_id')->nullable()->constrained($tableNames['survey_answers']);
 
             $table->unsignedBigInteger('survey_response_id');
             $table->foreign('survey_response_id')
                 ->references('id')
-                ->on('survey_responses')
+                ->on($tableNames['survey_responses'])
                 ->onDelete('cascade');
 
             $table->timestamps();

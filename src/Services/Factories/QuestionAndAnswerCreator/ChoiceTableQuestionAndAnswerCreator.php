@@ -2,16 +2,16 @@
 
 namespace Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator;
 
-use Statikbe\Surveyhero\Models\Survey;
-use Statikbe\Surveyhero\Models\SurveyAnswer;
-use Statikbe\Surveyhero\Models\SurveyQuestion;
+use Statikbe\Surveyhero\Contracts\SurveyContract;
+use Statikbe\Surveyhero\Contracts\SurveyQuestionContract;
 use Statikbe\Surveyhero\Services\SurveyMappingService;
+use Statikbe\Surveyhero\SurveyheroRegistrar;
 
 class ChoiceTableQuestionAndAnswerCreator extends AbstractQuestionAndAnswerCreator
 {
     const TYPE = 'choice_table';
 
-    public function updateOrCreateQuestionAndAnswer(\stdClass $question, Survey $survey, string $lang): SurveyQuestion|array
+    public function updateOrCreateQuestionAndAnswer(\stdClass $question, SurveyContract $survey, string $lang): SurveyQuestionContract|array
     {
         $questions = [];
         foreach ($question->question->choice_table->rows as $rowQuestion) {
@@ -31,7 +31,7 @@ class ChoiceTableQuestionAndAnswerCreator extends AbstractQuestionAndAnswerCreat
 
                 $this->setChoiceAndConvertToDataType($mappedChoice, $questionMapping['mapped_data_type'], $responseData, $choice);
 
-                SurveyAnswer::updateOrCreate([
+                app(SurveyheroRegistrar::class)->getSurveyAnswerClass()::updateOrCreate([
                     'survey_question_id' => $surveyQuestion->id,
                     'surveyhero_answer_id' => $choice->choice_id,
                 ], $responseData);

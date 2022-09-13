@@ -3,9 +3,8 @@
 namespace Statikbe\Surveyhero\Services;
 
 use Illuminate\Support\Facades\DB;
+use Statikbe\Surveyhero\Contracts\SurveyContract;
 use Statikbe\Surveyhero\Http\SurveyheroClient;
-use Statikbe\Surveyhero\Models\Survey;
-use Statikbe\Surveyhero\Models\SurveyAnswer;
 use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\ChoiceListQuestionAndAnswerCreator;
 use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\ChoiceTableQuestionAndAnswerCreator;
 use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\InputQuestionAndAnswerCreator;
@@ -22,9 +21,10 @@ class SurveyQuestionsAndAnswersImportService
     }
 
     /**
+     * @param SurveyContract $survey
      * @throws \Exception
      */
-    public function importSurveyQuestionsAndAnswers(Survey $survey): array
+    public function importSurveyQuestionsAndAnswers(SurveyContract $survey): array
     {
         $notImported = [
             'question' => [],

@@ -2,21 +2,28 @@
 
 namespace Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator;
 
+use Statikbe\Surveyhero\Contracts\SurveyAnswerContract;
+use Statikbe\Surveyhero\Contracts\SurveyContract;
+use Statikbe\Surveyhero\Contracts\SurveyQuestionContract;
 use Statikbe\Surveyhero\Exceptions\AnswerNotMappedException;
-use Statikbe\Surveyhero\Models\Survey;
-use Statikbe\Surveyhero\Models\SurveyAnswer;
-use Statikbe\Surveyhero\Models\SurveyQuestion;
 use Statikbe\Surveyhero\Services\SurveyMappingService;
+use Statikbe\Surveyhero\SurveyheroRegistrar;
 
 abstract class AbstractQuestionAndAnswerCreator implements QuestionAndAnswerCreator
 {
     /**
-     * @throws \Statikbe\Surveyhero\Exceptions\SurveyNotMappedException
+     * @param SurveyContract $survey
+     * @param string $lang
+     * @param string $questionId
+     * @param string|null $label
+     * @param string|null $subquestionId
+     * @return SurveyQuestionContract
      * @throws \Statikbe\Surveyhero\Exceptions\QuestionNotMappedException
+     * @throws \Statikbe\Surveyhero\Exceptions\SurveyNotMappedException
      */
-    public function updateOrCreateQuestion(Survey $survey, string $lang, string $questionId, ?string $label, ?string $subquestionId = null): SurveyQuestion
+    public function updateOrCreateQuestion(SurveyContract $survey, string $lang, string $questionId, ?string $label, ?string $subquestionId = null): SurveyQuestionContract
     {
-        return SurveyQuestion::updateOrCreate(
+        return app(SurveyheroRegistrar::class)->getSurveyQuestionClass()::updateOrCreate(
             [
                 'surveyhero_question_id' => $subquestionId ?? $questionId,
                 'survey_id' => $survey->id,
@@ -53,17 +60,17 @@ abstract class AbstractQuestionAndAnswerCreator implements QuestionAndAnswerCrea
     {
         //if the choice is not mapped try to set the label as string:
         if (! $mappedChoice) {
-            if ($dataType === SurveyAnswer::CONVERTED_TYPE_STRING) {
+            if ($dataType === SurveyAnswerContract::CONVERTED_TYPE_STRING) {
                 $responseData['converted_string_value'] = $surveyheroChoice->label;
             } else {
                 throw AnswerNotMappedException::create($surveyheroChoice->choice_id, "The choice mapping could not be made for choice ID: $surveyheroChoice->choice_id");
             }
         } else {
             switch ($dataType) {
-                case SurveyAnswer::CONVERTED_TYPE_INT:
+                case SurveyAnswerContract::CONVERTED_TYPE_INT:
                     $responseData['converted_int_value'] = $mappedChoice;
                     break;
-                case SurveyAnswer::CONVERTED_TYPE_STRING:
+                case SurveyAnswerContract::CONVERTED_TYPE_STRING:
                     $responseData['converted_string_value'] = $mappedChoice;
                     break;
             }

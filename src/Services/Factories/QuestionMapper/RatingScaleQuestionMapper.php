@@ -2,7 +2,7 @@
 
 namespace Statikbe\Surveyhero\Services\Factories\QuestionMapper;
 
-use Statikbe\Surveyhero\Models\SurveyAnswer;
+use Statikbe\Surveyhero\Contracts\SurveyAnswerContract;
 
 class RatingScaleQuestionMapper extends AbstractQuestionMapper
 {
@@ -12,11 +12,11 @@ class RatingScaleQuestionMapper extends AbstractQuestionMapper
     {
         $questionData = $this->createQuestionMap($question->element_id,
             $question->question->type,
-            SurveyAnswer::CONVERTED_TYPE_STRING,
+            SurveyAnswerContract::CONVERTED_TYPE_STRING,
             $questionCounter);
 
         if ($question->question->rating_scale->style == 'numerical_scale') {
-            $questionData['mapped_data_type'] = SurveyAnswer::CONVERTED_TYPE_INT;
+            $questionData['mapped_data_type'] = SurveyAnswerContract::CONVERTED_TYPE_INT;
         }
 
         return $questionData;

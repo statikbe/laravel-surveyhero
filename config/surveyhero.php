@@ -13,12 +13,48 @@ return [
     'api_username' => env('SURVEYHERO_API_USERNAME'),
     'api_password' => env('SURVEYHERO_API_PASSWORD'),
 
-    /**
-     * Map here the link_parameters response from Surveyhero to the database columns of the SurveyResponse model.
-     * You need to extend the SurveyResponse model with a migration to include the necessary fields.
-     * The key is the name of the Surveyhero link parameter and the value is the database column in the SurveyResponse model.
-     * e.g. 'organisation' => 'uuid',
-     */
+    'models' => [
+
+        /*
+         * TODO
+         * When using the "HasPermissions" trait from this package, we need to know which
+         * Eloquent model should be used to retrieve your permissions. Of course, it
+         * is often just the "Permission" model but you may use whatever you like.
+         *
+         * The model you want to use as a Permission model needs to implement the
+         * `Spatie\Permission\Contracts\Permission` contract.
+         */
+
+        'survey' => Statikbe\Surveyhero\Models\Survey::class,
+
+        /*
+         * TODO
+         * When using the "HasRoles" trait from this package, we need to know which
+         * Eloquent model should be used to retrieve your roles. Of course, it
+         * is often just the "Role" model but you may use whatever you like.
+         *
+         * The model you want to use as a Role model needs to implement the
+         * `Spatie\Permission\Contracts\Role` contract.
+         */
+
+        'survey_question' => Statikbe\Surveyhero\Models\SurveyQuestion::class,
+        'survey_answer' => Statikbe\Surveyhero\Models\SurveyAnswer::class,
+        'survey_response' => Statikbe\Surveyhero\Models\SurveyResponse::class,
+        'survey_question_response' => Statikbe\Surveyhero\Models\SurveyQuestionResponse::class,
+    ],
+
+    'table_names' => [
+        /* TODO
+         * When using the "HasRoles" trait from this package, we need to know which
+         * table should be used to retrieve your roles. We have chosen a basic
+         * default value but you may easily change it to any table you like.
+         */
+        'surveys' => 'surveys',
+        'survey_questions' => 'survey_questions',
+        'survey_answers' => 'survey_answers',
+        'survey_responses' => 'survey_responses',
+        'survey_question_responses' => 'survey_question_responses',
+    ],
 
     /**
      * Here you can map the link_parameters response from Surveyhero to the database columns of the SurveyResponse model.

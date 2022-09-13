@@ -2,9 +2,9 @@
 
 namespace Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator;
 
-use Statikbe\Surveyhero\Models\Survey;
-use Statikbe\Surveyhero\Models\SurveyAnswer;
-use Statikbe\Surveyhero\Models\SurveyQuestion;
+use Statikbe\Surveyhero\Contracts\SurveyContract;
+use Statikbe\Surveyhero\Contracts\SurveyQuestionContract;
+use Statikbe\Surveyhero\SurveyheroRegistrar;
 
 class RatingScaleQuestionAndAnswerCreator extends AbstractQuestionAndAnswerCreator
 {
@@ -14,7 +14,7 @@ class RatingScaleQuestionAndAnswerCreator extends AbstractQuestionAndAnswerCreat
      * @throws \Statikbe\Surveyhero\Exceptions\SurveyNotMappedException
      * @throws \Statikbe\Surveyhero\Exceptions\QuestionNotMappedException
      */
-    public function updateOrCreateQuestionAndAnswer(\stdClass $question, Survey $survey, string $lang): SurveyQuestion|array
+    public function updateOrCreateQuestionAndAnswer(\stdClass $question, SurveyContract $survey, string $lang): SurveyQuestionContract|array
     {
         $surveyQuestion = $this->updateOrCreateQuestion($survey, $lang, $question->element_id, $question->question->question_text);
 
@@ -24,7 +24,7 @@ class RatingScaleQuestionAndAnswerCreator extends AbstractQuestionAndAnswerCreat
         $stepSize = $ratingScale->step_size;
 
         for ($i = $minValue; $i <= $maxValue; $i += $stepSize) {
-            SurveyAnswer::updateOrCreate(
+            app(SurveyheroRegistrar::class)->getSurveyAnswerClass()::updateOrCreate(
                 [
                     'survey_question_id' => $surveyQuestion->id,
                     'converted_int_value' => $i,

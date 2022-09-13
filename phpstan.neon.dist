@@ -13,7 +13,7 @@ parameters:
     checkMissingIterableValueType: false
     ignoreErrors:
         - '#Access to an undefined property Illuminate\Database\Eloquent\Model::$name.#'
-        - '#Access to an undefined property Illuminate\Database\Eloquent\Model::$surveyhero_id.#'
+        - '#Access to an undefined property Illuminate\Database\Eloquent\Model::$surveyhero\_id.#'
         - '#Call to an undefined static method [a-zA-Z0-9\\_]+::truncate\(\)#'
         - '#Call to an undefined static method [a-zA-Z0-9\\_]+::updateOrCreate\(\)#'
 

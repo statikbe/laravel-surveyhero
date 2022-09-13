@@ -12,8 +12,8 @@ parameters:
     checkModelProperties: true
     checkMissingIterableValueType: false
     ignoreErrors:
-        - '#Access to an undefined property [a-zA-Z0-9\\_]+::$name.#'
-        - '#Access to an undefined property [a-zA-Z0-9\\_]+::$surveyhero\\_id.#'
+        - '#Access to an undefined property [a-zA-Z0-9\\_]+::\$name.#'
+        - '#Access to an undefined property [a-zA-Z0-9\\_]+::\$surveyhero\_id.#'
         - '#Call to an undefined static method [a-zA-Z0-9\\_]+::truncate\(\)#'
         - '#Call to an undefined static method [a-zA-Z0-9\\_]+::updateOrCreate\(\)#'
 

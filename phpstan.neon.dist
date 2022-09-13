@@ -11,4 +11,9 @@ parameters:
     checkOctaneCompatibility: true
     checkModelProperties: true
     checkMissingIterableValueType: false
+    ignoreErrors:
+        - '#Access to an undefined property Illuminate\Database\Eloquent\Model::$name.#'
+        - '#Access to an undefined property Illuminate\Database\Eloquent\Model::$surveyhero_id.#'
+        - '#Call to an undefined static method [a-zA-Z0-9\\_]+::truncate\(\)#'
+        - '#Call to an undefined static method [a-zA-Z0-9\\_]+::updateOrCreate\(\)#'
 

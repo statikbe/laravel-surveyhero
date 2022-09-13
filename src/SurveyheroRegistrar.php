@@ -15,20 +15,15 @@ use Statikbe\Surveyhero\Models\SurveyResponse;
 
 class SurveyheroRegistrar
 {
-    /** @var string */
-    protected $surveyClass;
+    protected string $surveyClass;
 
-    /** @var string */
-    protected $surveyQuestionClass;
+    protected string $surveyQuestionClass;
 
-    /** @var string */
-    protected $surveyAnswerClass;
+    protected string $surveyAnswerClass;
 
-    /** @var string */
-    protected $surveyResponseClass;
+    protected string $surveyResponseClass;
 
-    /** @var string */
-    protected $surveyQuestionResponseClass;
+    protected string $surveyQuestionResponseClass;
 
     public function __construct()
     {

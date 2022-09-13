@@ -1,13 +1,12 @@
 <?php
 
-    namespace Statikbe\Surveyhero\Contracts;
-
-    use Illuminate\Database\Eloquent\Builder;
+namespace Statikbe\Surveyhero\Contracts;
 
     /**
      * @property int $id
      */
-    interface ModelContract {
+    interface ModelContract
+    {
         /**
          * Begin querying the model.
          *

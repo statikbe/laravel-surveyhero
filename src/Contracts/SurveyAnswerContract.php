@@ -2,13 +2,13 @@
 
 namespace Statikbe\Surveyhero\Contracts;
 
-    use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-    interface SurveyAnswerContract extends ModelContract
-    {
-        const CONVERTED_TYPE_INT = 'int';
+interface SurveyAnswerContract extends ModelContract
+{
+    const CONVERTED_TYPE_INT = 'int';
 
-        const CONVERTED_TYPE_STRING = 'string';
+    const CONVERTED_TYPE_STRING = 'string';
 
-        public function surveyQuestion(): BelongsTo;
-    }
+    public function surveyQuestion(): BelongsTo;
+}

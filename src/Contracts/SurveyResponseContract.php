@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Statikbe\Surveyhero\Models\Survey;
+use Statikbe\Surveyhero\Contracts\SurveyContract;
 
 /**
  * @property int $id
@@ -19,10 +19,11 @@ use Statikbe\Surveyhero\Models\Survey;
  * @property string $survey_language
  * @property bool $survey_completed
  * @property int $survey_id
- * @property Survey $survey
+ * @property SurveyContract $survey
  * @property Collection $surveyQuestionResponses
  */
-interface SurveyResponseContract extends ModelContract {
+interface SurveyResponseContract extends ModelContract
+{
     public function survey(): BelongsTo;
 
     public function surveyQuestionResponses(): HasMany;

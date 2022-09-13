@@ -4,7 +4,9 @@ namespace Statikbe\Surveyhero\Contracts;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Statikbe\Surveyhero\Models\SurveyResponse;
+use Statikbe\Surveyhero\Contracts\SurveyAnswerContract;
+use Statikbe\Surveyhero\Contracts\SurveyResponseContract;
+use Statikbe\Surveyhero\Contracts\SurveyQuestionContract;
 
 /**
  * @property int $id
@@ -16,9 +18,12 @@ use Statikbe\Surveyhero\Models\SurveyResponse;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property int $survey_response_id
- * @property SurveyResponse $surveyResponse
+ * @property SurveyResponseContract $surveyResponse
+ * @property SurveyQuestionContract $surveyQuestion
+ * @property SurveyAnswerContract $surveyAnswer
  */
-interface SurveyQuestionResponseContract extends ModelContract {
+interface SurveyQuestionResponseContract extends ModelContract
+{
     public function surveyResponse(): BelongsTo;
 
     public function surveyQuestion(): BelongsTo;

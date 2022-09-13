@@ -3,11 +3,12 @@
 namespace Statikbe\Surveyhero\Contracts;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Statikbe\Surveyhero\Models\SurveyQuestion;
+use Statikbe\Surveyhero\Contracts\SurveyQuestionContract;
 
 /**
  * @property int $id
- * @property SurveyQuestion $survey_question_id
+ * @property int $survey_question_id
+ * @property SurveyQuestionContract $surveyQuestion
  * @property int $surveyhero_answer_id
  * @property int $converted_int_value
  * @property string $converted_string_value
@@ -17,7 +18,7 @@ interface SurveyAnswerContract extends ModelContract
 {
     const CONVERTED_TYPE_INT = 'int';
 
-    const CONVERTED_TYPE_STRING = 'string';
+        const CONVERTED_TYPE_STRING = 'string';
 
-    public function surveyQuestion(): BelongsTo;
-}
+        public function surveyQuestion(): BelongsTo;
+    }

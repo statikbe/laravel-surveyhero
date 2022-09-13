@@ -73,12 +73,12 @@ class SurveyResponseImportService
     /**
      * @param $responseId
      * @param  SurveyContract  $survey
-     * @param  null  $surveyQuestionMapping
+     * @param  array|null  $surveyQuestionMapping
      *
      * @throws ResponseCreatorNotImplemented
      * @throws SurveyNotMappedException
      */
-    public function importSurveyResponse($responseId, SurveyContract $survey, $surveyQuestionMapping = null): void
+    public function importSurveyResponse($responseId, SurveyContract $survey, array $surveyQuestionMapping = null): void
     {
         if (! $surveyQuestionMapping) {
             $surveyQuestionMapping = $this->surveyMappingService->getSurveyQuestionMapping($survey);

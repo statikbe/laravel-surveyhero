@@ -4,6 +4,7 @@ namespace Statikbe\Surveyhero\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Schema;
+use Statikbe\Surveyhero\Contracts\SurveyContract;
 use Statikbe\Surveyhero\Exceptions\ResponseCreatorNotImplemented;
 use Statikbe\Surveyhero\Exceptions\SurveyNotMappedException;
 use Statikbe\Surveyhero\Services\SurveyResponseImportService;
@@ -44,6 +45,7 @@ class SurveyheroResponseImportCommand extends Command
         $surveys = $surveyQuery->get();
 
         foreach ($surveys as $survey) {
+            /* @var SurveyContract $survey */
             try {
                 $notImported = $this->importService->importSurveyResponses($survey);
             } catch (SurveyNotMappedException $exception) {

@@ -4,6 +4,7 @@ namespace Statikbe\Surveyhero\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Schema;
+use Statikbe\Surveyhero\Contracts\SurveyContract;
 use Statikbe\Surveyhero\Services\SurveyQuestionsAndAnswersImportService;
 use Statikbe\Surveyhero\SurveyheroRegistrar;
 
@@ -39,6 +40,7 @@ class SurveyheroQuestionsAndAnswersImportCommand extends Command
         $surveys = $surveyQuery->get();
 
         foreach ($surveys as $survey) {
+            /* @var SurveyContract $survey */
             try {
                 $notImported = $this->importService->importSurveyQuestionsAndAnswers($survey);
             } catch (\Exception $e) {

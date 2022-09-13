@@ -3,6 +3,7 @@
 namespace Statikbe\Surveyhero\Commands;
 
 use Illuminate\Console\Command;
+use Statikbe\Surveyhero\Contracts\SurveyContract;
 use Statikbe\Surveyhero\Services\SurveyMappingService;
 use Statikbe\Surveyhero\SurveyheroRegistrar;
 
@@ -36,6 +37,7 @@ class SurveyheroMapperCommand extends Command
 
         $mapping = [];
         foreach ($surveys as $surveyIndex => $survey) {
+            /* @var SurveyContract $survey */
             try {
                 $mapping['question_mapping'][$surveyIndex] = $this->mappingService->map($survey);
             } catch (\Exception $e) {

@@ -1,9 +1,9 @@
 <?php
 
-    namespace Statikbe\Surveyhero;
+namespace Statikbe\Surveyhero;
 
-    use Statikbe\Surveyhero\Contracts\SurveyContract;
     use Statikbe\Surveyhero\Contracts\SurveyAnswerContract;
+    use Statikbe\Surveyhero\Contracts\SurveyContract;
     use Statikbe\Surveyhero\Contracts\SurveyQuestionContract;
     use Statikbe\Surveyhero\Contracts\SurveyQuestionResponseContract;
     use Statikbe\Surveyhero\Contracts\SurveyResponseContract;
@@ -13,7 +13,8 @@
     use Statikbe\Surveyhero\Models\SurveyQuestionResponse;
     use Statikbe\Surveyhero\Models\SurveyResponse;
 
-    class SurveyheroRegistrar {
+    class SurveyheroRegistrar
+    {
         /** @var string */
         protected $surveyClass;
 
@@ -29,7 +30,8 @@
         /** @var string */
         protected $surveyQuestionResponseClass;
 
-        public function __construct() {
+        public function __construct()
+        {
             $this->surveyClass = config('surveyhero.models.survey', Survey::class);
             $this->surveyQuestionClass = config('surveyhero.models.survey_question', SurveyQuestion::class);
             $this->surveyAnswerClass = config('surveyhero.models.survey_answer', SurveyAnswer::class);
@@ -50,7 +52,7 @@
         public function setSurveyClass($surveyClass): self
         {
             $this->surveyClass = $surveyClass;
-            config()->set('surveyhero.models.survey',  $surveyClass);
+            config()->set('surveyhero.models.survey', $surveyClass);
             app()->bind(SurveyContract::class, $surveyClass);
 
             return $this;
@@ -69,7 +71,7 @@
         public function setSurveyQuestionClass($surveyQuestionClass): self
         {
             $this->surveyQuestionClass = $surveyQuestionClass;
-            config()->set('surveyhero.models.survey_question',  $surveyQuestionClass);
+            config()->set('surveyhero.models.survey_question', $surveyQuestionClass);
             app()->bind(SurveyQuestionContract::class, $surveyQuestionClass);
 
             return $this;
@@ -88,7 +90,7 @@
         public function setSurveyAnswerClass($surveyAnswerClass): self
         {
             $this->surveyAnswerClass = $surveyAnswerClass;
-            config()->set('surveyhero.models.survey_answer',  $surveyAnswerClass);
+            config()->set('surveyhero.models.survey_answer', $surveyAnswerClass);
             app()->bind(SurveyAnswerContract::class, $surveyAnswerClass);
 
             return $this;
@@ -107,7 +109,7 @@
         public function setSurveyResponseClass($surveyResponseClass): self
         {
             $this->surveyResponseClass = $surveyResponseClass;
-            config()->set('surveyhero.models.survey_response',  $surveyResponseClass);
+            config()->set('surveyhero.models.survey_response', $surveyResponseClass);
             app()->bind(SurveyResponseContract::class, $surveyResponseClass);
 
             return $this;
@@ -126,10 +128,9 @@
         public function setSurveyQuestionResponseClass($surveyQuestionResponseClass): self
         {
             $this->surveyQuestionResponseClass = $surveyQuestionResponseClass;
-            config()->set('surveyhero.models.survey_question_response',  $surveyQuestionResponseClass);
+            config()->set('surveyhero.models.survey_question_response', $surveyQuestionResponseClass);
             app()->bind(SurveyQuestionResponseContract::class, $surveyQuestionResponseClass);
 
             return $this;
         }
-
     }

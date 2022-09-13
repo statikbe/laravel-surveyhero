@@ -1,11 +1,13 @@
 <?php
 
-    namespace Statikbe\Surveyhero\Contracts;
+namespace Statikbe\Surveyhero\Contracts;
 
     use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-    interface SurveyAnswerContract extends ModelContract {
+    interface SurveyAnswerContract extends ModelContract
+    {
         const CONVERTED_TYPE_INT = 'int';
+
         const CONVERTED_TYPE_STRING = 'string';
 
         public function surveyQuestion(): BelongsTo;

@@ -1,6 +1,6 @@
 <?php
 
-    namespace Statikbe\Surveyhero\Contracts;
+namespace Statikbe\Surveyhero\Contracts;
 
     use Illuminate\Database\Eloquent\Relations\BelongsTo;
 

@@ -17,7 +17,7 @@ interface QuestionResponseCreator
      * @throws \Statikbe\Surveyhero\Exceptions\AnswerNotMappedException
      * @throws \Statikbe\Surveyhero\Exceptions\QuestionNotImportedException
      */
-    public function updateOrCreateQuestionResponse(\stdClass      $surveyheroQuestionResponse,
+    public function updateOrCreateQuestionResponse(\stdClass $surveyheroQuestionResponse,
                                                    SurveyResponseContract $response,
-                                                   array          $questionMapping): SurveyQuestionResponseContract|array;
+                                                   array $questionMapping): SurveyQuestionResponseContract|array;
 }

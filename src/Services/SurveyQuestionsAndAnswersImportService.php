@@ -21,7 +21,8 @@ class SurveyQuestionsAndAnswersImportService
     }
 
     /**
-     * @param SurveyContract $survey
+     * @param  SurveyContract  $survey
+     *
      * @throws \Exception
      */
     public function importSurveyQuestionsAndAnswers(SurveyContract $survey): array

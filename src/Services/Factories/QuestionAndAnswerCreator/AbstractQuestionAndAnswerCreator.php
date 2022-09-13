@@ -12,12 +12,13 @@ use Statikbe\Surveyhero\SurveyheroRegistrar;
 abstract class AbstractQuestionAndAnswerCreator implements QuestionAndAnswerCreator
 {
     /**
-     * @param SurveyContract $survey
-     * @param string $lang
-     * @param string $questionId
-     * @param string|null $label
-     * @param string|null $subquestionId
+     * @param  SurveyContract  $survey
+     * @param  string  $lang
+     * @param  string  $questionId
+     * @param  string|null  $label
+     * @param  string|null  $subquestionId
      * @return SurveyQuestionContract
+     *
      * @throws \Statikbe\Surveyhero\Exceptions\QuestionNotMappedException
      * @throws \Statikbe\Surveyhero\Exceptions\SurveyNotMappedException
      */

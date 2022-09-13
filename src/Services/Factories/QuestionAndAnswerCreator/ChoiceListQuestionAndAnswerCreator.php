@@ -12,10 +12,11 @@ class ChoiceListQuestionAndAnswerCreator extends AbstractQuestionAndAnswerCreato
     const TYPE = 'choice_list';
 
     /**
-     * @param \stdClass $question
-     * @param SurveyContract $survey
-     * @param string $lang
+     * @param  \stdClass  $question
+     * @param  SurveyContract  $survey
+     * @param  string  $lang
      * @return SurveyQuestionContract|array
+     *
      * @throws \Statikbe\Surveyhero\Exceptions\AnswerNotMappedException
      * @throws \Statikbe\Surveyhero\Exceptions\QuestionNotMappedException
      * @throws \Statikbe\Surveyhero\Exceptions\SurveyNotMappedException

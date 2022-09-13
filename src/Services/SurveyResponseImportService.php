@@ -72,8 +72,9 @@ class SurveyResponseImportService
 
     /**
      * @param $responseId
-     * @param SurveyContract $survey
-     * @param null $surveyQuestionMapping
+     * @param  SurveyContract  $survey
+     * @param  null  $surveyQuestionMapping
+     *
      * @throws ResponseCreatorNotImplemented
      * @throws SurveyNotMappedException
      */

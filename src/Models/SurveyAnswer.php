@@ -9,14 +9,6 @@ use Spatie\Translatable\HasTranslations;
 use Statikbe\Surveyhero\Contracts\SurveyAnswerContract;
 use Statikbe\Surveyhero\SurveyheroRegistrar;
 
-/**
- * @property int $id
- * @property SurveyQuestion $survey_question_id
- * @property int $surveyhero_answer_id
- * @property int $converted_int_value
- * @property string $converted_string_value
- * @property string $label
- */
 class SurveyAnswer extends Model implements SurveyAnswerContract
 {
     use HasFactory;

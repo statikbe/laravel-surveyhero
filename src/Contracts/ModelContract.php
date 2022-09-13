@@ -22,7 +22,7 @@
          * @param  array  $values
          * @return \Illuminate\Database\Eloquent\Model|static
          */
-        public function updateOrCreate(array $attributes, array $values = []);
+        /*public function updateOrCreate(array $attributes, array $values = []);
 
-        public static function truncate();
+        public static function truncate();*/
     }

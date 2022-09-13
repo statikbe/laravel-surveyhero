@@ -4,7 +4,6 @@ namespace Statikbe\Surveyhero\Contracts;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Statikbe\Surveyhero\Contracts\SurveyContract;
 
 /**
  * @property int $id

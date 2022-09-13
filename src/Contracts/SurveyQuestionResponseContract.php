@@ -4,9 +4,6 @@ namespace Statikbe\Surveyhero\Contracts;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Statikbe\Surveyhero\Contracts\SurveyAnswerContract;
-use Statikbe\Surveyhero\Contracts\SurveyResponseContract;
-use Statikbe\Surveyhero\Contracts\SurveyQuestionContract;
 
 /**
  * @property int $id

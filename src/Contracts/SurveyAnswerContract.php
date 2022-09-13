@@ -4,7 +4,7 @@
 
     use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-    interface SurveyAnswerContract {
+    interface SurveyAnswerContract extends ModelContract {
         const CONVERTED_TYPE_INT = 'int';
         const CONVERTED_TYPE_STRING = 'string';
 

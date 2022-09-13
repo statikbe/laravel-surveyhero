@@ -4,7 +4,7 @@
 
     use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-    interface SurveyQuestionResponseContract {
+    interface SurveyQuestionResponseContract extends ModelContract {
         public function surveyResponse(): BelongsTo;
 
         public function surveyQuestion(): BelongsTo;

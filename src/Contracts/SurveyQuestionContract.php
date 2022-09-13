@@ -5,7 +5,7 @@
     use Illuminate\Database\Eloquent\Relations\BelongsTo;
     use Illuminate\Database\Eloquent\Relations\HasMany;
 
-    interface SurveyQuestionContract {
+    interface SurveyQuestionContract extends ModelContract {
         public function survey(): BelongsTo;
 
         public function surveyAnswers(): HasMany;

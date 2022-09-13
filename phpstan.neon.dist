@@ -19,5 +19,5 @@ parameters:
         - '#Call to an undefined static method [a-zA-Z0-9\\_]+Contract::where\(\)#'
         - '#Call to an undefined static method [a-zA-Z0-9\\_]+Contract::whereHas\(\)#'
         - '#Call to an undefined static method [a-zA-Z0-9\\_]+Contract::create\(\)#'
-        - '#Call to an undefined static method [a-zA-Z0-9\\_]+Contract::save\(\)#'
+        - '#Call to an undefined method [a-zA-Z0-9\\_]+Contract::save\(\)#'
 

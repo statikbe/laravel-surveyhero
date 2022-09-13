@@ -14,6 +14,10 @@ parameters:
     ignoreErrors:
         - '#Access to an undefined property [a-zA-Z0-9\\_]+::\$name.#'
         - '#Access to an undefined property [a-zA-Z0-9\\_]+::\$surveyhero\_id.#'
-        - '#Call to an undefined static method [a-zA-Z0-9\\_]+::truncate\(\)#'
-        - '#Call to an undefined static method [a-zA-Z0-9\\_]+::updateOrCreate\(\)#'
+        - '#Call to an undefined static method [a-zA-Z0-9\\_]+Contract::truncate\(\)#'
+        - '#Call to an undefined static method [a-zA-Z0-9\\_]+Contract::updateOrCreate\(\)#'
+        - '#Call to an undefined static method [a-zA-Z0-9\\_]+Contract::where\(\)#'
+        - '#Call to an undefined static method [a-zA-Z0-9\\_]+Contract::whereHas\(\)#'
+        - '#Call to an undefined static method [a-zA-Z0-9\\_]+Contract::create\(\)#'
+        - '#Call to an undefined static method [a-zA-Z0-9\\_]+Contract::save\(\)#'
 

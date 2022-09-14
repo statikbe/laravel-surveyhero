@@ -14,7 +14,7 @@ class SurveyheroResponseImportCommand extends Command
 {
     public $signature = 'surveyhero:import-responses {--survey=all : The Surveyhero survey ID} {--fresh : Delete ALL imported responses and re-import}';
 
-    public $description = 'Retrieve survey responses from SurveyHero API and save in database.';
+    public $description = 'Retrieve survey responses from SurveyHero API and save in the database.';
 
     /**
      * @var \Statikbe\Surveyhero\Services\SurveyResponseImportService

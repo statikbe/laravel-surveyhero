@@ -48,18 +48,14 @@ class SurveyheroMapperCommand extends Command
             $this->comment("Mapping for survey '$survey->name' completed!");
         }
 
-        $fileName = 'surveyhero_mapping.php';
-        $myfile = fopen($fileName, 'w') or exit('Unable to open file!');
-
-        fwrite($myfile, "<?php \n\n".$this->var_export_short($mapping)."; \n");
-        fclose($myfile);
+        $fileName = $this->writeFile($mapping);
 
         $this->comment("Mapping complete! [$fileName]");
 
         return self::SUCCESS;
     }
 
-    private function var_export_short($data): string
+    private function var_export_short($data, $linePrefix): string
     {
         $dump = var_export($data, true);
 
@@ -74,6 +70,39 @@ class SurveyheroMapperCommand extends Command
             $dump = preg_replace('#\)$#', ']', $dump);
         }
 
+        if($linePrefix){
+            $arr = explode("\n", $dump);
+            foreach ($arr as $key => $value) {
+                $arr[$key] = $linePrefix . $arr[$key];
+            }
+            $dump = implode("\n", $arr);
+        }
+
         return $dump;
+    }
+
+    private function writeFile(array $mapping): string {
+        $fileName = 'surveyhero_mapping.php';
+        $myfile = fopen($fileName, 'w') or exit('Unable to open file!');
+
+        fwrite($myfile, "<?php \n\n");
+        fwrite($myfile, "return [\n\t'question_mapping' => [\n");
+        foreach($mapping['question_mapping'] as $surveyMap) {
+            fwrite($myfile, sprintf("\t\t'survey_id' => %s, \n\t\t'questions' => ", $surveyMap['survey_id']));
+            foreach($surveyMap['questions'] as $line => $questionMap) {
+                if($line === 0){
+                    fwrite($myfile, trim($this->var_export_short($questionMap, "\t\t\t")));
+                }
+                else {
+                    fwrite($myfile, $this->var_export_short($questionMap, "\t\t\t"));
+                }
+                fwrite($myfile, ",\n");
+            }
+            fwrite($myfile, "\t],\n");
+        }
+        fwrite($myfile, "]; \n");
+        fclose($myfile);
+
+        return $fileName;
     }
 }

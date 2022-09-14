@@ -13,18 +13,13 @@ use Statikbe\Surveyhero\Services\Factories\QuestionMapper\InputQuestionMapper;
 use Statikbe\Surveyhero\Services\Factories\QuestionMapper\QuestionMapper;
 use Statikbe\Surveyhero\Services\Factories\QuestionMapper\RatingScaleQuestionMapper;
 
-class SurveyMappingService
+class SurveyMappingService extends AbstractSurveyheroAPIService
 {
-    /**
-     * @var \Statikbe\Surveyhero\Http\SurveyheroClient
-     */
-    private SurveyheroClient $client;
-
     private array $questionMapping;
 
     public function __construct()
     {
-        $this->client = new SurveyheroClient();
+        parent::__construct();
         $this->questionMapping = config('surveyhero.question_mapping', []);
     }
 

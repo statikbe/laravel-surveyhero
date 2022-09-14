@@ -18,20 +18,18 @@ use Statikbe\Surveyhero\Services\Factories\ResponseCreator\QuestionResponseCreat
 use Statikbe\Surveyhero\Services\Factories\ResponseCreator\TextResponseCreator;
 use Statikbe\Surveyhero\SurveyheroRegistrar;
 
-class SurveyResponseImportService
+class SurveyResponseImportService extends AbstractSurveyheroAPIService
 {
     const SURVEYHERO_STATUS_COMPLETED = 'completed';
-
-    private SurveyheroClient $client;
 
     /**
      * @var \Statikbe\Surveyhero\Services\SurveyMappingService
      */
     private SurveyMappingService $surveyMappingService;
 
-    public function __construct(SurveyheroClient $client, SurveyMappingService $surveyMappingService)
+    public function __construct(SurveyMappingService $surveyMappingService)
     {
-        $this->client = $client;
+        parent::__construct();
         $this->surveyMappingService = $surveyMappingService;
     }
 

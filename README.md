@@ -15,6 +15,14 @@ You can install the package via composer:
 composer require statikbe/laravel-surveyhero
 ```
 
+Please publish the config file with:
+
+```bash
+php artisan vendor:publish --tag="surveyhero-config"
+```
+
+Check the [configuration options](#configuration) first, in case you want to customise your data model.
+
 Please publish and run the migrations with:
 
 ```bash
@@ -24,12 +32,6 @@ php artisan migrate
 
 **NB:** If you want to customise the default data model, first edit the configuration file, see the 
 [Data Model Customisation section](#data-model-customisation).
-
-Please publish the config file with:
-
-```bash
-php artisan vendor:publish --tag="surveyhero-config"
-```
 
 ## Data model
 
@@ -258,6 +260,21 @@ Following parameters are optional in case you want to evaluate the link_paramete
 
 ## Commands
 
+### Import surveys
+
+This command imports all surveys for a given survey ID, the survey IDs in the configuration file or all surveys. 
+
+```shell
+php artisan surveyhero:import-surveys
+```
+
+You can configure a specific survey with the flag `--survey=22333`.
+Or you can configure survey IDs in the `question_mapping` in the configuration file.
+If you want to import all, add the flag `--all`.
+
+If you want to reimport all surveys you can wipe them by using the flag `--fresh`.
+
+
 ### Import responses
 
 This command imports all survey responses for a given survey ID or all surveys. You can schedule this for continuous 
@@ -365,7 +382,7 @@ The `foreign_key` is the column name of the foreign keys used to refer the table
 - Export survey responses to CSV and Excel.
 - Statistics calculator service to quickly query aggregates of responses of questions.
 - ~~A command to create a basic question_mapping configuration based on the [Surveyhero Element API](https://developer.surveyhero.com/api/#element-api)~~
-- A command to create all surveys in the Surveyhero account. 
+- ~~A command to create all surveys in the Surveyhero account.~~ 
 
 ## Testing
 

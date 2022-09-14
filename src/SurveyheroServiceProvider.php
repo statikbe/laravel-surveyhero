@@ -4,6 +4,7 @@ namespace Statikbe\Surveyhero;
 
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
+use Statikbe\Surveyhero\Commands\SurveyheroSurveyImportCommand;
 use Statikbe\Surveyhero\Commands\SurveyheroMapperCommand;
 use Statikbe\Surveyhero\Commands\SurveyheroQuestionsAndAnswersImportCommand;
 use Statikbe\Surveyhero\Commands\SurveyheroResponseImportCommand;
@@ -23,6 +24,7 @@ class SurveyheroServiceProvider extends PackageServiceProvider
             ->hasViews()
             ->hasMigration('create_surveyhero_tables')
             ->hasCommands([
+                SurveyheroSurveyImportCommand::class,
                 SurveyheroResponseImportCommand::class,
                 SurveyheroQuestionsAndAnswersImportCommand::class,
                 SurveyheroMapperCommand::class,

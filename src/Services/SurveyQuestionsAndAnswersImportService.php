@@ -11,15 +11,8 @@ use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\InputQuestio
 use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\QuestionAndAnswerCreator;
 use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\RatingScaleQuestionAndAnswerCreator;
 
-class SurveyQuestionsAndAnswersImportService
+class SurveyQuestionsAndAnswersImportService extends AbstractSurveyheroAPIService
 {
-    private SurveyheroClient $client;
-
-    public function __construct(SurveyheroClient $client)
-    {
-        $this->client = $client;
-    }
-
     /**
      * @param  SurveyContract  $survey
      *

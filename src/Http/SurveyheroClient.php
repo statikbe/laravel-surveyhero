@@ -7,6 +7,15 @@ use Illuminate\Support\Facades\Http;
 
 class SurveyheroClient
 {
+    public function getSurveys(): array
+    {
+        $responsesData = $this->fetchFromSurveyHero('surveys');
+        $surveys = json_decode($responsesData->body());
+
+        return $surveys ? $surveys->surveys : [];
+    }
+
+
     public function getSurveyResponses(string|int $surveyId): array
     {
         $responsesData = $this->fetchFromSurveyHero(sprintf('surveys/%s/responses', $surveyId));

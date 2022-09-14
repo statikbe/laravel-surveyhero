@@ -45,13 +45,13 @@ class SurveyMappingService extends AbstractSurveyheroAPIService
                 //a mapper can return one question or multiple.
                 $mappedQuestions = $mapper->mapQuestion($question, $questionCounter);
                 if (! empty($mappedQuestions)) {
-                    if (is_array(array_values($mappedQuestions)[0])) {
+                    if(is_array(array_values($mappedQuestions)[0])) {
                         //multiple questions mapped:
                         $mapping['questions'] = array_merge($mapping['questions'], $mappedQuestions);
+                    } else {
+                        //only one question mapped:
+                        $mapping['questions'][] = $mappedQuestions;
                     }
-                } else {
-                    //only one question mapped:
-                    $mapping['questions'][] = $mappedQuestions;
                 }
                 $questionCounter++;
             } else {

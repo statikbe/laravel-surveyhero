@@ -71,8 +71,8 @@ class CreateSurveyheroTables extends Migration
             $table->foreignId($tableNames['survey_questions']['foreign_key'])
                 ->constrained($tableNames['survey_questions']['name']);
             $table->foreignId($tableNames['survey_answers']['foreign_key'])
-                ->constrained($tableNames['survey_answers']['name'])
-                ->nullable();
+                ->nullable()
+                ->constrained($tableNames['survey_answers']['name']);
 
             $table->foreignId($tableNames['survey_responses']['foreign_key'])
                 ->constrained($tableNames['survey_responses']['name'])

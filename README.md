@@ -22,6 +22,9 @@ php artisan vendor:publish --tag="surveyhero-migrations"
 php artisan migrate
 ```
 
+**NB:** If you want to customise the default data model, first edit the configuration file, see the 
+[Data Model Customisation section](#data-model-customisation).
+
 Please publish the config file with:
 
 ```bash
@@ -102,6 +105,9 @@ Create an API user and password [on Surveyhero](https://developer.surveyhero.com
 SURVEYHERO_API_USERNAME=1234567890
 SURVEYHERO_API_PASSWORD=qwertyuiopasdfghjklzxcvbnm
 ```
+
+You can overwrite the default table names and Eloquent model classes, if needed check the 
+[Data Model Customisation section](#data-model-customisation).
 
 ### Question mapping
 
@@ -288,6 +294,61 @@ adjust there. You can use this as a starting point to create the question mappin
 ```shell
 php artisan surveyhero:map
  ```
+
+## Data Model Customisation
+
+If you want to add extra variables, functions or relationships to the Eloquent models of this package, you might want 
+to extend the model classes or implement your own. 
+
+**Note:** If you implement your own data models without subclassing the default
+models, you need to implement the Contract interfaces in `Statikbe\Surveyhero\Contracts`. The package expects
+certain column names (check the migrations and contracts for details), however you can configure the table names and 
+foreign keys in the configuration, see below.
+
+### Customising the Eloquent models
+
+You can set your own Eloquent models in the configuration file under the variable `models`.
+
+```php 
+'models' => [
+    'survey' => Statikbe\Surveyhero\Models\Survey::class,
+    'survey_question' => Statikbe\Surveyhero\Models\SurveyQuestion::class,
+    'survey_answer' => Statikbe\Surveyhero\Models\SurveyAnswer::class,
+    'survey_response' => Statikbe\Surveyhero\Models\SurveyResponse::class,
+    'survey_question_response' => Statikbe\Surveyhero\Models\SurveyQuestionResponse::class,
+],
+```
+
+### Customising the table names
+
+You can change the table names by editing the `table_names` variable in the config file:
+
+```php 
+'table_names' => [
+    'surveys' => [
+        'name' => 'surveys',
+        'foreign_key' => 'survey_id',
+    ],
+    'survey_questions' => [
+        'name' => 'survey_questions',
+        'foreign_key' => 'survey_question_id',
+    ],
+    'survey_answers' => [
+        'name' => 'survey_answers',
+        'foreign_key' => 'survey_answer_id',
+    ],
+    'survey_responses' => [
+        'name' => 'survey_responses',
+        'foreign_key' => 'survey_response_id',
+    ],
+    'survey_question_responses' => [
+        'name' => 'survey_question_responses',
+        'foreign_key' => 'survey_question_response_id',
+    ],
+],
+```
+
+The `foreign_key` is the column name of the foreign keys used to refer the table name.
 
 ## Ideas for future improvements
 

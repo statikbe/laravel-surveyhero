@@ -13,47 +13,44 @@ return [
     'api_username' => env('SURVEYHERO_API_USERNAME'),
     'api_password' => env('SURVEYHERO_API_PASSWORD'),
 
+    /**
+     * To allow you to override the default models that this package provides, in case you want to add other fields,
+     * relationships or functions to the survey related models, you can define your own Eloquent Models here for each
+     * data model.
+     */
     'models' => [
-
-        /*
-         * TODO
-         * When using the "HasPermissions" trait from this package, we need to know which
-         * Eloquent model should be used to retrieve your permissions. Of course, it
-         * is often just the "Permission" model but you may use whatever you like.
-         *
-         * The model you want to use as a Permission model needs to implement the
-         * `Spatie\Permission\Contracts\Permission` contract.
-         */
-
         'survey' => Statikbe\Surveyhero\Models\Survey::class,
-
-        /*
-         * TODO
-         * When using the "HasRoles" trait from this package, we need to know which
-         * Eloquent model should be used to retrieve your roles. Of course, it
-         * is often just the "Role" model but you may use whatever you like.
-         *
-         * The model you want to use as a Role model needs to implement the
-         * `Spatie\Permission\Contracts\Role` contract.
-         */
-
         'survey_question' => Statikbe\Surveyhero\Models\SurveyQuestion::class,
         'survey_answer' => Statikbe\Surveyhero\Models\SurveyAnswer::class,
         'survey_response' => Statikbe\Surveyhero\Models\SurveyResponse::class,
         'survey_question_response' => Statikbe\Surveyhero\Models\SurveyQuestionResponse::class,
     ],
 
+    /**
+     * If you overwrite your data models, you might also want to change the database table names. You can do this by
+     * defining the table name and the foreign key used to create relationships in other tables.
+     */
     'table_names' => [
-        /* TODO
-         * When using the "HasRoles" trait from this package, we need to know which
-         * table should be used to retrieve your roles. We have chosen a basic
-         * default value but you may easily change it to any table you like.
-         */
-        'surveys' => 'surveys',
-        'survey_questions' => 'survey_questions',
-        'survey_answers' => 'survey_answers',
-        'survey_responses' => 'survey_responses',
-        'survey_question_responses' => 'survey_question_responses',
+        'surveys' => [
+            'name' => 'surveys',
+            'foreign_key' => 'survey_id',
+        ],
+        'survey_questions' => [
+            'name' => 'survey_questions',
+            'foreign_key' => 'survey_question_id',
+        ],
+        'survey_answers' => [
+            'name' => 'survey_answers',
+            'foreign_key' => 'survey_answer_id',
+        ],
+        'survey_responses' => [
+            'name' => 'survey_responses',
+            'foreign_key' => 'survey_response_id',
+        ],
+        'survey_question_responses' => [
+            'name' => 'survey_question_responses',
+            'foreign_key' => 'survey_question_response_id',
+        ],
     ],
 
     /**

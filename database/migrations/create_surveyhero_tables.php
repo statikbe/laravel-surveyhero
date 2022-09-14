@@ -14,7 +14,7 @@ class CreateSurveyheroTables extends Migration
             throw new \Exception('Error: config/surveyhero.php not loaded. Check your config file, run [php artisan config:clear] and try again.');
         }
 
-        Schema::create($tableNames['surveys'], function (Blueprint $table) {
+        Schema::create($tableNames['surveys']['name'], function (Blueprint $table) {
             $table->id();
             $table->bigInteger('surveyhero_id');
 
@@ -24,7 +24,7 @@ class CreateSurveyheroTables extends Migration
             $table->timestamps();
         });
 
-        Schema::create($tableNames['survey_responses'], function (Blueprint $table) use ($tableNames) {
+        Schema::create($tableNames['survey_responses']['name'], function (Blueprint $table) use ($tableNames) {
             $table->id();
             $table->bigInteger('surveyhero_id');
 
@@ -34,19 +34,17 @@ class CreateSurveyheroTables extends Migration
             $table->boolean('survey_completed')->default(false);
             $table->json('surveyhero_link_parameters')->nullable();
 
-            $table->unsignedBigInteger('survey_id');
-            $table->foreign('survey_id')
-                ->references('id')
-                ->on($tableNames['surveys'])
+            $table->foreignId($tableNames['surveys']['foreign_key'])
+                ->constrained($tableNames['surveys']['name'])
                 ->onDelete('cascade');
 
             $table->timestamps();
         });
 
-        Schema::create($tableNames['survey_questions'], function (Blueprint $table) use ($tableNames) {
+        Schema::create($tableNames['survey_questions']['name'], function (Blueprint $table) use ($tableNames) {
             $table->id();
-            $table->foreignId('survey_id')
-                ->constrained($tableNames['surveys'])
+            $table->foreignId($tableNames['surveys']['foreign_key'])
+                ->constrained($tableNames['surveys']['name'])
                 ->onDelete('cascade');
             $table->bigInteger('surveyhero_question_id')->nullable();
             $table->string('field');
@@ -56,10 +54,10 @@ class CreateSurveyheroTables extends Migration
             $table->index(['field']);
         });
 
-        Schema::create($tableNames['survey_answers'], function (Blueprint $table) use ($tableNames) {
+        Schema::create($tableNames['survey_answers']['name'], function (Blueprint $table) use ($tableNames) {
             $table->id();
-            $table->foreignId('survey_question_id')
-                ->constrained($tableNames['survey_questions'])
+            $table->foreignId($tableNames['survey_questions']['foreign_key'])
+                ->constrained($tableNames['survey_questions']['name'])
                 ->onDelete('cascade');
             $table->bigInteger('surveyhero_answer_id')->nullable();
             $table->string('converted_string_value')->nullable();
@@ -68,15 +66,16 @@ class CreateSurveyheroTables extends Migration
             $table->timestamps();
         });
 
-        Schema::create($tableNames['survey_question_responses'], function (Blueprint $table) use ($tableNames) {
+        Schema::create($tableNames['survey_question_responses']['name'], function (Blueprint $table) use ($tableNames) {
             $table->id();
-            $table->foreignId('survey_question_id')->constrained();
-            $table->foreignId('survey_answer_id')->nullable()->constrained($tableNames['survey_answers']);
+            $table->foreignId($tableNames['survey_questions']['foreign_key'])
+                ->constrained($tableNames['survey_questions']['name']);
+            $table->foreignId($tableNames['survey_answers']['foreign_key'])
+                ->constrained($tableNames['survey_answers']['name'])
+                ->nullable();
 
-            $table->unsignedBigInteger('survey_response_id');
-            $table->foreign('survey_response_id')
-                ->references('id')
-                ->on($tableNames['survey_responses'])
+            $table->foreignId($tableNames['survey_responses']['foreign_key'])
+                ->constrained($tableNames['survey_responses']['name'])
                 ->onDelete('cascade');
 
             $table->timestamps();

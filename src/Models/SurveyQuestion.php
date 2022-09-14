@@ -21,16 +21,18 @@ class SurveyQuestion extends Model implements SurveyQuestionContract
 
     public function getTable(): string
     {
-        return config('surveyhero.table_names.survey_questions', parent::getTable());
+        return config('surveyhero.table_names.survey_questions.name', parent::getTable());
     }
 
     public function survey(): BelongsTo
     {
-        return $this->belongsTo(app(SurveyheroRegistrar::class)->getSurveyClass());
+        return $this->belongsTo(app(SurveyheroRegistrar::class)->getSurveyClass(),
+            config('surveyhero.table_names.surveys.foreign_key', 'survey_id'));
     }
 
     public function surveyAnswers(): HasMany
     {
-        return $this->hasMany(app(SurveyheroRegistrar::class)->getSurveyAnswerClass());
+        return $this->hasMany(app(SurveyheroRegistrar::class)->getSurveyAnswerClass(),
+            config('surveyhero.table_names.survey_questions.foreign_key', 'survey_question_id'));
     }
 }

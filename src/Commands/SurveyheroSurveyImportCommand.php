@@ -1,13 +1,10 @@
 <?php
 
-    namespace Statikbe\Surveyhero\Commands;
+namespace Statikbe\Surveyhero\Commands;
 
     use Illuminate\Console\Command;
     use Illuminate\Support\Collection;
     use Illuminate\Support\Facades\Schema;
-    use Statikbe\Surveyhero\Contracts\SurveyContract;
-    use Statikbe\Surveyhero\Exceptions\ResponseCreatorNotImplemented;
-    use Statikbe\Surveyhero\Exceptions\SurveyNotMappedException;
     use Statikbe\Surveyhero\Services\SurveyImportService;
     use Statikbe\Surveyhero\SurveyheroRegistrar;
 
@@ -50,7 +47,7 @@
             //if no survey id is passed as arg, we check if there is a mapping and import there surveys, otherwise we import all.
             else {
                 $questionMapping = config('surveyhero.question_mapping');
-                $surveyIdsToImport = collect(array_map(function($elem){
+                $surveyIdsToImport = collect(array_map(function ($elem) {
                     return $elem['survey_id'];
                 }, $questionMapping));
             }
@@ -63,6 +60,7 @@
             }
 
             $this->comment(sprintf('Imported %d survey%s!', count($importedInfo['imported']), count($importedInfo['imported']) > 1 ? 's' : ''));
+
             return self::SUCCESS;
         }
 

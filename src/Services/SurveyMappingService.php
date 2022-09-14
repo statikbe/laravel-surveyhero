@@ -6,7 +6,6 @@ use Statikbe\Surveyhero\Contracts\SurveyContract;
 use Statikbe\Surveyhero\Exceptions\QuestionMapperNotImplementedException;
 use Statikbe\Surveyhero\Exceptions\QuestionNotMappedException;
 use Statikbe\Surveyhero\Exceptions\SurveyNotMappedException;
-use Statikbe\Surveyhero\Http\SurveyheroClient;
 use Statikbe\Surveyhero\Services\Factories\QuestionMapper\ChoiceListQuestionMapper;
 use Statikbe\Surveyhero\Services\Factories\QuestionMapper\ChoiceTableQuestionMapper;
 use Statikbe\Surveyhero\Services\Factories\QuestionMapper\InputQuestionMapper;

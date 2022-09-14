@@ -1,10 +1,11 @@
 <?php
 
-    namespace Statikbe\Surveyhero\Services;
+namespace Statikbe\Surveyhero\Services;
 
     use Statikbe\Surveyhero\Http\SurveyheroClient;
 
-    class AbstractSurveyheroAPIService {
+    class AbstractSurveyheroAPIService
+    {
         /**
          * @var \Statikbe\Surveyhero\Http\SurveyheroClient
          */
@@ -15,7 +16,8 @@
             $this->client = new SurveyheroClient();
         }
 
-        public function getApiClient(): SurveyheroClient {
+        public function getApiClient(): SurveyheroClient
+        {
             return $this->client;
         }
     }

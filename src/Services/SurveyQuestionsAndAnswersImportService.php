@@ -4,7 +4,6 @@ namespace Statikbe\Surveyhero\Services;
 
 use Illuminate\Support\Facades\DB;
 use Statikbe\Surveyhero\Contracts\SurveyContract;
-use Statikbe\Surveyhero\Http\SurveyheroClient;
 use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\ChoiceListQuestionAndAnswerCreator;
 use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\ChoiceTableQuestionAndAnswerCreator;
 use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\InputQuestionAndAnswerCreator;

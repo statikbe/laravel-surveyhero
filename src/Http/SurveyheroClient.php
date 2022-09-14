@@ -15,7 +15,6 @@ class SurveyheroClient
         return $surveys ? $surveys->surveys : [];
     }
 
-
     public function getSurveyResponses(string|int $surveyId): array
     {
         $responsesData = $this->fetchFromSurveyHero(sprintf('surveys/%s/responses', $surveyId));

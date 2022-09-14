@@ -10,7 +10,6 @@ use Statikbe\Surveyhero\Exceptions\AnswerNotMappedException;
 use Statikbe\Surveyhero\Exceptions\QuestionNotImportedException;
 use Statikbe\Surveyhero\Exceptions\ResponseCreatorNotImplemented;
 use Statikbe\Surveyhero\Exceptions\SurveyNotMappedException;
-use Statikbe\Surveyhero\Http\SurveyheroClient;
 use Statikbe\Surveyhero\Services\Factories\ResponseCreator\ChoicesResponseCreator;
 use Statikbe\Surveyhero\Services\Factories\ResponseCreator\ChoiceTableResponseCreator;
 use Statikbe\Surveyhero\Services\Factories\ResponseCreator\NumberResponseCreator;

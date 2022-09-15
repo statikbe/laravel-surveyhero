@@ -77,9 +77,11 @@ class ChoiceTableResponseCreator extends AbstractQuestionResponseCreator
          */
 
         $responseList = [];
-        //TODO remove deselected answers
+
         foreach ($surveyheroQuestionResponse->choice_table as $surveyheroChoiceQuestion) {
             $subquestionMapping = $this->getSubquestionMapping($surveyheroChoiceQuestion->row_id, $questionMapping);
+
+            $notUpdatedResponses = $this->findAllExistingQuestionResponses($subquestionMapping['question_id'], $response);
             foreach ($surveyheroChoiceQuestion->choices as $surveyheroChoice) {
                 $existingQuestionResponse = $this->findExistingQuestionResponse($subquestionMapping['question_id'], $response, $surveyheroChoice->choice_id);
                 $surveyQuestion = $this->findSurveyQuestion($surveyheroChoiceQuestion->row_id);
@@ -87,9 +89,22 @@ class ChoiceTableResponseCreator extends AbstractQuestionResponseCreator
 
                 $responseData = $this->createSurveyQuestionResponseData($surveyQuestion, $response, $surveyAnswer);
 
-                $responseList[] = app(SurveyheroRegistrar::class)->getSurveyQuestionResponseClass()::updateOrCreate([
+                $questionResponse = app(SurveyheroRegistrar::class)->getSurveyQuestionResponseClass()::updateOrCreate([
                     'id' => $existingQuestionResponse->id ?? null,
                 ], $responseData);
+                $responseList[] = $questionResponse;
+
+                //remove from list of not updated responses:
+                if($notUpdatedResponses->contains($questionResponse->id)) {
+                    $index = $notUpdatedResponses->search(fn($item) => $item->id === $questionResponse->id);
+                    $notUpdatedResponses->pull($index);
+                }
+            }
+
+            //remove all not updated responses:
+            foreach($notUpdatedResponses as $notUpdatedResponse){
+                /* @var SurveyQuestionResponseContract $notUpdatedResponse */
+                $notUpdatedResponse->delete();
             }
         }
 

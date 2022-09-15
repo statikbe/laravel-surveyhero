@@ -39,7 +39,7 @@ namespace Statikbe\Surveyhero\Commands;
             /* @var Collection $existingSurveys */
             $surveyIdsToImport = null;
             if ($surveyId) {
-                $existingSurveys = app(SurveyheroRegistrar::class)->getSurveyClass()::query()
+                $surveyIdsToImport = app(SurveyheroRegistrar::class)->getSurveyClass()::query()
                     ->where('surveyhero_id', $surveyId)
                     ->select('surveyhero_id')
                     ->get();

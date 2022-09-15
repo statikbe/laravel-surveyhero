@@ -15,13 +15,11 @@ interface ModelContract
     public static function query();
 
     /**
-     * Create or update a record matching the attributes, and fill it with values.
+     * Delete the model from the database.
      *
-     * @param  array  $attributes
-     * @param  array  $values
-     * @return \Illuminate\Database\Eloquent\Model|static
+     * @return bool|null
+     *
+     * @throws \LogicException
      */
-    /*public function updateOrCreate(array $attributes, array $values = []);
-
-    public static function truncate();*/
+    public function delete();
 }

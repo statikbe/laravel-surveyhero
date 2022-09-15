@@ -30,7 +30,7 @@ class CreateSurveyheroTables extends Migration
 
             $table->datetime('survey_start_date')->nullable();
             $table->datetime('survey_last_updated')->nullable();
-            $table->string('survey_language');
+            $table->string('survey_language')->nullable();
             $table->boolean('survey_completed')->default(false);
             $table->json('surveyhero_link_parameters')->nullable();
 

@@ -2,6 +2,7 @@
 
 namespace Statikbe\Surveyhero\Services;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Statikbe\Surveyhero\Contracts\SurveyContract;
 use Statikbe\Surveyhero\Contracts\SurveyResponseContract;
@@ -82,11 +83,11 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
         }
 
         $responseAnswers = $this->client->getSurveyResponseAnswers($survey->surveyhero_id, $responseId);
-        if ($responseAnswers) {
+        if ($responseAnswers && Carbon::parse($responseAnswers->last_updated_on)->gt($survey->survey_last_imported)) {
             //do not import already imported data that is not updated.
             /* @var SurveyResponseContract $existingResponseRecord */
             $existingResponseRecord = app(SurveyheroRegistrar::class)->getSurveyResponseClass()::where('surveyhero_id', $responseId)->first();
-            if ($existingResponseRecord && ($existingResponseRecord->survey_completed || $existingResponseRecord->survey_last_updated->lte($survey->survey_last_imported))) {
+            if ($existingResponseRecord && $existingResponseRecord->survey_completed) {
                 return;
             }
 

@@ -46,7 +46,8 @@ class ChoicesResponseCreator extends AbstractQuestionResponseCreator
 
         $responseList = [];
 
-        //TODO remove deselected answers
+        $notUpdatedResponses = $this->findAllExistingQuestionResponses($questionMapping['question_id'], $response);
+
         foreach ($surveyheroQuestionResponse->choices as $surveyheroChoice) {
             $existingQuestionResponse = $this->findExistingQuestionResponse($questionMapping['question_id'], $response, $surveyheroChoice->choice_id);
             $surveyQuestion = $this->findSurveyQuestion($surveyheroQuestionResponse->element_id);
@@ -54,9 +55,22 @@ class ChoicesResponseCreator extends AbstractQuestionResponseCreator
 
             $responseData = $this->createSurveyQuestionResponseData($surveyQuestion, $response, $surveyAnswer);
 
-            $responseList[] = app(SurveyheroRegistrar::class)->getSurveyQuestionResponseClass()::updateOrCreate([
+            $questionResponse = app(SurveyheroRegistrar::class)->getSurveyQuestionResponseClass()::updateOrCreate([
                 'id' => $existingQuestionResponse->id ?? null,
             ], $responseData);
+            $responseList[] = $questionResponse;
+
+            //remove from list of not updated responses:
+            if($notUpdatedResponses->contains($questionResponse->id)) {
+                $index = $notUpdatedResponses->search(fn($item) => $item->id === $questionResponse->id);
+                $notUpdatedResponses->pull($index);
+            }
+        }
+
+        //remove all not updated responses:
+        foreach($notUpdatedResponses as $notUpdatedResponse){
+            /* @var SurveyQuestionResponseContract $notUpdatedResponse */
+            $notUpdatedResponse->delete();
         }
 
         return $responseList;

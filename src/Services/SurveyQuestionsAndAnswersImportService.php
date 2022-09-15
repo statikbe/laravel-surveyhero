@@ -49,48 +49,6 @@ class SurveyQuestionsAndAnswersImportService extends AbstractSurveyheroAPIServic
         return $notImported;
     }
 
-    /*private function updateOrCreateChoiceListAnswer($question, $surveyQuestion, $lang): void
-    {
-        foreach ($question->choice_list->choices as $choice) {
-            $responseData = [
-                'survey_question_id' => $surveyQuestion->id,
-                'surveyhero_answer_id' => $choice->choice_id,
-                'label' => [
-                    $lang->code => $choice->label,
-                ],
-            ];
-
-            SurveyAnswer::updateOrCreate([
-                'survey_question_id' => $surveyQuestion->id,
-                'surveyhero_answer_id' => $choice->choice_id,
-            ], $responseData);
-        }
-    }*/
-
-    /*private function updateOrCreateNumericRatingScaleAnswer($question, $surveyQuestion, $lang): void
-    {
-        $ratingScale = $question->rating_scale;
-        $minValue = $ratingScale->left->value;
-        $maxValue = $ratingScale->right->value;
-        $stepSize = $ratingScale->step_size;
-
-        for ($i = $minValue; $i <= $maxValue; $i += $stepSize) {
-            SurveyAnswer::updateOrCreate(
-                [
-                    'survey_question_id' => $surveyQuestion->id,
-                    'converted_int_value' => $i,
-                ],
-                [
-                    'survey_question_id' => $surveyQuestion->id,
-                    'surveyhero_answer_id' => null,
-                    'converted_int_value' => $i,
-                    'label' => [
-                        $lang->code => $i,
-                    ],
-                ]);
-        }
-    }*/
-
     private function getQuestionAndAnswerCreator(string $surveyheroFieldType): QuestionAndAnswerCreator|null
     {
         return match ($surveyheroFieldType) {

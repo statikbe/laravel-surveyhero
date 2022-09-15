@@ -2,6 +2,7 @@
 
 namespace Statikbe\Surveyhero\Services\Factories\ResponseCreator;
 
+use Illuminate\Database\Eloquent\Collection;
 use Statikbe\Surveyhero\Contracts\SurveyAnswerContract;
 use Statikbe\Surveyhero\Contracts\SurveyQuestionContract;
 use Statikbe\Surveyhero\Contracts\SurveyQuestionResponseContract;
@@ -37,6 +38,21 @@ abstract class AbstractQuestionResponseCreator implements QuestionResponseCreato
     }
 
     /**
+     * @param  string|int  $surveyheroQuestionId
+     * @param  SurveyResponseContract  $response
+     * @return SurveyQuestionResponseContract|null
+     */
+    protected function findAllExistingQuestionResponses(string|int $surveyheroQuestionId,
+                                                        SurveyResponseContract $response): Collection
+    {
+        $query = app(SurveyheroRegistrar::class)->getSurveyQuestionResponseClass()::whereHas('surveyQuestion', function ($q) use ($surveyheroQuestionId) {
+            $q->where('surveyhero_question_id', $surveyheroQuestionId);
+        })->where('survey_response_id', $response->id);
+
+        return $query->get();
+    }
+
+    /**
      * @param  string  $surveyheroQuestionId
      * @return SurveyQuestionContract
      *
@@ -44,7 +60,7 @@ abstract class AbstractQuestionResponseCreator implements QuestionResponseCreato
      */
     protected function findSurveyQuestion(string $surveyheroQuestionId): SurveyQuestionContract
     {
-        $surveyQuestion = app(SurveyheroRegistrar::class)->getSurveyQuestionResponseClass()::where('surveyhero_question_id', $surveyheroQuestionId)->first();
+        $surveyQuestion = app(SurveyheroRegistrar::class)->getSurveyQuestionClass()::where('surveyhero_question_id', $surveyheroQuestionId)->first();
         if (! $surveyQuestion) {
             throw QuestionNotImportedException::create($surveyheroQuestionId, 'The question is not imported');
         } else {

@@ -40,7 +40,7 @@ abstract class AbstractQuestionResponseCreator implements QuestionResponseCreato
     /**
      * @param  string|int  $surveyheroQuestionId
      * @param  SurveyResponseContract  $response
-     * @return SurveyQuestionResponseContract|null
+     * @return Collection
      */
     protected function findAllExistingQuestionResponses(string|int $surveyheroQuestionId,
                                                         SurveyResponseContract $response): Collection

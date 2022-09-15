@@ -36,21 +36,21 @@ class SurveyheroSurveyImportCommand extends Command
 
         $surveyId = trim($this->option('survey'));
 
-            /* @var Collection $existingSurveys */
-            $surveyIdsToImport = null;
-            if ($surveyId) {
-                $surveyIdsToImport = app(SurveyheroRegistrar::class)->getSurveyClass()::query()
-                    ->where('surveyhero_id', $surveyId)
-                    ->select('surveyhero_id')
-                    ->get();
-            }
-            //if no survey id is passed as arg, we check if there is a mapping and import there surveys, otherwise we import all.
-            else {
-                $questionMapping = config('surveyhero.question_mapping');
-                $surveyIdsToImport = collect(array_map(function ($elem) {
-                    return $elem['survey_id'];
-                }, $questionMapping));
-            }
+        /* @var Collection $existingSurveys */
+        $surveyIdsToImport = null;
+        if ($surveyId) {
+            $surveyIdsToImport = app(SurveyheroRegistrar::class)->getSurveyClass()::query()
+                ->where('surveyhero_id', $surveyId)
+                ->select('surveyhero_id')
+                ->get();
+        }
+        //if no survey id is passed as arg, we check if there is a mapping and import there surveys, otherwise we import all.
+        else {
+            $questionMapping = config('surveyhero.question_mapping');
+            $surveyIdsToImport = collect(array_map(function ($elem) {
+                return $elem['survey_id'];
+            }, $questionMapping));
+        }
 
         $importedInfo = $this->importService->importSurveys($surveyIdsToImport);
 

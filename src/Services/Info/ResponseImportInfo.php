@@ -14,7 +14,7 @@
         }
 
         public function addInfo(?ResponseImportInfo $newInfo): self {
-            if(!$newInfo){
+            if($newInfo){
                 $this->totalResponsesImported += $newInfo->getTotalResponsesImported();
                 $this->unimportedQuestions = array_merge($this->unimportedQuestions, $newInfo->getUnimportedQuestions());
                 $this->unimportedAnswers = array_merge($this->unimportedAnswers, $newInfo->getUnimportedAnswers());

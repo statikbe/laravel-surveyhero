@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-surveyhero` will be documented in this file.
 
+## v1.3.2 - 2022-09-21
+
+- Fix bug with calculation of last imported timestamp of survey, which cause not all responses to be imported
+
 ## v1.3.1 - 2022-09-21
 
 Fix import refresh bugs & response updates

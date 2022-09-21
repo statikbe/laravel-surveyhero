@@ -52,7 +52,7 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
 
             //collector ids:
             $collectorIds = [];
-            if(isset($surveyMapping['collectors'])){
+            if (isset($surveyMapping['collectors'])) {
                 $collectorIds = $surveyMapping['collectors'];
             }
 

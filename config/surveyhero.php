@@ -95,7 +95,7 @@ return [
     'question_mapping' => [
         [
             'survey_id' => 1234567,
-            'collectors' => [ 9876543 ], //optionally, see https://developer.surveyhero.com/api/#collector-api
+            'collectors' => [9876543], //optionally, see https://developer.surveyhero.com/api/#collector-api
             'questions' => [
                 'question_id' => 1000001,
                 'type' => 'choice_table',

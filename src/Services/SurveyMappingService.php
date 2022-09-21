@@ -83,11 +83,13 @@ class SurveyMappingService extends AbstractSurveyheroAPIService
     /**
      * Returns the survey mapping from the configuration for the given survey.
      *
-     * @param SurveyContract $survey
+     * @param  SurveyContract  $survey
      * @return array|null
+     *
      * @throws SurveyNotMappedException
      */
-    public function getSurveyMapping(SurveyContract $survey): ?array {
+    public function getSurveyMapping(SurveyContract $survey): ?array
+    {
         try {
             $foundSurveys = array_filter($this->questionMapping, function ($surveyMapping, $key) use ($survey) {
                 return $surveyMapping['survey_id'] == $survey->surveyhero_id;
@@ -98,6 +100,7 @@ class SurveyMappingService extends AbstractSurveyheroAPIService
 
         if (! empty($foundSurveys)) {
             $mapping = reset($foundSurveys);
+
             return $mapping;
         } else {
             throw SurveyNotMappedException::create($survey, 'Survey has no question mapping in config.');

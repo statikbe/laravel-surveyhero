@@ -16,7 +16,7 @@ class Survey extends Model implements SurveyContract
     protected $guarded = [];
 
     protected $casts = [
-        'survey_last_imported' => 'datetime'
+        'survey_last_imported' => 'datetime',
     ];
 
     public function getTable(): string

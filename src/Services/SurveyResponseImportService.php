@@ -55,7 +55,7 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
 
             //collector ids:
             $collectorIds = [];
-            if(isset($surveyMapping['collectors'])){
+            if (isset($surveyMapping['collectors'])) {
                 $collectorIds = $surveyMapping['collectors'];
             }
 
@@ -63,7 +63,7 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
 
             foreach ($responses as $response) {
                 $responseImportInfo = $this->importSurveyResponse($response->response_id, $survey, $surveyQuestionMapping);
-                if($responseImportInfo) {
+                if ($responseImportInfo) {
                     $importInfo['total_responses'] += $responseImportInfo['total_responses'];
                     $importInfo['questions'] = array_merge($importInfo['questions'], $responseImportInfo['questions']);
                     $importInfo['answers'] = array_merge($importInfo['answers'], $responseImportInfo['answers']);

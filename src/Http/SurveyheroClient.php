@@ -15,14 +15,14 @@ class SurveyheroClient
         return $surveys ? $surveys->surveys : [];
     }
 
-    public function getSurveyResponses(string|int $surveyId, ?Carbon $surveyLastUpdatedAt, array $collectorIds=[]): array
+    public function getSurveyResponses(string|int $surveyId, ?Carbon $surveyLastUpdatedAt, array $collectorIds = []): array
     {
         $url = sprintf('surveys/%s/responses', $surveyId);
         $queryStringArgs = [];
-        if($surveyLastUpdatedAt){
+        if ($surveyLastUpdatedAt) {
             $queryStringArgs['last_updated_on[from]'] = $surveyLastUpdatedAt->toIso8601String();
         }
-        if(!empty($collectorIds)){
+        if (! empty($collectorIds)) {
             $queryStringArgs['collector_id'] = $collectorIds;
         }
 

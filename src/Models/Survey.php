@@ -48,12 +48,14 @@ class Survey extends Model implements SurveyContract
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function doesResponseNeedsToBeUpdated(string $responseLastUpdatedIsoTimestamp): bool {
-        if($this->survey_last_imported) {
+    public function doesResponseNeedsToBeUpdated(string $responseLastUpdatedIsoTimestamp): bool
+    {
+        if ($this->survey_last_imported) {
             return Carbon::parse($responseLastUpdatedIsoTimestamp)->gt($this->survey_last_imported);
+        } else {
+            return true;
         }
-        else return true;
     }
 }

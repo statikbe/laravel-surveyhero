@@ -2,7 +2,6 @@
 
 namespace Statikbe\Surveyhero\Services;
 
-use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Statikbe\Surveyhero\Contracts\SurveyContract;
 use Statikbe\Surveyhero\Contracts\SurveyResponseContract;

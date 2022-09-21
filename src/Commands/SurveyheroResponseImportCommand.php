@@ -50,7 +50,7 @@ class SurveyheroResponseImportCommand extends Command
         foreach ($surveys as $survey) {
             /* @var SurveyContract $survey */
             try {
-                if($refreshResponses){
+                if ($refreshResponses) {
                     $survey->survey_last_imported = null;
                     $survey->save();
                 }

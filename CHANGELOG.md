@@ -2,6 +2,13 @@
 
 All notable changes to `laravel-surveyhero` will be documented in this file.
 
+## v1.3.0 - 2022-09-21
+
+- support for collector IDs
+- fix & improve command output of response import cmd
+- add response import info DTO to cleanup error output of response import cmd
+- casting survey_last_imported var to Carbon
+
 ## v1.2.0 - 2022-09-15
 
 - customisable data models & tables

@@ -62,11 +62,10 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
             }
 
             //update new survey last updated timestamp:
-            if($responseImportInfo->getSurveyLastUpdatedAt()){
-                if (!$survey->survey_last_imported) {
+            if ($responseImportInfo->getSurveyLastUpdatedAt()) {
+                if (! $survey->survey_last_imported) {
                     $survey->survey_last_imported = $responseImportInfo->getSurveyLastUpdatedAt();
-                }
-                else{
+                } else {
                     $survey->survey_last_imported = $responseImportInfo->getSurveyLastUpdatedAt()->max($survey->survey_last_imported);
                 }
                 $survey->save();

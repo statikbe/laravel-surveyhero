@@ -14,7 +14,6 @@ class ResponseImportInfo
 
     private ?Carbon $surveyLastUpdatedAt;
 
-
     public function __construct()
     {
         $this->totalResponsesImported = 0;
@@ -30,11 +29,10 @@ class ResponseImportInfo
             $this->unimportedQuestions = array_merge($this->unimportedQuestions, $newInfo->getUnimportedQuestions());
             $this->unimportedAnswers = array_merge($this->unimportedAnswers, $newInfo->getUnimportedAnswers());
 
-            if($newInfo->surveyLastUpdatedAt){
-                if(!$this->surveyLastUpdatedAt){
+            if ($newInfo->surveyLastUpdatedAt) {
+                if (! $this->surveyLastUpdatedAt) {
                     $this->surveyLastUpdatedAt = $newInfo->surveyLastUpdatedAt;
-                }
-                else {
+                } else {
                     $this->surveyLastUpdatedAt = $newInfo->surveyLastUpdatedAt->max($this->surveyLastUpdatedAt);
                 }
             }
@@ -103,19 +101,20 @@ class ResponseImportInfo
     /**
      * @return Carbon|null
      */
-    public function getSurveyLastUpdatedAt(): ?Carbon {
+    public function getSurveyLastUpdatedAt(): ?Carbon
+    {
         return $this->surveyLastUpdatedAt;
     }
 
     /**
-     * @param Carbon|null $surveyLastUpdatedAt
+     * @param  Carbon|null  $surveyLastUpdatedAt
      */
-    public function setSurveyLastUpdatedAt(?Carbon $surveyLastUpdatedAt): void {
-        if($surveyLastUpdatedAt) {
-            if($this->surveyLastUpdatedAt){
+    public function setSurveyLastUpdatedAt(?Carbon $surveyLastUpdatedAt): void
+    {
+        if ($surveyLastUpdatedAt) {
+            if ($this->surveyLastUpdatedAt) {
                 $this->surveyLastUpdatedAt = $surveyLastUpdatedAt;
-            }
-            else {
+            } else {
                 $this->surveyLastUpdatedAt = $surveyLastUpdatedAt->max($this->surveyLastUpdatedAt);
             }
         }

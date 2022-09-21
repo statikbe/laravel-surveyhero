@@ -2,6 +2,17 @@
 
 All notable changes to `laravel-surveyhero` will be documented in this file.
 
+## v1.2.0 - 2022-09-15
+
+- customisable data models & tables
+- survey question mapper command output improvements
+- survey question mapper command bug fixes
+- survey import command bug fixes
+- data model nullable on survey_language
+- choice table question mapper bug fixes
+- removal of old question responses in case the response is incomplete and new data exists.
+- bug fixes in Q & A import
+
 ## v1.1.3 - 2022-09-06
 
 Renaming survey->survey_last_updated to survey_last_imported

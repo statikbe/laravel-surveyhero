@@ -16,6 +16,7 @@ use Statikbe\Surveyhero\Services\Factories\ResponseCreator\ChoiceTableResponseCr
 use Statikbe\Surveyhero\Services\Factories\ResponseCreator\NumberResponseCreator;
 use Statikbe\Surveyhero\Services\Factories\ResponseCreator\QuestionResponseCreator;
 use Statikbe\Surveyhero\Services\Factories\ResponseCreator\TextResponseCreator;
+use Statikbe\Surveyhero\Services\Info\ResponseImportInfo;
 use Statikbe\Surveyhero\SurveyheroRegistrar;
 
 class SurveyResponseImportService extends AbstractSurveyheroAPIService
@@ -35,20 +36,16 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
 
     /**
      * @param  SurveyContract  $survey
-     * @return array{ 'questions': array, 'answers': array, 'total_responses': int }        A list of surveyhero question ids that could not be imported.
+     * @return ResponseImportInfo
      *
      * @throws ResponseCreatorNotImplemented
      * @throws SurveyNotMappedException
      */
-    public function importSurveyResponses(SurveyContract $survey): array
+    public function importSurveyResponses(SurveyContract $survey): ResponseImportInfo
     {
-        $importInfo = [
-            'questions' => [],
-            'answers' => [],
-            'total_responses' => 0,
-        ];
         $surveyMapping = $this->surveyMappingService->getSurveyMapping($survey);
         $surveyQuestionMapping = $this->surveyMappingService->getSurveyQuestionMapping($survey);
+        $responseImportInfo = new ResponseImportInfo();
 
         try {
             DB::beginTransaction();
@@ -62,12 +59,7 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
             $responses = $this->client->getSurveyResponses($survey->surveyhero_id, $survey->survey_last_imported, $collectorIds);
 
             foreach ($responses as $response) {
-                $responseImportInfo = $this->importSurveyResponse($response->response_id, $survey, $surveyQuestionMapping);
-                if($responseImportInfo) {
-                    $importInfo['total_responses'] += $responseImportInfo['total_responses'];
-                    $importInfo['questions'] = array_merge($importInfo['questions'], $responseImportInfo['questions']);
-                    $importInfo['answers'] = array_merge($importInfo['answers'], $responseImportInfo['answers']);
-                }
+                $responseImportInfo->addInfo($this->importSurveyResponse($response->response_id, $survey, $surveyQuestionMapping));
             }
 
             //update new survey last updated timestamp:
@@ -79,25 +71,21 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
             throw $exception;
         }
 
-        return $importInfo;
+        return $responseImportInfo;
     }
 
     /**
      * @param $responseId
      * @param  SurveyContract  $survey
      * @param  array|null  $surveyQuestionMapping
-     * @return array{'questions': array, 'answers': array, 'total_responses': int } | null       A list of surveyhero question ids that could not be imported.
+     * @return ResponseImportInfo | null       A list of surveyhero question ids that could not be imported.
      *
      * @throws ResponseCreatorNotImplemented
      * @throws SurveyNotMappedException
      */
-    public function importSurveyResponse($responseId, SurveyContract $survey, array $surveyQuestionMapping = null): array|null
+    public function importSurveyResponse($responseId, SurveyContract $survey, array $surveyQuestionMapping = null): ResponseImportInfo|null
     {
-        $importInfo = [
-            'questions' => [],
-            'answers' => [],
-            'total_responses' => 0,
-        ];
+        $importInfo = new ResponseImportInfo();
 
         if (! $surveyQuestionMapping) {
             $surveyQuestionMapping = $this->surveyMappingService->getSurveyQuestionMapping($survey);
@@ -122,15 +110,15 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
                         try {
                             $questionResponseCreator->updateOrCreateQuestionResponse($answer, $surveyResponse, $questionMapping);
                         } catch (AnswerNotMappedException $ex) {
-                            $importInfo['answers'][] = [$ex->answerId, $ex->getMessage()];
+                            $importInfo->addUnimportedAnswer($ex->answerId, $ex->getMessage());
                             //set survey response as incomplete, because we could not completely import it.
                             $this->setResponseAsIncomplete($surveyResponse);
                         } catch (QuestionNotImportedException $ex) {
-                            $importInfo['questions'][$answer->element_id] = [$answer->element_id];
+                            $importInfo->addUnimportedQuestion($answer->element_id, $ex->getMessage());
                             //set survey response as incomplete, because we could not completely import it.
                             $this->setResponseAsIncomplete($surveyResponse);
                         } catch (AnswerNotImportedException $ex) {
-                            $importInfo['answers'][$answer->element_id] = [$answer->element_id];
+                            $importInfo->addUnimportedAnswer($answer->element_id, $ex->getMessage());
                             //set survey response as incomplete, because we could not completely import it.
                             $this->setResponseAsIncomplete($surveyResponse);
                         }
@@ -138,11 +126,11 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
                         throw new ResponseCreatorNotImplemented("There is no response creator implemented for surveyhero field type: $answer->type");
                     }
                 } else {
-                    $importInfo['questions'][$answer->element_id] = [$answer->element_id];
+                    $importInfo->addUnimportedQuestion($answer->element_id, 'No question mapping available in configuration file.');
                 }
             }
 
-            $importInfo['total_responses'] += 1;
+            $importInfo->increateTotalResponses();
 
             //increase survey last updated timestamp:
             $responseLastUpdatedOn = $this->client->transformAPITimestamp($responseAnswers->last_updated_on);

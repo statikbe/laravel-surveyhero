@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Schema;
 use Statikbe\Surveyhero\Contracts\SurveyContract;
 use Statikbe\Surveyhero\Exceptions\ResponseCreatorNotImplemented;
 use Statikbe\Surveyhero\Exceptions\SurveyNotMappedException;
+use Statikbe\Surveyhero\Services\Info\ResponseImportInfo;
 use Statikbe\Surveyhero\Services\SurveyResponseImportService;
 use Statikbe\Surveyhero\SurveyheroRegistrar;
 
@@ -36,6 +37,8 @@ class SurveyheroResponseImportCommand extends Command
             $this->deleteResponses();
         }
 
+        $importInfo = new ResponseImportInfo();
+
         $surveyId = trim($this->option('survey'));
 
         $surveyQuery = app(SurveyheroRegistrar::class)->getSurveyClass()::query();
@@ -47,7 +50,7 @@ class SurveyheroResponseImportCommand extends Command
         foreach ($surveys as $survey) {
             /* @var SurveyContract $survey */
             try {
-                $importInfo = $this->importService->importSurveyResponses($survey);
+                $importInfo->addInfo($this->importService->importSurveyResponses($survey));
             } catch (SurveyNotMappedException $exception) {
                 $this->error("{$exception->getMessage()} Survey '$survey->name' with Surveyhero ID $survey->surveyhero_id");
 
@@ -58,20 +61,20 @@ class SurveyheroResponseImportCommand extends Command
                 return self::FAILURE;
             }
 
-            if (! empty($importInfo['questions'])) {
-                $this->info(sprintf('%d questions could not imported!', count($importInfo['questions'])));
-                $this->table(['Surveyhero ID'], $importInfo['questions']);
+            if ($importInfo->hasUnimportedQuestions()) {
+                $this->info(sprintf('%d questions could not imported!', count($importInfo->getUnimportedQuestions())));
+                $this->table(['Surveyhero ID', 'Info'], $importInfo->getUnimportedQuestions());
             }
 
-            if (! empty($importInfo['answers'])) {
+            if ($importInfo->hasUnimportedAnswers()) {
                 $this->info('Not all answers are mapped:');
-                $this->table(['Surveyhero ID', 'Answer info'], $importInfo['answers']);
+                $this->table(['Surveyhero ID', 'Info'], $importInfo->getUnimportedAnswers());
             }
 
             $this->comment("Survey '$survey->name' imported!");
         }
 
-        $this->comment(sprintf('Imported %d responses of %d survey%s!', $importInfo['total_responses'], count($surveys), count($surveys) > 1 ? 's' : ''));
+        $this->comment(sprintf('Imported %d responses of %d survey%s!', $importInfo->getTotalResponsesImported(), count($surveys), count($surveys) > 1 ? 's' : ''));
 
         return self::SUCCESS;
     }

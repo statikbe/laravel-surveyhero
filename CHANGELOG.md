@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-surveyhero` will be documented in this file.
 
+## v1.3.1 - 2022-09-21
+
+Fix import refresh bugs & response updates
+
 ## v1.3.0 - 2022-09-21
 
 - support for collector IDs

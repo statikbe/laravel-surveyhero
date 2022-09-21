@@ -129,6 +129,7 @@ Each survey has a separate data structure in the `question_mapping` configuratio
 'question_mapping' => [
     [
         'survey_id' => 1234567,
+        'collectors' => [ 9876543 ], //optionally, see https://developer.surveyhero.com/api/#collector-api
         'questions' => [
             ... //see below
         ]
@@ -137,6 +138,10 @@ Each survey has a separate data structure in the `question_mapping` configuratio
 ```
 
 It is used to identify which Surveyhero survey the mapping is for.
+You can optionally set the collector ID's that will be used to import the responses. You can configure different
+collectors per survey in Surveyhero. This can be useful to distinguish the responses of different environments, 
+e.g. by creating a collector per environment you can maintain 1 survey for your local development environment and production deployment.
+In that case you might add environment vars for the collector ID's in the `.env` file to ease configuration.
 
 Each question type has different specifications, so the mapping data structure is slightly different:
 

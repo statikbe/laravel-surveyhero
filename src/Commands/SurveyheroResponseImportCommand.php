@@ -47,7 +47,7 @@ class SurveyheroResponseImportCommand extends Command
         foreach ($surveys as $survey) {
             /* @var SurveyContract $survey */
             try {
-                $notImported = $this->importService->importSurveyResponses($survey);
+                $importInfo = $this->importService->importSurveyResponses($survey);
             } catch (SurveyNotMappedException $exception) {
                 $this->error("{$exception->getMessage()} Survey '$survey->name' with Surveyhero ID $survey->surveyhero_id");
 
@@ -58,20 +58,20 @@ class SurveyheroResponseImportCommand extends Command
                 return self::FAILURE;
             }
 
-            if (! empty($notImported['questions'])) {
-                $this->info(sprintf('%d questions could not imported!', count($notImported['questions'])));
-                $this->table(['Surveyhero ID'], $notImported['questions']);
+            if (! empty($importInfo['questions'])) {
+                $this->info(sprintf('%d questions could not imported!', count($importInfo['questions'])));
+                $this->table(['Surveyhero ID'], $importInfo['questions']);
             }
 
-            if (! empty($notImported['answers'])) {
+            if (! empty($importInfo['answers'])) {
                 $this->info('Not all answers are mapped:');
-                $this->table(['Surveyhero ID', 'Answer info'], $notImported['answers']);
+                $this->table(['Surveyhero ID', 'Answer info'], $importInfo['answers']);
             }
 
             $this->comment("Survey '$survey->name' imported!");
         }
 
-        $this->comment(sprintf('Imported %d survey%s!', count($surveys), count($surveys) > 1 ? 's' : ''));
+        $this->comment(sprintf('Imported %d responses of %d survey%s!', $importInfo['total_responses'], count($surveys), count($surveys) > 1 ? 's' : ''));
 
         return self::SUCCESS;
     }

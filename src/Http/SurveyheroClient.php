@@ -15,9 +15,18 @@ class SurveyheroClient
         return $surveys ? $surveys->surveys : [];
     }
 
-    public function getSurveyResponses(string|int $surveyId): array
+    public function getSurveyResponses(string|int $surveyId, ?Carbon $surveyLastUpdatedAt, array $collectorIds=[]): array
     {
-        $responsesData = $this->fetchFromSurveyHero(sprintf('surveys/%s/responses', $surveyId));
+        $url = sprintf('surveys/%s/responses', $surveyId);
+        $queryStringArgs = [];
+        if($surveyLastUpdatedAt){
+            $queryStringArgs['last_updated_on[from]'] = $surveyLastUpdatedAt->toIso8601String();
+        }
+        if(!empty($collectorIds)){
+            $queryStringArgs['collector_id'] = $collectorIds;
+        }
+
+        $responsesData = $this->fetchFromSurveyHero($url, $queryStringArgs);
         $responses = json_decode($responsesData->body());
 
         return $responses ? $responses->responses : [];
@@ -52,12 +61,13 @@ class SurveyheroClient
             substr($surveyheroTimestamp, 0, strpos($surveyheroTimestamp, '+')));
     }
 
-    private function fetchFromSurveyHero(string $urlPath): \Illuminate\Http\Client\Response
+    private function fetchFromSurveyHero(string $urlPath, array $queryStringArgs = []): \Illuminate\Http\Client\Response
     {
-        //Prevent API rate limiting
-        sleep(1);
+        //Prevent API rate limiting: max 2 requests per minute
+        //half a second in microseconds is 500000
+        usleep(500000);
 
         return Http::withBasicAuth(config('surveyhero.api_username'), config('surveyhero.api_password'))
-            ->get(config('surveyhero.api_url').$urlPath);
+            ->get(config('surveyhero.api_url').$urlPath, $queryStringArgs);
     }
 }

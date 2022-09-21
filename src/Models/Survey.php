@@ -15,6 +15,10 @@ class Survey extends Model implements SurveyContract
 
     protected $guarded = [];
 
+    protected $casts = [
+        'survey_last_imported' => 'datetime'
+    ];
+
     public function getTable(): string
     {
         return config('surveyhero.table_names.surveys.name', parent::getTable());

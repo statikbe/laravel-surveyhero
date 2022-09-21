@@ -72,7 +72,22 @@ class SurveyMappingService extends AbstractSurveyheroAPIService
      */
     public function getSurveyQuestionMapping(SurveyContract $survey): array
     {
-        $foundSurveys = null;
+        $surveyMapping = $this->getSurveyMapping($survey);
+        if (array_key_exists('questions', $surveyMapping)) {
+            return $surveyMapping['questions'];
+        } else {
+            throw SurveyNotMappedException::create($survey, 'Survey mapping found but its question mapping configuration is not well-formed.');
+        }
+    }
+
+    /**
+     * Returns the survey mapping from the configuration for the given survey.
+     *
+     * @param SurveyContract $survey
+     * @return array|null
+     * @throws SurveyNotMappedException
+     */
+    public function getSurveyMapping(SurveyContract $survey): ?array {
         try {
             $foundSurveys = array_filter($this->questionMapping, function ($surveyMapping, $key) use ($survey) {
                 return $surveyMapping['survey_id'] == $survey->surveyhero_id;
@@ -83,11 +98,7 @@ class SurveyMappingService extends AbstractSurveyheroAPIService
 
         if (! empty($foundSurveys)) {
             $mapping = reset($foundSurveys);
-            if (array_key_exists('questions', $mapping)) {
-                return $mapping['questions'];
-            } else {
-                throw SurveyNotMappedException::create($survey, 'Survey mapping found but its question mapping configuration is not well-formed.');
-            }
+            return $mapping;
         } else {
             throw SurveyNotMappedException::create($survey, 'Survey has no question mapping in config.');
         }

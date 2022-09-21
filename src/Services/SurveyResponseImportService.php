@@ -92,7 +92,7 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
         }
 
         $responseAnswers = $this->client->getSurveyResponseAnswers($survey->surveyhero_id, $responseId);
-        if ($responseAnswers && Carbon::parse($responseAnswers->last_updated_on)->gt($survey->survey_last_imported)) {
+        if ($responseAnswers && $survey->doesResponseNeedsToBeUpdated($responseAnswers->last_updated_on)) {
             //do not import already imported data that is not updated.
             /* @var SurveyResponseContract $existingResponseRecord */
             $existingResponseRecord = app(SurveyheroRegistrar::class)->getSurveyResponseClass()::where('surveyhero_id', $responseId)->first();

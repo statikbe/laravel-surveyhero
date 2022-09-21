@@ -31,9 +31,9 @@ class SurveyheroResponseImportCommand extends Command
 
     public function handle(): int
     {
-        $truncateResponses = $this->option('fresh');
+        $refreshResponses = $this->option('fresh');
 
-        if ($truncateResponses) {
+        if ($refreshResponses) {
             $this->deleteResponses();
         }
 
@@ -50,6 +50,10 @@ class SurveyheroResponseImportCommand extends Command
         foreach ($surveys as $survey) {
             /* @var SurveyContract $survey */
             try {
+                if($refreshResponses){
+                    $survey->survey_last_imported = null;
+                    $survey->save();
+                }
                 $importInfo->addInfo($this->importService->importSurveyResponses($survey));
             } catch (SurveyNotMappedException $exception) {
                 $this->error("{$exception->getMessage()} Survey '$survey->name' with Surveyhero ID $survey->surveyhero_id");

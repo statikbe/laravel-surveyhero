@@ -2,6 +2,8 @@
 
 namespace Statikbe\Surveyhero\Services\Info;
 
+use Carbon\Carbon;
+
 class ResponseImportInfo
 {
     private int $totalResponsesImported;
@@ -10,11 +12,15 @@ class ResponseImportInfo
 
     private array $unimportedAnswers;
 
+    private ?Carbon $surveyLastUpdatedAt;
+
+
     public function __construct()
     {
         $this->totalResponsesImported = 0;
         $this->unimportedAnswers = [];
         $this->unimportedQuestions = [];
+        $this->surveyLastUpdatedAt = null;
     }
 
     public function addInfo(?ResponseImportInfo $newInfo): self
@@ -23,6 +29,15 @@ class ResponseImportInfo
             $this->totalResponsesImported += $newInfo->getTotalResponsesImported();
             $this->unimportedQuestions = array_merge($this->unimportedQuestions, $newInfo->getUnimportedQuestions());
             $this->unimportedAnswers = array_merge($this->unimportedAnswers, $newInfo->getUnimportedAnswers());
+
+            if($newInfo->surveyLastUpdatedAt){
+                if(!$this->surveyLastUpdatedAt){
+                    $this->surveyLastUpdatedAt = $newInfo->surveyLastUpdatedAt;
+                }
+                else {
+                    $this->surveyLastUpdatedAt = $newInfo->surveyLastUpdatedAt->max($this->surveyLastUpdatedAt);
+                }
+            }
         }
 
         return $this;
@@ -83,5 +98,26 @@ class ResponseImportInfo
     public function getUnimportedAnswers(): array
     {
         return $this->unimportedAnswers;
+    }
+
+    /**
+     * @return Carbon|null
+     */
+    public function getSurveyLastUpdatedAt(): ?Carbon {
+        return $this->surveyLastUpdatedAt;
+    }
+
+    /**
+     * @param Carbon|null $surveyLastUpdatedAt
+     */
+    public function setSurveyLastUpdatedAt(?Carbon $surveyLastUpdatedAt): void {
+        if($surveyLastUpdatedAt) {
+            if($this->surveyLastUpdatedAt){
+                $this->surveyLastUpdatedAt = $surveyLastUpdatedAt;
+            }
+            else {
+                $this->surveyLastUpdatedAt = $surveyLastUpdatedAt->max($this->surveyLastUpdatedAt);
+            }
+        }
     }
 }

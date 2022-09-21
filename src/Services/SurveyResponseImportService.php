@@ -62,7 +62,15 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
             }
 
             //update new survey last updated timestamp:
-            $survey->save();
+            if($responseImportInfo->getSurveyLastUpdatedAt()){
+                if (!$survey->survey_last_imported) {
+                    $survey->survey_last_imported = $responseImportInfo->getSurveyLastUpdatedAt();
+                }
+                else{
+                    $survey->survey_last_imported = $responseImportInfo->getSurveyLastUpdatedAt()->max($survey->survey_last_imported);
+                }
+                $survey->save();
+            }
 
             DB::commit();
         } catch (\Exception $exception) {
@@ -133,9 +141,7 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
 
             //increase survey last updated timestamp:
             $responseLastUpdatedOn = $this->client->transformAPITimestamp($responseAnswers->last_updated_on);
-            if (is_null($survey->survey_last_imported) || $responseLastUpdatedOn->gt($survey->survey_last_imported)) {
-                $survey->survey_last_imported = $responseLastUpdatedOn;
-            }
+            $importInfo->setSurveyLastUpdatedAt($responseLastUpdatedOn);
         }
 
         return $importInfo;

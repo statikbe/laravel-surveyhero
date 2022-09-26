@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-surveyhero` will be documented in this file.
 
+## v1.3.3 - 2022-09-26
+
+- add convertedValue() convenience function that returns the converted value without specifying the type.
+
 ## v1.3.2 - 2022-09-21
 
 - Fix bug with calculation of last imported timestamp of survey, which cause not all responses to be imported

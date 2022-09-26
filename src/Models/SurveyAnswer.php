@@ -28,4 +28,13 @@ class SurveyAnswer extends Model implements SurveyAnswerContract
         return $this->belongsTo(app(SurveyheroRegistrar::class)->getSurveyQuestionClass(),
             config('surveyhero.table_names.survey_questions.foreign_key', 'survey_question_id'));
     }
+
+    public function convertedValue(): int|string|null {
+        if($this->converted_string_value){
+            return $this->converted_string_value;
+        }
+        else {
+            return $this->converted_int_value;
+        }
+    }
 }

@@ -42,9 +42,9 @@ abstract class AbstractQuestionAndAnswerCreator implements QuestionAndAnswerCrea
         $answerMapping = $questionMapping['answer_mapping'];
         $mappingService = new SurveyMappingService();
 
-        if($questionMapping['question_id'] !== $questionId && isset($questionMapping['subquestion_mapping'])) {
+        if ($questionMapping['question_id'] !== $questionId && isset($questionMapping['subquestion_mapping'])) {
             $subquestionMapping = $mappingService->getSubquestionMapping($questionId, $questionMapping);
-            if(isset($subquestionMapping['answer_mapping'])){
+            if (isset($subquestionMapping['answer_mapping'])) {
                 $answerMapping = $subquestionMapping['answer_mapping'];
             }
         }

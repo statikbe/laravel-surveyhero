@@ -10,7 +10,6 @@ use Statikbe\Surveyhero\Contracts\SurveyResponseContract;
 use Statikbe\Surveyhero\Exceptions\AnswerNotImportedException;
 use Statikbe\Surveyhero\Exceptions\AnswerNotMappedException;
 use Statikbe\Surveyhero\Exceptions\QuestionNotImportedException;
-use Statikbe\Surveyhero\Services\SurveyMappingService;
 use Statikbe\Surveyhero\SurveyheroRegistrar;
 
 abstract class AbstractQuestionResponseCreator implements QuestionResponseCreator

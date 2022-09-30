@@ -27,7 +27,7 @@ class ChoiceTableQuestionAndAnswerCreator extends AbstractQuestionAndAnswerCreat
                 ];
 
                 $questionMapping = (new SurveyMappingService())->getQuestionMappingForSurvey($survey, $question->element_id);
-                $mappedChoice = $this->getChoiceMapping($choice->choice_id, $questionMapping);
+                $mappedChoice = $this->getChoiceMapping($choice->choice_id, $rowQuestion->row_id, $questionMapping);
 
                 $this->setChoiceAndConvertToDataType($mappedChoice, $questionMapping['mapped_data_type'], $responseData, $choice);
 

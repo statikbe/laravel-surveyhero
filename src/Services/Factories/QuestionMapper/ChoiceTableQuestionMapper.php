@@ -59,6 +59,7 @@ class ChoiceTableQuestionMapper extends AbstractQuestionMapper
                 'question_id' => $rowQuestion->row_id,
                 'field' => "question_{$questionCounter}_{$subquestionIndex}",
             ];
+            $subquestionIndex++;
         }
 
         return $mapping;

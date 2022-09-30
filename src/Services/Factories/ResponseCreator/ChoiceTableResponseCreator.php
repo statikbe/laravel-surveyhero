@@ -4,6 +4,7 @@ namespace Statikbe\Surveyhero\Services\Factories\ResponseCreator;
 
 use Statikbe\Surveyhero\Contracts\SurveyQuestionResponseContract;
 use Statikbe\Surveyhero\Contracts\SurveyResponseContract;
+use Statikbe\Surveyhero\Services\SurveyMappingService;
 use Statikbe\Surveyhero\SurveyheroRegistrar;
 
 class ChoiceTableResponseCreator extends AbstractQuestionResponseCreator
@@ -77,9 +78,10 @@ class ChoiceTableResponseCreator extends AbstractQuestionResponseCreator
          */
 
         $responseList = [];
+        $mappingService = new SurveyMappingService();
 
         foreach ($surveyheroQuestionResponse->choice_table as $surveyheroChoiceQuestion) {
-            $subquestionMapping = $this->getSubquestionMapping($surveyheroChoiceQuestion->row_id, $questionMapping);
+            $subquestionMapping = $mappingService->getSubquestionMapping($surveyheroChoiceQuestion->row_id, $questionMapping);
 
             $notUpdatedResponses = $this->findAllExistingQuestionResponses($subquestionMapping['question_id'], $response);
             foreach ($surveyheroChoiceQuestion->choices as $surveyheroChoice) {
@@ -109,18 +111,5 @@ class ChoiceTableResponseCreator extends AbstractQuestionResponseCreator
         }
 
         return $responseList;
-    }
-
-    protected function getSubquestionMapping(string|int $questionId, array $questionMapping): array
-    {
-        $questionMap = array_filter($questionMapping['subquestion_mapping'], function ($question, $key) use ($questionId) {
-            return $question['question_id'] == $questionId;
-        }, ARRAY_FILTER_USE_BOTH);
-
-        if (! empty($questionMapping)) {
-            $questionMap = reset($questionMap);
-        }
-
-        return $questionMap;
     }
 }

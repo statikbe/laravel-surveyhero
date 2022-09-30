@@ -146,6 +146,25 @@ class SurveyMappingService extends AbstractSurveyheroAPIService
     }
 
     /**
+     * Returns the subquestion mapping for questions with subquestions.
+     * @param string|int $questionId The subquestion ID.
+     * @param array $surveyQuestionMapping  The question mapping. It needs to have a subquestion_mapping key.
+     * @return array
+     */
+    public function getSubquestionMapping(string|int $questionId, array $surveyQuestionMapping): array
+    {
+        $questionMap = array_filter($surveyQuestionMapping['subquestion_mapping'], function ($question, $key) use ($questionId) {
+            return $question['question_id'] == $questionId;
+        }, ARRAY_FILTER_USE_BOTH);
+
+        if (! empty($questionMap)) {
+            $questionMap = reset($questionMap);
+        }
+
+        return $questionMap;
+    }
+
+    /**
      * @param  SurveyContract  $survey
      * @param  string  $questionId
      * @param  string|null  $subquestionId

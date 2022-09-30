@@ -37,10 +37,19 @@ abstract class AbstractQuestionAndAnswerCreator implements QuestionAndAnswerCrea
             ]);
     }
 
-    protected function getChoiceMapping(string|int $choiceId, array $questionMapping): int|string|null
+    protected function getChoiceMapping(string|int $choiceId, string|int $questionId, array $questionMapping): int|string|null
     {
-        if (array_key_exists($choiceId, $questionMapping['answer_mapping'])) {
-            return $questionMapping['answer_mapping'][$choiceId];
+        $answerMapping = $questionMapping['answer_mapping'];
+        $mappingService = new SurveyMappingService();
+
+        if($questionMapping['question_id'] !== $questionId && isset($questionMapping['subquestion_mapping'])) {
+            $subquestionMapping = $mappingService->getSubquestionMapping($questionId, $questionMapping);
+            if(isset($subquestionMapping['answer_mapping'])){
+                $answerMapping = $subquestionMapping['answer_mapping'];
+            }
+        }
+        if (array_key_exists($choiceId, $answerMapping)) {
+            return $answerMapping[$choiceId];
         }
 
         return null;

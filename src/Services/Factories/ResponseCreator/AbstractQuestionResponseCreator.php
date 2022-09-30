@@ -10,6 +10,7 @@ use Statikbe\Surveyhero\Contracts\SurveyResponseContract;
 use Statikbe\Surveyhero\Exceptions\AnswerNotImportedException;
 use Statikbe\Surveyhero\Exceptions\AnswerNotMappedException;
 use Statikbe\Surveyhero\Exceptions\QuestionNotImportedException;
+use Statikbe\Surveyhero\Services\SurveyMappingService;
 use Statikbe\Surveyhero\SurveyheroRegistrar;
 
 abstract class AbstractQuestionResponseCreator implements QuestionResponseCreator
@@ -96,15 +97,6 @@ abstract class AbstractQuestionResponseCreator implements QuestionResponseCreato
             'survey_response_id' => $response->id,
             'survey_answer_id' => $answer ? $answer->id : null,
         ];
-    }
-
-    protected function getChoiceMapping(string|int $choiceId, array $questionMapping): int|string|null
-    {
-        if (array_key_exists($choiceId, $questionMapping['answer_mapping'])) {
-            return $questionMapping['answer_mapping'][$choiceId];
-        }
-
-        return null;
     }
 
     /**

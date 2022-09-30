@@ -111,6 +111,11 @@ return [
                     [
                         'question_id' => 13509165,
                         'field' => 'question_3',
+                        'answer_mapping' => [
+                            13509163 => 3,
+                            13509164 => 2,
+                            13509165 => 1,
+                        ],
                     ],
                 ],
                 'answer_mapping' => [

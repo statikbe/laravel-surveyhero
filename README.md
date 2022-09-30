@@ -208,6 +208,11 @@ data type of `answer_mapping`.
         [
             'question_id' => 13509165,
             'field' => 'question_3',
+            'answer_mapping' => [
+                13509163 => 3,
+                13509164 => 2,
+                13509165 => 1,
+            ],
         ],
     ],
     'answer_mapping' => [
@@ -221,7 +226,8 @@ data type of `answer_mapping`.
 
 A choice table is a Likert scale type of question with a set of rows or subquestions. You need to map each row to a 
 subquestion with its own `question_id` and `field`. So each subquestion will become a `SurveyQuestionResponse` record.
-The `answer_mapping` operates identically to [Choice List](#choice-list).
+The `answer_mapping` operates identically to [Choice List](#choice-list). You can also specify an `answer_mapping` for
+a specific question, in case the mapping differs for that question, see `question_id` 13509165.
 
 ### Link parameters mapping
 
@@ -374,7 +380,7 @@ The `foreign_key` is the column name of the foreign keys used to refer the table
 
 ## Ideas for future improvements
 
-- Add support for response filters in the API client to filter out responses from collectors and use last updated at filters.
+- ~~Add support for response filters in the API client to filter out responses from collectors and use last updated at filters.~~
 - Add more default indices to the migration.
 - Support more Surveyhero question types.
 - Support more converted value data types, e.g. double.

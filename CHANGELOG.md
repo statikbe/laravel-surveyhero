@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-surveyhero` will be documented in this file.
 
+## 1.3.4 - 2022-09-30
+
+Support for answer_mapping to subquestions of choice_table type.
+
 ## v1.3.3 - 2022-09-26
 
 - add convertedValue() convenience function that returns the converted value without specifying the type.

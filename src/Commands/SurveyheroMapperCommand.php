@@ -88,9 +88,9 @@ class SurveyheroMapperCommand extends Command
 
         fwrite($myfile, "<?php \n\n");
         fwrite($myfile, "return [\n\t'question_mapping' => [\n");
-        fwrite($myfile, "\t\t[\n");
         foreach ($mapping['question_mapping'] as $surveyMap) {
-            fwrite($myfile, sprintf("\t\t\t'survey_id' => %s, \n\t\t\t'questions' => [\n", $surveyMap['survey_id']));
+            fwrite($myfile, "\t\t[\n");
+            fwrite($myfile, sprintf("\t\t\t'survey_id' => %s, \n\t\t\t'collectors' => [%s], \n\t\t\t'questions' => [\n", $surveyMap['survey_id'], $surveyMap['collectors']));
             foreach ($surveyMap['questions'] as $line => $questionMap) {
                 fwrite($myfile, $this->var_export_short($questionMap, "\t\t\t\t"));
                 fwrite($myfile, ",\n");

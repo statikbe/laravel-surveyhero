@@ -33,8 +33,14 @@ class SurveyMappingService extends AbstractSurveyheroAPIService
     public function map(SurveyContract $survey): array
     {
         $questions = $this->client->getSurveyQuestions($survey->surveyhero_id);
+
+        $collectors = collect($this->client->getSurveyCollectors($survey->surveyhero_id))->map(function ($value) {
+            return $value->collector_id;
+        });
+
         $mapping = [
             'survey_id' => (int) $survey->surveyhero_id,
+            'collectors' => $collectors->implode(',') ?? null,
             'questions' => [],
         ];
         $questionCounter = 1;

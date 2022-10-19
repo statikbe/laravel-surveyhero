@@ -62,16 +62,15 @@ class SurveyheroClient
         return $languages ? $languages->languages : [];
     }
 
-    public function createWebhook(string|int $surveyId, string $eventType, string $url, string $status="active")
+    public function createWebhook(string|int $surveyId, string $eventType, string $url, string $status = 'active')
     {
         $body = [
             'event_type' => $eventType,
             'url' => $url,
-            'status' => $status
+            'status' => $status,
         ];
 
         $this->postToSurveyHero(sprintf('surveys/%s/webhooks', $surveyId), $body);
-
     }
 
     public function transformAPITimestamp(string $surveyheroTimestamp): Carbon
@@ -95,11 +94,11 @@ class SurveyheroClient
         //Prevent API rate limiting: max 2 requests per second
         //half a second in microseconds is 500000
         usleep(500000);
-        $response =  Http::withBasicAuth(config('surveyhero.api_username'), config('surveyhero.api_password'))
-                       ->post(config('surveyhero.api_url') . $urlPath, $body);
-         if($response->successful()) {
-             return $response;
-         }
-        Throw new \Exception($response->body());
+        $response = Http::withBasicAuth(config('surveyhero.api_username'), config('surveyhero.api_password'))
+                       ->post(config('surveyhero.api_url').$urlPath, $body);
+        if ($response->successful()) {
+            return $response;
+        }
+        throw new \Exception($response->body());
     }
 }

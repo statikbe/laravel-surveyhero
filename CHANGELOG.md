@@ -2,6 +2,15 @@
 
 All notable changes to `laravel-surveyhero` will be documented in this file.
 
+## V1.3.6 - 2022-10-19
+
+Added command to generate webhooks for your surveys
+
+surveyhero:add-webooks
+{--survey=all : The Surveyhero survey ID}
+{--eventType= : Webhooks event type (https://developer.surveyhero.com/api/#webhooks-event-types)}
+{--url= : The URL the webhook should call}
+
 ## v1.3.5 - 2022-10-19
 
 - Add collectors to mapping command

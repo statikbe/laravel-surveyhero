@@ -2,6 +2,11 @@
 
 All notable changes to `laravel-surveyhero` will be documented in this file.
 
+## v1.3.5 - 2022-10-19
+
+- Add collectors to mapping command
+- Fix mapping command formatting when mapping multiple surveys
+
 ## 1.3.4 - 2022-09-30
 
 Support for answer_mapping to subquestions of choice_table type.

@@ -378,6 +378,40 @@ You can change the table names by editing the `table_names` variable in the conf
 
 The `foreign_key` is the column name of the foreign keys used to refer the table name.
 
+## Surveyhero webhooks
+
+We have implemented part of the [Surveyhero webhook](https://developer.surveyhero.com/api/#webhooks-api) options into this package.
+
+### Create a webhook
+
+With the command below you can add a webhook to your Survey:
+
+```shell 
+php artisan surveyhero:add-webhooks --eventType=response.completed --url=https://webhook.site/complete-response
+```
+
+### Webhook handlers
+
+We have also implemented a default controller (`SurveyheroWebhookController.php`) to handle the webhook responses. Currently, it only supports the 
+`response.completed` [type](https://developer.surveyhero.com/api/#webhooks-event-types).
+
+You can add this in a route to your `api.php` file, like so:
+
+```php 
+use Statikbe\Surveyhero\Http\Controllers\Api\SurveyheroWebhookController;
+
+Route::post('/process-surveyhero-response-completed', [SurveyheroWebhookController::class, 'handleResponseCompletedWebhook'])
+    ->name('surveyhero_response_webhook');
+```
+
+There is also a convenience function on the facade so you can also just include this in your `api.php`:
+
+```php 
+use Statikbe\Surveyhero\Facades\Surveyhero;
+
+Surveyhero::webhookRoutes();
+```
+
 ## Ideas for future improvements
 
 - ~~Add support for response filters in the API client to filter out responses from collectors and use last updated at filters.~~

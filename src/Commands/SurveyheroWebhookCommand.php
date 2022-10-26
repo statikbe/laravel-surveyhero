@@ -9,9 +9,9 @@ use Statikbe\Surveyhero\SurveyheroRegistrar;
 
 class SurveyheroWebhookCommand extends Command
 {
-    public $signature = 'surveyhero:add-webooks
+    public $signature = 'surveyhero:add-webhooks
                         {--survey=all : The Surveyhero survey ID}
-                        {--eventType= : Webhooks event type (https://developer.surveyhero.com/api/#webhooks-event-types)}
+                        {--eventType=response.completed : Webhooks event type (https://developer.surveyhero.com/api/#webhooks-event-types)}
                         {--url= : The URL the webhook should call}';
 
     public $description = 'Automatically generate webhooks for survey responses on your desired URL.';

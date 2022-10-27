@@ -412,9 +412,29 @@ use Statikbe\Surveyhero\Facades\Surveyhero;
 Surveyhero::webhookRoutes();
 ```
 
+## Data export
+
+You can export the responses to a spreadsheet with questions, answers and responses worksheets by default.
+For example, you can execute:
+
+```shell
+ php artisan surveyhero:responses-export --survey=1451654 --linkParameter=organisation --extraResponseCol=survey_completed --extraResponseCol=survey_start_date
+```
+
+You can pass the survey to be exported and then customise the export by adding columns to the responses sheet, from
+the link parameters that were passed to Surveyhero or extra columns from the survey responses table.
+
+### Customisation
+
+You can extend `SurveyExportService`, `SurveyExport` and the sheet implementations.
+
+In the `SurveyExportService` you can change the `createSurveyExport()` function to change the `SurveyExport` implementation.
+If you want to add more sheets, you can set the sheets by setting `setSheets()` on `SurveyExport`. 
+If you want to change the work sheets, you can change the queries in `query()`, the title in `setTitle()`, etc.  
+
 ## Ideas for future improvements
 
-- ~~Add support for response filters in the API client to filter out responses from collectors and use last updated at filters.~~
+- Add more commands to manage webhooks
 - Add more default indices to the migration.
 - Support more Surveyhero question types.
 - Support more converted value data types, e.g. double.
@@ -424,10 +444,7 @@ Surveyhero::webhookRoutes();
   - there are no double answer IDs.
   - the data format for a question time is ok, i.e. are all fields there and are they the right type.
   - all questions and answers are mapped by doing an API request.
-- Export survey responses to CSV and Excel.
 - Statistics calculator service to quickly query aggregates of responses of questions.
-- ~~A command to create a basic question_mapping configuration based on the [Surveyhero Element API](https://developer.surveyhero.com/api/#element-api)~~
-- ~~A command to create all surveys in the Surveyhero account.~~ 
 
 ## Testing
 

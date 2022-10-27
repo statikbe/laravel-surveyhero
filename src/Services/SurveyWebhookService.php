@@ -3,7 +3,6 @@
 namespace Statikbe\Surveyhero\Services;
 
 use Statikbe\Surveyhero\Contracts\SurveyContract;
-use Statikbe\Surveyhero\Models\Survey;
 
 class SurveyWebhookService extends AbstractSurveyheroAPIService
 {
@@ -12,7 +11,6 @@ class SurveyWebhookService extends AbstractSurveyheroAPIService
      *
      * @param  SurveyContract  $survey
      * @return void
-     *
      */
     public function createWebhook(SurveyContract $survey, string $eventType, string $url): void
     {

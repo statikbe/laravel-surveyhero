@@ -1,6 +1,6 @@
 <?php
 
-    namespace Statikbe\Surveyhero\Exports;
+namespace Statikbe\Surveyhero\Exports;
 
     use Maatwebsite\Excel\Concerns\Exportable;
     use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -10,23 +10,28 @@
     use Statikbe\Surveyhero\Exports\Sheets\QuestionsSheet;
     use Statikbe\Surveyhero\Exports\Sheets\ResponsesSheet;
 
-    class SurveyExport implements WithMultipleSheets, ShouldAutoSize {
-
+    class SurveyExport implements WithMultipleSheets, ShouldAutoSize
+    {
         use Exportable;
 
         private SurveyContract $survey;
+
         private array $linkParameters;
+
         private array $extraResponseColumns;
+
         private array $sheets = [];
 
-        public function __construct(SurveyContract $survey, array $linkParameters, array $extraResponseColumns=[]){
+        public function __construct(SurveyContract $survey, array $linkParameters, array $extraResponseColumns = [])
+        {
             $this->survey = $survey;
             $this->linkParameters = $linkParameters;
             $this->extraResponseColumns = $extraResponseColumns;
         }
 
-        public function sheets(): array {
-            if($this->sheets){
+        public function sheets(): array
+        {
+            if ($this->sheets) {
                 return $this->sheets;
             }
 
@@ -40,10 +45,12 @@
 
         /**
          * Override default worksheets list.
-         * @param array<object> $sheets
+         *
+         * @param  array<object>  $sheets
          * @return void
          */
-        public function setSheets(array $sheets): void {
+        public function setSheets(array $sheets): void
+        {
             $this->sheets = $sheets;
         }
     }

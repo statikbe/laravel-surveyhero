@@ -1,6 +1,6 @@
 <?php
 
-    namespace Statikbe\Surveyhero\Exports\Sheets;
+namespace Statikbe\Surveyhero\Exports\Sheets;
 
     use Illuminate\Support\Facades\DB;
     use Maatwebsite\Excel\Concerns\FromQuery;
@@ -11,41 +11,50 @@
     use Statikbe\Surveyhero\Contracts\SurveyContract;
     use Statikbe\Surveyhero\Contracts\SurveyQuestionContract;
 
-    class QuestionsSheet implements FromQuery, WithTitle, WithHeadings, WithMapping, ShouldAutoSize {
-
+    class QuestionsSheet implements FromQuery, WithTitle, WithHeadings, WithMapping, ShouldAutoSize
+    {
         private SurveyContract $survey;
+
         private array $locales;
+
         private ?string $title;
 
-        public function __construct(SurveyContract $survey){
+        public function __construct(SurveyContract $survey)
+        {
             $this->survey = $survey;
             $this->locales = $this->getLabelLocales();
             $this->title = null;
         }
 
-        public function title(): string {
-            if($this->title){
+        public function title(): string
+        {
+            if ($this->title) {
                 return $this->title;
             }
+
             return 'Questions';
         }
 
-        public function setTitle(string $title): static {
+        public function setTitle(string $title): static
+        {
             $this->title = $title;
+
             return $this;
         }
 
-        public function query() {
+        public function query()
+        {
             return $this->survey->surveyQuestions();
         }
 
-        public function headings(): array {
+        public function headings(): array
+        {
             $headings = [
                 'surveyhero_question_id',
                 'field',
             ];
 
-            foreach($this->locales as $locale){
+            foreach ($this->locales as $locale) {
                 $headings[] = "question_$locale";
             }
 
@@ -53,34 +62,38 @@
         }
 
         /**
-         * @param SurveyQuestionContract $surveyQuestion
+         * @param  SurveyQuestionContract  $surveyQuestion
          * @return array
          */
-        public function map($surveyQuestion): array {
+        public function map($surveyQuestion): array
+        {
             $data = [
                 $surveyQuestion->surveyhero_question_id,
                 $surveyQuestion->field,
             ];
 
-            foreach($this->locales as $locale){
+            foreach ($this->locales as $locale) {
                 $data[] = $surveyQuestion->translate('label', $locale);
             }
+
             return $data;
         }
 
-        private function getLabelLocales(): array {
+        private function getLabelLocales(): array
+        {
             $questionTable = config('surveyhero.table_names.survey_questions');
-            $labelLocales = DB::select("select distinct JSON_KEYS(label) as label from ".$questionTable['name']);
+            $labelLocales = DB::select('select distinct JSON_KEYS(label) as label from '.$questionTable['name']);
 
             $locales = [];
-            foreach($labelLocales as $labelLocale){
-                if($labelLocale && $labelLocale->label){
+            foreach ($labelLocales as $labelLocale) {
+                if ($labelLocale && $labelLocale->label) {
                     $jsonData = json_decode($labelLocale->label);
-                    foreach($jsonData as $locale){
+                    foreach ($jsonData as $locale) {
                         $locales[$locale] = $locale;
                     }
                 }
             }
+
             return $locales;
         }
     }

@@ -1,6 +1,6 @@
 <?php
 
-    namespace Statikbe\Surveyhero\Commands;
+namespace Statikbe\Surveyhero\Commands;
 
     use Illuminate\Console\Command;
     use Statikbe\Surveyhero\Services\SurveyExportService;
@@ -29,5 +29,4 @@
 
             return self::SUCCESS;
         }
-
     }

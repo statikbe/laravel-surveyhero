@@ -1,49 +1,51 @@
 <?php
 
-    namespace Statikbe\Surveyhero\Exports\Sheets;
+namespace Statikbe\Surveyhero\Exports\Sheets;
 
-    use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
-    use Illuminate\Database\Eloquent\Relations\Relation;
-    use Illuminate\Database\Query\Builder;
     use Illuminate\Support\Collection;
     use Illuminate\Support\Facades\DB;
     use Maatwebsite\Excel\Concerns\FromCollection;
-    use Maatwebsite\Excel\Concerns\FromQuery;
     use Maatwebsite\Excel\Concerns\ShouldAutoSize;
     use Maatwebsite\Excel\Concerns\WithHeadings;
-    use Maatwebsite\Excel\Concerns\WithMapping;
     use Maatwebsite\Excel\Concerns\WithTitle;
     use Statikbe\Surveyhero\Contracts\SurveyContract;
-    use Statikbe\Surveyhero\SurveyheroRegistrar;
 
-    class ResponsesSheet implements FromCollection, WithTitle, WithHeadings, ShouldAutoSize {
+    class ResponsesSheet implements FromCollection, WithTitle, WithHeadings, ShouldAutoSize
+    {
         private SurveyContract $survey;
+
         private array $linkParameters;
+
         private array $extraResponseColumns;
+
         private array $questionFields = [];
+
         private ?string $title;
 
-        public function __construct(SurveyContract $survey, array $linkParameters, array $extraResponseColumns){
+        public function __construct(SurveyContract $survey, array $linkParameters, array $extraResponseColumns)
+        {
             $this->survey = $survey;
             $this->linkParameters = $linkParameters;
             $this->extraResponseColumns = $extraResponseColumns;
             $this->title = null;
         }
 
-        public function collection() {
+        public function collection()
+        {
             $query = $this->query();
             $responses = $query->get();
 
-            $groupedResponses = $responses->mapToGroups(function($item, $key){
+            $groupedResponses = $responses->mapToGroups(function ($item, $key) {
                 return [$item->surveyhero_response_id => $item];
             });
 
-            return $groupedResponses->map(function($responses, $key) {
+            return $groupedResponses->map(function ($responses, $key) {
                 return $this->transposeResponse($responses, $key);
             });
         }
 
-        public function query() {
+        public function query()
+        {
             $surveyTable = config('surveyhero.table_names.surveys');
             $questionTable = config('surveyhero.table_names.survey_questions');
             $responsesTable = config('surveyhero.table_names.survey_responses');
@@ -60,22 +62,23 @@
                 $responsesTable['name'].'.surveyhero_link_parameters',
             ];
 
-            foreach($this->extraResponseColumns as $extraResponseColumn){
+            foreach ($this->extraResponseColumns as $extraResponseColumn) {
                 $selectRows[] = $responsesTable['name'].'.'.$extraResponseColumn;
             }
 
             //TODO filter on link parameters
             return DB::table($responsesTable['name'])
-                ->join($questionResponseTable['name'], $questionResponseTable['name'] . '.' . $responsesTable['foreign_key'], '=', $responsesTable['name'] . '.id')
-                ->join($questionTable['name'], $questionResponseTable['name'] . '.' . $questionTable['foreign_key'], '=', $questionTable['name'] . '.id')
-                ->join($answersTable['name'], $questionResponseTable['name'] . '.' . $answersTable['foreign_key'], $answersTable['name'] . '.id')
+                ->join($questionResponseTable['name'], $questionResponseTable['name'].'.'.$responsesTable['foreign_key'], '=', $responsesTable['name'].'.id')
+                ->join($questionTable['name'], $questionResponseTable['name'].'.'.$questionTable['foreign_key'], '=', $questionTable['name'].'.id')
+                ->join($answersTable['name'], $questionResponseTable['name'].'.'.$answersTable['foreign_key'], $answersTable['name'].'.id')
                 ->select($selectRows)
-                ->where($responsesTable['name'] . '.' . $surveyTable['foreign_key'], '=', $this->survey->id)
+                ->where($responsesTable['name'].'.'.$surveyTable['foreign_key'], '=', $this->survey->id)
                 ->orderBy('surveyhero_response_id', 'asc')
-                ->orderBy($questionTable['name'] . '.surveyhero_question_id', 'asc');
+                ->orderBy($questionTable['name'].'.surveyhero_question_id', 'asc');
         }
 
-        public function headings(): array {
+        public function headings(): array
+        {
             $headings = [
                 'surveyhero_response_id',
             ];
@@ -86,7 +89,7 @@
             //extra response columns
             $headings = array_merge($headings, $this->extraResponseColumns);
 
-            foreach($this->survey->surveyQuestions as $question){
+            foreach ($this->survey->surveyQuestions as $question) {
                 $headings[] = $question->field;
                 $this->questionFields[] = $question->field;
             }
@@ -94,63 +97,71 @@
             return $headings;
         }
 
-        public function title(): string {
-            if($this->title){
+        public function title(): string
+        {
+            if ($this->title) {
                 return $this->title;
             }
+
             return 'Responses';
         }
 
-        public function setTitle(string $title): static {
+        public function setTitle(string $title): static
+        {
             $this->title = $title;
+
             return $this;
         }
 
-        private function transposeResponse(Collection $responses, int $key): array {
+        private function transposeResponse(Collection $responses, int $key): array
+        {
             $responseData = [
                 $key,
             ];
             //link parameters
             $linkParameterValues = [];
-            foreach($this->linkParameters as $linkParameter){
-                foreach($responses as $response) {
+            foreach ($this->linkParameters as $linkParameter) {
+                foreach ($responses as $response) {
                     $jsonData = json_decode($response->surveyhero_link_parameters);
                     $linkParameterValues[$linkParameter] = ($jsonData->{$linkParameter} ?? null);
                 }
             }
             //  make sure the link parameters are inserted in the same order as in the headers:
-            foreach($this->linkParameters as $linkParameter) {
-                if($linkParameterValues[$linkParameter]) {
+            foreach ($this->linkParameters as $linkParameter) {
+                if ($linkParameterValues[$linkParameter]) {
                     $responseData[] = $linkParameterValues[$linkParameter];
+                } else {
+                    $responseData[] = null;
                 }
-                else $responseData[] = null;
             }
 
             //extra response colummns:
             $extraResponseValues = [];
-            foreach($this->extraResponseColumns as $extraResponseColumn){
-                foreach($responses as $response) {
+            foreach ($this->extraResponseColumns as $extraResponseColumn) {
+                foreach ($responses as $response) {
                     $extraResponseValues[$extraResponseColumn] = $response->{$extraResponseColumn};
                 }
             }
             //  make sure the extra columns are inserted in the same order as in the headers:
-            foreach($this->extraResponseColumns as $extraResponseColumn) {
-                if($extraResponseValues[$extraResponseColumn]){
+            foreach ($this->extraResponseColumns as $extraResponseColumn) {
+                if ($extraResponseValues[$extraResponseColumn]) {
                     $responseData[] = $extraResponseValues[$extraResponseColumn];
+                } else {
+                    $responseData[] = null;
                 }
-                else $responseData[] = null;
             }
 
             //questions
-            foreach($this->questionFields as $questionField){
+            foreach ($this->questionFields as $questionField) {
                 $answers = [];
-                foreach($responses as $response){
-                    if($response->question_field === $questionField){
+                foreach ($responses as $response) {
+                    if ($response->question_field === $questionField) {
                         $answers[] = $response->converted_string_value ?? $response->converted_int_value;
                     }
                 }
                 $responseData[] = implode('|', $answers);
             }
+
             return $responseData;
         }
     }

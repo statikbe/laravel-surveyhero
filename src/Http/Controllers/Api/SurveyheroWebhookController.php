@@ -1,6 +1,6 @@
 <?php
 
-    namespace Statikbe\Surveyhero\Http\Controllers\Api;
+namespace Statikbe\Surveyhero\Http\Controllers\Api;
 
     use Illuminate\Http\JsonResponse;
     use Illuminate\Http\Request;
@@ -10,8 +10,10 @@
     use Statikbe\Surveyhero\Models\Survey;
     use Statikbe\Surveyhero\Services\SurveyResponseImportService;
 
-    class SurveyheroWebhookController extends Controller {
-        public function handleResponseCompletedWebhook(SurveyResponseImportService $surveyHeroService, Request $request): JsonResponse {
+    class SurveyheroWebhookController extends Controller
+    {
+        public function handleResponseCompletedWebhook(SurveyResponseImportService $surveyHeroService, Request $request): JsonResponse
+        {
             Log::info('Surveyhero webhook called');
 
             //Check if response data is valid

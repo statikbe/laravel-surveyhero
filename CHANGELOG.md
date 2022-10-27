@@ -2,6 +2,11 @@
 
 All notable changes to `laravel-surveyhero` will be documented in this file.
 
+## v1.3.7 - 2022-10-26
+
+Fix typo in webhook command
+Add webhook handler controller for response completed webhook
+
 ## V1.3.6 - 2022-10-19
 
 Added command to generate webhooks for your surveys

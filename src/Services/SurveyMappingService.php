@@ -40,7 +40,7 @@ class SurveyMappingService extends AbstractSurveyheroAPIService
 
         $mapping = [
             'survey_id' => (int) $survey->surveyhero_id,
-            'collectors' => $collectors->implode(',') ?? null,
+            'collectors' => $collectors->implode(','),
             'questions' => [],
         ];
         $questionCounter = 1;

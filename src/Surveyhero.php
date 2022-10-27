@@ -2,7 +2,7 @@
 
 namespace Statikbe\Surveyhero;
 
-use Illuminate\Routing\Route;
+use Illuminate\Support\Facades\Route;
 use Statikbe\Surveyhero\Http\Controllers\Api\SurveyheroWebhookController;
 
 class Surveyhero

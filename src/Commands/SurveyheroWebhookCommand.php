@@ -54,7 +54,7 @@ class SurveyheroWebhookCommand extends Command
         foreach ($surveys as $surveyIndex => $survey) {
             /* @var SurveyContract $survey */
             try {
-                $this->webhookService->generateWebhook($survey, $eventType, $url);
+                $this->webhookService->createWebhook($survey, $eventType, $url);
             } catch (\Exception $e) {
                 $this->error($e->getMessage());
 

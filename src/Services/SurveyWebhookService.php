@@ -8,14 +8,13 @@ use Statikbe\Surveyhero\Models\Survey;
 class SurveyWebhookService extends AbstractSurveyheroAPIService
 {
     /**
-     * Creates a basic question mapping based on the API to kickstart the configuration.
+     * Creates a webhook for Surveyhero to notify on the given event type.
      *
      * @param  SurveyContract  $survey
-     * @return array
+     * @return void
      *
-     * @see SurveyheroMapperCommand
      */
-    public function generateWebhook(Survey $survey, string $eventType, string $url)
+    public function createWebhook(SurveyContract $survey, string $eventType, string $url): void
     {
         $this->client->createWebhook($survey->surveyhero_id, $eventType, $url, 'active');
     }

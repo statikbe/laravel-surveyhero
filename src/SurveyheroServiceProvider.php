@@ -9,6 +9,7 @@ use Statikbe\Surveyhero\Commands\SurveyheroQuestionsAndAnswersImportCommand;
 use Statikbe\Surveyhero\Commands\SurveyheroResponseImportCommand;
 use Statikbe\Surveyhero\Commands\SurveyheroSurveyImportCommand;
 use Statikbe\Surveyhero\Commands\SurveyheroWebhookCommand;
+use Statikbe\Surveyhero\Commands\SurveyResponseExportCommand;
 
 class SurveyheroServiceProvider extends PackageServiceProvider
 {
@@ -30,6 +31,7 @@ class SurveyheroServiceProvider extends PackageServiceProvider
                 SurveyheroQuestionsAndAnswersImportCommand::class,
                 SurveyheroMapperCommand::class,
                 SurveyheroWebhookCommand::class,
+                SurveyResponseExportCommand::class,
             ]);
     }
 

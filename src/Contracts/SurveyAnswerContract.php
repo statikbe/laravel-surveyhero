@@ -20,4 +20,13 @@ interface SurveyAnswerContract extends ModelContract
     const CONVERTED_TYPE_STRING = 'string';
 
     public function surveyQuestion(): BelongsTo;
+
+    /**
+     * Translate a variable with $key to $locale
+     * @param string $key
+     * @param string $locale
+     * @param bool $useFallbackLocale
+     * @return mixed
+     */
+    public function translate(string $key, string $locale = '', bool $useFallbackLocale = true): mixed;
 }

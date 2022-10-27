@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property Collection $surveyResponses
+ * @property Collection $surveyQuestions
  */
 interface SurveyContract extends ModelContract
 {

@@ -17,4 +17,13 @@ interface SurveyQuestionContract extends ModelContract
     public function survey(): BelongsTo;
 
     public function surveyAnswers(): HasMany;
+
+    /**
+     * Translate a variable with $key to $locale
+     * @param string $key
+     * @param string $locale
+     * @param bool $useFallbackLocale
+     * @return mixed
+     */
+    public function translate(string $key, string $locale = '', bool $useFallbackLocale = true): mixed;
 }

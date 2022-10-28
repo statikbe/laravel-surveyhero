@@ -23,9 +23,10 @@ interface SurveyAnswerContract extends ModelContract
 
     /**
      * Translate a variable with $key to $locale
-     * @param string $key
-     * @param string $locale
-     * @param bool $useFallbackLocale
+     *
+     * @param  string  $key
+     * @param  string  $locale
+     * @param  bool  $useFallbackLocale
      * @return mixed
      */
     public function translate(string $key, string $locale = '', bool $useFallbackLocale = true): mixed;

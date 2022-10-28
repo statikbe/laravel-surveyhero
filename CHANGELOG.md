@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-surveyhero` will be documented in this file.
 
+## v1.4.0 - 2022-10-27
+
+Add data export functionality to spreadsheet
+
 ## v1.3.7 - 2022-10-26
 
 Fix typo in webhook command

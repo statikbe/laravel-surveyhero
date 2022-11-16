@@ -179,7 +179,8 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
         ], $responseData);
     }
 
-    public function deleteSurveyResponse($surveyId, $responseId) {
+    public function deleteSurveyResponse($surveyId, $responseId)
+    {
         $this->client->deleteResponse($surveyId, $responseId);
     }
 

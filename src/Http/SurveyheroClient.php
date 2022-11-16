@@ -73,6 +73,11 @@ class SurveyheroClient
         $this->postToSurveyHero(sprintf('surveys/%s/webhooks', $surveyId), $body);
     }
 
+    public function deleteResponse(string|int $surveyId, string|int $responseId)
+    {
+        $this->deleteFromSurveyHero(sprintf('surveys/%s/responses/%s', $surveyId, $responseId));
+    }
+
     public function transformAPITimestamp(string $surveyheroTimestamp): Carbon
     {
         return Carbon::createFromFormat('Y-m-d\TH:i:s',
@@ -89,13 +94,26 @@ class SurveyheroClient
             ->get(config('surveyhero.api_url').$urlPath, $queryStringArgs);
     }
 
-    private function postToSurveyHero(string $urlPath, array $body = []): \Illuminate\Http\Client\Response
+    private function postToSurveyHero(string $urlPath, array $queryStringArgs = []): \Illuminate\Http\Client\Response
     {
         //Prevent API rate limiting: max 2 requests per second
         //half a second in microseconds is 500000
         usleep(500000);
         $response = Http::withBasicAuth(config('surveyhero.api_username'), config('surveyhero.api_password'))
-                       ->post(config('surveyhero.api_url').$urlPath, $body);
+                       ->post(config('surveyhero.api_url').$urlPath, $queryStringArgs);
+        if ($response->successful()) {
+            return $response;
+        }
+        throw new \Exception($response->body());
+    }
+
+    private function deleteFromSurveyHero(string $urlPath, array $queryStringArgs = []): \Illuminate\Http\Client\Response
+    {
+        //Prevent API rate limiting: max 2 requests per second
+        //half a second in microseconds is 500000
+        usleep(500000);
+        $response = Http::withBasicAuth(config('surveyhero.api_username'), config('surveyhero.api_password'))
+                        ->delete(config('surveyhero.api_url').$urlPath, $queryStringArgs);
         if ($response->successful()) {
             return $response;
         }

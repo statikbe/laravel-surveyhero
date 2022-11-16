@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-surveyhero` will be documented in this file.
 
+## 1.4.1 - 2022-11-16
+
+added public function deleteSurveyResponse($surveyId, $responseId) to SurveyResponseImportService::class to delete survey responses
+
 ## v1.4.0 - 2022-10-27
 
 Add data export functionality to spreadsheet

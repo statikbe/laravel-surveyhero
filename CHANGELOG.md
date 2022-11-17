@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-surveyhero` will be documented in this file.
 
+## v1.4.2 - 2022-11-17
+
+Fixed collector retrieval in webhook controller
+
 ## 1.4.1 - 2022-11-16
 
 added public function deleteSurveyResponse($surveyId, $responseId) to SurveyResponseImportService::class to delete survey responses

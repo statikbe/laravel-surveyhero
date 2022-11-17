@@ -33,7 +33,7 @@ class SurveyheroWebhookController extends Controller
         }
 
         //Check if response is from a configured collector, if not configured we do not import the response.
-        $collectors = $questionMapping[0]['collectors'];
+        $collectors = collect($questionMapping)->where('survey_id', $responseData['survey_id'])->pluck('collectors')->first();
         Log::info($collectors);
         if ($collectors && count($collectors) > 0 && ! in_array($responseData['collector_id'], $collectors)) {
             return response()->json([

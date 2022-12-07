@@ -39,6 +39,14 @@ class SurveyheroClient
         return $answerData->successful() ? json_decode($answerData->body()) : null;
     }
 
+    public function getSurveyElements(string|int $surveyId, string $lang = null): array
+    {
+        $questionsData = $this->fetchFromSurveyHero(sprintf('surveys/%s/elements%s', $surveyId, $lang ? '?lang='.$lang : null));
+        $questions = json_decode($questionsData->body());
+
+        return $questions ? $questions->elements : [];
+    }
+
     public function getSurveyQuestions(string|int $surveyId, string $lang = null): array
     {
         $questionsData = $this->fetchFromSurveyHero(sprintf('surveys/%s/questions%s', $surveyId, $lang ? '?lang='.$lang : null));

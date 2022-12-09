@@ -33,6 +33,7 @@ abstract class AbstractQuestionAndAnswerCreator implements QuestionAndAnswerCrea
                 'label' => [
                     $lang => $label ?? '',
                 ],
+                'surveyhero_element_id' => $questionId,
                 'field' => (new SurveyMappingService())->findQuestionField($survey, $questionId, $subquestionId),
             ]);
     }

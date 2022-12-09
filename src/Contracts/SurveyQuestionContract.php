@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /**
  * @property int $id
  * @property SurveyContract $survey_id
+ * @property int $surveyhero_element_id
  * @property int $surveyhero_question_id
  * @property string $field
  * @property string $label

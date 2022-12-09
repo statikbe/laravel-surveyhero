@@ -46,6 +46,7 @@ class CreateSurveyheroTables extends Migration
             $table->foreignId($tableNames['surveys']['foreign_key'])
                 ->constrained($tableNames['surveys']['name'])
                 ->onDelete('cascade');
+            $table->bigInteger('surveyhero_element_id')->nullable();
             $table->bigInteger('surveyhero_question_id')->nullable();
             $table->string('field');
             $table->json('label');

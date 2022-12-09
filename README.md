@@ -47,6 +47,7 @@ SURVEY {
 SURVEY_QUESTIONS {
     num id		
     num survey_id FK
+    num surveyhero_element_id
     num surveyhero_question_id
     string field			
     json label		

@@ -3,21 +3,20 @@
 namespace Statikbe\Surveyhero\Traits;
 
 use Statikbe\Surveyhero\Services\SurveyMappingService;
-use Statikbe\Surveyhero\SurveyheroRegistrar;
 
 trait HasCollectors
 {
     private ?array $collectors = null;
 
-
-    public function getCollectors(): array {
-        if(!$this->collectors) {
+    public function getCollectors(): array
+    {
+        if (! $this->collectors) {
             $surveyMappingService = new SurveyMappingService();
             $surveyMappingConfig = $surveyMappingService->getSurveyMappingFromConfig($this);
             $surveyCollectors = $this->collector_ids;
 
             //Take collectors from config if defined, otherwise use collectors from API
-            $this->collectors = isset($surveyMappingConfig['collectors']) && !empty($surveyMappingConfig['collectors']) ? $surveyMappingConfig['collectors'] : $surveyCollectors;
+            $this->collectors = isset($surveyMappingConfig['collectors']) && ! empty($surveyMappingConfig['collectors']) ? $surveyMappingConfig['collectors'] : $surveyCollectors;
         }
 
         return $this->collectors;

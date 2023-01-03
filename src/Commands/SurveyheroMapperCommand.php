@@ -34,10 +34,11 @@ class SurveyheroMapperCommand extends Command
         $generateConfig = trim($this->option('generateConfig'));
         $updateDatabase = trim($this->option('updateDatabase'));
 
-        if(!$generateConfig && !$updateDatabase) {
-            $this->comment("Please include at least one of the following parameters:");
-            $this->comment("--generateConfig (Generate the boiler plate for your question mapping)");
-            $this->comment("--updateDatabase (Update the question_mapping field in the database based on the API and config)");
+        if (! $generateConfig && ! $updateDatabase) {
+            $this->comment('Please include at least one of the following parameters:');
+            $this->comment('--generateConfig (Generate the boiler plate for your question mapping)');
+            $this->comment('--updateDatabase (Update the question_mapping field in the database based on the API and config)');
+
             return self::FAILURE;
         }
 
@@ -54,9 +55,9 @@ class SurveyheroMapperCommand extends Command
                 $surveyQuestionMapping = $this->mappingService->map($survey);
                 $mapping['question_mapping'][$surveyIndex] = $surveyQuestionMapping;
 
-                if($updateDatabase) {
+                if ($updateDatabase) {
                     $this->updateDatabaseMapping($survey, $surveyQuestionMapping);
-                    $this->comment("Mapping for survey [" . $survey->name . "] stored in database");
+                    $this->comment('Mapping for survey ['.$survey->name.'] stored in database');
                 } else {
                     $this->comment("Mapping for survey ['$survey->name'] completed!");
                 }
@@ -68,25 +69,25 @@ class SurveyheroMapperCommand extends Command
             $this->comment("Mapping for survey ['$survey->name'] completed!");
         }
 
-        if($generateConfig) {
+        if ($generateConfig) {
             $fileName = $this->writeFile($mapping);
             $this->comment("Generated mapping saved to: $fileName");
         }
 
-        $this->comment("Mapping complete!");
+        $this->comment('Mapping complete!');
 
         return self::SUCCESS;
     }
 
     private function updateDatabaseMapping($survey, $surveyQuestionMapping): void
     {
-        $collectors = array_map('intval',explode(',',$surveyQuestionMapping['collectors']));
+        $collectors = array_map('intval', explode(',', $surveyQuestionMapping['collectors']));
 
         app(SurveyheroRegistrar::class)->getSurveyClass()::updateOrCreate(
             ['id' => $survey->id],
             [
                 'collector_ids' => $collectors,
-                'question_mapping' => $surveyQuestionMapping['questions']
+                'question_mapping' => $surveyQuestionMapping['questions'],
             ]
         );
     }
@@ -96,7 +97,7 @@ class SurveyheroMapperCommand extends Command
         $dump = var_export($data, true);
 
         //Add question_id keys to questions array. This is necessary for merging with the api config
-        $dump = preg_replace('#(?:\A|\n)([ ]*)array \(#i', $data['question_id'] . ' => [', $dump, 1);
+        $dump = preg_replace('#(?:\A|\n)([ ]*)array \(#i', $data['question_id'].' => [', $dump, 1);
         $dump = preg_replace('#(?:\A|\n)([ ]*)array \(#i', '[', $dump); // Starts
         $dump = preg_replace('#\n([ ]*)\),#', "\n$1],", $dump); // Ends
         $dump = preg_replace('#=> \[\n\s+\],\n#', "=> [],\n", $dump); // Empties

@@ -29,7 +29,7 @@ class SurveyheroWebhookController extends Controller
 
         //Check if response is from an imported survey, if not imported we do not import the response.
         $survey = app(SurveyheroRegistrar::class)->getSurveyClass()->where('surveyhero_id', $responseData['survey_id'])->first();
-        if(!$survey) {
+        if (! $survey) {
             return response()->json([
                 'message' => 'Response survey_id does not match imported survey. So we do not import this response.',
             ], Response::HTTP_OK);
@@ -38,7 +38,7 @@ class SurveyheroWebhookController extends Controller
         $collectors = $survey->getCollectors();
 
         //Check if response is from a configured collector, if not configured we do not import the response.
-        if ($collectors && count($collectors) > 0 && ! in_array((int)$responseData['collector_id'], $collectors)) {
+        if ($collectors && count($collectors) > 0 && ! in_array((int) $responseData['collector_id'], $collectors)) {
             return response()->json([
                 'message' => 'Response collector does not match configured collectors. So we do not import this response.',
             ], Response::HTTP_OK);

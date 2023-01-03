@@ -97,58 +97,59 @@ return [
             'survey_id' => 1234567,
             'collectors' => [9876543], //optionally, see https://developer.surveyhero.com/api/#collector-api
             'questions' => [
-                'question_id' => 1000001,
-                'type' => 'choice_table',
-                'subquestion_mapping' => [
-                    [
-                        'question_id' => 13509163,
-                        'field' => 'question_1',
-                    ],
-                    [
-                        'question_id' => 13509164,
-                        'field' => 'question_2',
-                    ],
-                    [
-                        'question_id' => 13509165,
-                        'field' => 'question_3',
-                        'answer_mapping' => [
-                            13509163 => 3,
-                            13509164 => 2,
-                            13509165 => 1,
+                1000001 => [
+                    'question_id' => 1000001,
+                    'type' => 'choice_table',
+                    'subquestion_mapping' => [
+                        [
+                            'question_id' => 13509163,
+                            'field' => 'question_1',
+                        ],
+                        [
+                            'question_id' => 13509164,
+                            'field' => 'question_2',
+                        ],
+                        [
+                            'question_id' => 13509165,
+                            'field' => 'question_3',
+                            'answer_mapping' => [
+                                13509163 => 3,
+                                13509164 => 2,
+                                13509165 => 1,
+                            ],
                         ],
                     ],
+                    'answer_mapping' => [
+                        13509163 => 1,
+                        13509164 => 2,
+                        13509165 => 3,
+                    ],
+                    'mapped_data_type' => 'int', //can also be string if the values are strings in answer_mapping
                 ],
-                'answer_mapping' => [
-                    13509163 => 1,
-                    13509164 => 2,
-                    13509165 => 3,
+                1000002 => [
+                    'question_id' => 1000002,
+                    'type' => 'choices',
+                    'field' => 'question_4',
+                    'answer_mapping' => [
+                        13509166 => 1,
+                        13509167 => 2,
+                        13509168 => 3,
+                    ],
+                    'mapped_data_type' => 'int', //can also be string if the values are strings in answer_mapping
                 ],
-                'mapped_data_type' => 'int', //can also be string if the values are strings in answer_mapping
-            ],
 
-            [
-                'question_id' => 1000002,
-                'type' => 'choices',
-                'field' => 'question_4',
-                'answer_mapping' => [
-                    13509166 => 1,
-                    13509167 => 2,
-                    13509168 => 3,
+                1000005 => [
+                    'question_id' => 1000005,
+                    'type' => 'text',
+                    'field' => 'question_5',
                 ],
-                'mapped_data_type' => 'int', //can also be string if the values are strings in answer_mapping
-            ],
 
-            [
-                'question_id' => 1000005,
-                'type' => 'text',
-                'field' => 'question_5',
-            ],
-
-            [
-                'question_id' => 1000006,
-                'type' => 'number',
-                'field' => 'age',
-                'mapped_data_type' => 'int',
+                1000006 => [
+                    'question_id' => 1000006,
+                    'type' => 'number',
+                    'field' => 'age',
+                    'mapped_data_type' => 'int',
+                ],
             ],
         ],
     ],

@@ -9,7 +9,10 @@ use Statikbe\Surveyhero\SurveyheroRegistrar;
 
 class SurveyheroMapperCommand extends Command
 {
-    public $signature = 'surveyhero:map {--survey=all : The Surveyhero survey ID}';
+    public $signature = 'surveyhero:map
+                        {--survey=all : The Surveyhero survey ID}
+                        {--generateConfig : Generate the boiler plate for your question mapping}
+                        {--updateDatabase : Update the question_mapping and collector_ids fields in the database based on the API}';
 
     public $description = 'Map all questions and answers linked to configured surveys.';
 
@@ -28,6 +31,15 @@ class SurveyheroMapperCommand extends Command
     public function handle(): int
     {
         $surveyId = trim($this->option('survey'));
+        $generateConfig = trim($this->option('generateConfig'));
+        $updateDatabase = trim($this->option('updateDatabase'));
+
+        if(!$generateConfig && !$updateDatabase) {
+            $this->comment("Please include at least one of the following parameters:");
+            $this->comment("--generateConfig (Generate the boiler plate for your question mapping)");
+            $this->comment("--updateDatabase (Update the question_mapping field in the database based on the API and config)");
+            return self::FAILURE;
+        }
 
         $surveyQuery = app(SurveyheroRegistrar::class)->getSurveyClass()::query();
         if ($surveyId !== 'all') {
@@ -39,26 +51,52 @@ class SurveyheroMapperCommand extends Command
         foreach ($surveys as $surveyIndex => $survey) {
             /* @var SurveyContract $survey */
             try {
-                $mapping['question_mapping'][$surveyIndex] = $this->mappingService->map($survey);
+                $surveyQuestionMapping = $this->mappingService->map($survey);
+                $mapping['question_mapping'][$surveyIndex] = $surveyQuestionMapping;
+
+                if($updateDatabase) {
+                    $this->updateDatabaseMapping($survey, $surveyQuestionMapping);
+                    $this->comment("Mapping for survey [" . $survey->name . "] stored in database");
+                } else {
+                    $this->comment("Mapping for survey ['$survey->name'] completed!");
+                }
             } catch (\Exception $e) {
                 $this->error($e->getMessage());
 
                 return self::FAILURE;
             }
-            $this->comment("Mapping for survey '$survey->name' completed!");
+            $this->comment("Mapping for survey ['$survey->name'] completed!");
         }
 
-        $fileName = $this->writeFile($mapping);
+        if($generateConfig) {
+            $fileName = $this->writeFile($mapping);
+            $this->comment("Generated mapping saved to: $fileName");
+        }
 
-        $this->comment("Mapping complete! [$fileName]");
+        $this->comment("Mapping complete!");
 
         return self::SUCCESS;
+    }
+
+    private function updateDatabaseMapping($survey, $surveyQuestionMapping): void
+    {
+        $collectors = array_map('intval',explode(',',$surveyQuestionMapping['collectors']));
+
+        app(SurveyheroRegistrar::class)->getSurveyClass()::updateOrCreate(
+            ['id' => $survey->id],
+            [
+                'collector_ids' => $collectors,
+                'question_mapping' => $surveyQuestionMapping['questions']
+            ]
+        );
     }
 
     private function var_export_short($data, $linePrefix): string
     {
         $dump = var_export($data, true);
 
+        //Add question_id keys to questions array. This is necessary for merging with the api config
+        $dump = preg_replace('#(?:\A|\n)([ ]*)array \(#i', $data['question_id'] . ' => [', $dump, 1);
         $dump = preg_replace('#(?:\A|\n)([ ]*)array \(#i', '[', $dump); // Starts
         $dump = preg_replace('#\n([ ]*)\),#', "\n$1],", $dump); // Ends
         $dump = preg_replace('#=> \[\n\s+\],\n#', "=> [],\n", $dump); // Empties

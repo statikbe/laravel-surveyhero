@@ -19,6 +19,8 @@ class CreateSurveyheroTables extends Migration
             $table->bigInteger('surveyhero_id');
 
             $table->string('name');
+            $table->json('collector_ids')->nullable();
+            $table->json('question_mapping')->nullable();
             $table->datetime('survey_last_imported')->nullable();
 
             $table->timestamps();

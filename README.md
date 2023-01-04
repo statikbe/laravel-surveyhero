@@ -1,3 +1,5 @@
+<p align="center"><img src="documentation/img/banner-laravel-surveyhero.png" alt="Laravel Surveyhero"></p>
+
 # Import Surveyhero responses into the Laravel database
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/statikbe/laravel-surveyhero.svg?style=flat-square)](https://packagist.org/packages/statikbe/laravel-surveyhero)

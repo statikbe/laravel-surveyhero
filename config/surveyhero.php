@@ -101,15 +101,15 @@ return [
                     'question_id' => 1000001,
                     'type' => 'choice_table',
                     'subquestion_mapping' => [
-                        [
+                        13509163 => [
                             'question_id' => 13509163,
                             'field' => 'question_1',
                         ],
-                        [
+                        13509164 => [
                             'question_id' => 13509164,
                             'field' => 'question_2',
                         ],
-                        [
+                        13509165 => [
                             'question_id' => 13509165,
                             'field' => 'question_3',
                             'answer_mapping' => [

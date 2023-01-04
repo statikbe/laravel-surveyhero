@@ -96,7 +96,7 @@ class SurveyheroClient
     {
         //Prevent API rate limiting: max 2 requests per second
         //half a second in microseconds is 500000
-        usleep(500000);
+        usleep(600000);
 
         return Http::withBasicAuth(config('surveyhero.api_username'), config('surveyhero.api_password'))
             ->get(config('surveyhero.api_url').$urlPath, $queryStringArgs);
@@ -106,7 +106,7 @@ class SurveyheroClient
     {
         //Prevent API rate limiting: max 2 requests per second
         //half a second in microseconds is 500000
-        usleep(500000);
+        usleep(600000);
         $response = Http::withBasicAuth(config('surveyhero.api_username'), config('surveyhero.api_password'))
                        ->post(config('surveyhero.api_url').$urlPath, $queryStringArgs);
         if ($response->successful()) {
@@ -119,7 +119,7 @@ class SurveyheroClient
     {
         //Prevent API rate limiting: max 2 requests per second
         //half a second in microseconds is 500000
-        usleep(500000);
+        usleep(600000);
         $response = Http::withBasicAuth(config('surveyhero.api_username'), config('surveyhero.api_password'))
                         ->delete(config('surveyhero.api_url').$urlPath, $queryStringArgs);
         if ($response->successful()) {

@@ -3,10 +3,15 @@
 namespace Statikbe\Surveyhero\Http;
 
 use Carbon\Carbon;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 
 class SurveyheroClient
 {
+    const CACHE_LATEST_REQUEST_TIME_KEY = 'latest-surveyhero-api-request-time';
+
+    const REQUEST_RATE_LIMIT_WAIT_TIME = 60000;
+
     public function getSurveys(): array
     {
         $responsesData = $this->fetchFromSurveyHero('surveys');
@@ -15,14 +20,17 @@ class SurveyheroClient
         return $surveys ? $surveys->surveys : [];
     }
 
-    public function getSurveyResponses(string|int $surveyId, ?Carbon $surveyLastUpdatedAt, array $collectorIds = []): array
-    {
+    public function getSurveyResponses(
+        string|int $surveyId,
+        ?Carbon $surveyLastUpdatedAt,
+        array $collectorIds = []
+    ): array {
         $url = sprintf('surveys/%s/responses', $surveyId);
         $queryStringArgs = [];
         if ($surveyLastUpdatedAt) {
             $queryStringArgs['last_updated_on[from]'] = $surveyLastUpdatedAt->toIso8601String();
         }
-        if (! empty($collectorIds)) {
+        if (!empty($collectorIds)) {
             $queryStringArgs['collector_id'] = $collectorIds;
         }
 
@@ -41,7 +49,7 @@ class SurveyheroClient
 
     public function getSurveyElements(string|int $surveyId, string $lang = null): array
     {
-        $questionsData = $this->fetchFromSurveyHero(sprintf('surveys/%s/elements%s', $surveyId, $lang ? '?lang='.$lang : null));
+        $questionsData = $this->fetchFromSurveyHero(sprintf('surveys/%s/elements%s', $surveyId, $lang ? '?lang=' . $lang : null));
         $questions = json_decode($questionsData->body());
 
         return $questions ? $questions->elements : [];
@@ -49,7 +57,7 @@ class SurveyheroClient
 
     public function getSurveyQuestions(string|int $surveyId, string $lang = null): array
     {
-        $questionsData = $this->fetchFromSurveyHero(sprintf('surveys/%s/questions%s', $surveyId, $lang ? '?lang='.$lang : null));
+        $questionsData = $this->fetchFromSurveyHero(sprintf('surveys/%s/questions%s', $surveyId, $lang ? '?lang=' . $lang : null));
         $questions = json_decode($questionsData->body());
 
         return $questions ? $questions->elements : [];
@@ -74,8 +82,8 @@ class SurveyheroClient
     {
         $body = [
             'event_type' => $eventType,
-            'url' => $url,
-            'status' => $status,
+            'url'        => $url,
+            'status'     => $status,
         ];
 
         $this->postToSurveyHero(sprintf('surveys/%s/webhooks', $surveyId), $body);
@@ -88,43 +96,74 @@ class SurveyheroClient
 
     public function transformAPITimestamp(string $surveyheroTimestamp): Carbon
     {
-        return Carbon::createFromFormat('Y-m-d\TH:i:s',
-            substr($surveyheroTimestamp, 0, strpos($surveyheroTimestamp, '+')));
+        return Carbon::createFromFormat('Y-m-d\TH:i:s', substr($surveyheroTimestamp, 0, strpos($surveyheroTimestamp, '+')));
     }
 
     private function fetchFromSurveyHero(string $urlPath, array $queryStringArgs = []): \Illuminate\Http\Client\Response
     {
-        //Prevent API rate limiting: max 2 requests per second
-        //half a second in microseconds is 500000
-        usleep(600000);
+        $this->preventThrottle();
 
-        return Http::withBasicAuth(config('surveyhero.api_username'), config('surveyhero.api_password'))
-            ->get(config('surveyhero.api_url').$urlPath, $queryStringArgs);
+        $response = Http::retry(3, 600)
+                        ->withBasicAuth(config('surveyhero.api_username'), config('surveyhero.api_password'))
+                        ->get(config('surveyhero.api_url') . $urlPath, $queryStringArgs);
+
+        $this->updateThrottle();
+
+        if ($response->successful()) {
+            return $response;
+        }
+
+        throw new \Exception($response->body());
     }
 
     private function postToSurveyHero(string $urlPath, array $queryStringArgs = []): \Illuminate\Http\Client\Response
     {
-        //Prevent API rate limiting: max 2 requests per second
-        //half a second in microseconds is 500000
-        usleep(600000);
-        $response = Http::withBasicAuth(config('surveyhero.api_username'), config('surveyhero.api_password'))
-                       ->post(config('surveyhero.api_url').$urlPath, $queryStringArgs);
+        $this->preventThrottle();
+
+        $response = Http::retry(3, 600)
+                        ->withBasicAuth(config('surveyhero.api_username'), config('surveyhero.api_password'))
+                        ->post(config('surveyhero.api_url') . $urlPath, $queryStringArgs);
+
+        $this->updateThrottle();
+
+        if ($response->successful()) {
+            return $response;
+        }
+
+        throw new \Exception($response->body());
+    }
+
+    /**
+     * @throws \Exception
+     */
+    private function deleteFromSurveyHero(string $urlPath, array $queryStringArgs = []): \Illuminate\Http\Client\Response {
+        $this->preventThrottle();
+
+        $response = Http::retry(3, 600)
+                        ->withBasicAuth(config('surveyhero.api_username'), config('surveyhero.api_password'))
+                        ->delete(config('surveyhero.api_url') . $urlPath, $queryStringArgs);
+
+        $this->updateThrottle();
+
         if ($response->successful()) {
             return $response;
         }
         throw new \Exception($response->body());
     }
 
-    private function deleteFromSurveyHero(string $urlPath, array $queryStringArgs = []): \Illuminate\Http\Client\Response
+    //Prevent API rate limiting: max 2 requests per second
+    //Ensure sleep between requests
+    private function preventThrottle(): void
     {
-        //Prevent API rate limiting: max 2 requests per second
-        //half a second in microseconds is 500000
-        usleep(600000);
-        $response = Http::withBasicAuth(config('surveyhero.api_username'), config('surveyhero.api_password'))
-                        ->delete(config('surveyhero.api_url').$urlPath, $queryStringArgs);
-        if ($response->successful()) {
-            return $response;
+        if(cache(self::CACHE_LATEST_REQUEST_TIME_KEY)) {
+            usleep(self::REQUEST_RATE_LIMIT_WAIT_TIME);
         }
-        throw new \Exception($response->body());
     }
+
+    //Set latest request time with 1s TTL
+    private function updateThrottle(): void
+    {
+        cache([self::CACHE_LATEST_REQUEST_TIME_KEY => now()->format('Y-m-d H:i:s.u')], 1);
+    }
+
 }

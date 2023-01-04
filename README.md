@@ -1,8 +1,8 @@
 # Import Surveyhero responses into the Laravel database
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/statikbe/laravel-surveyhero.svg?style=flat-square)](https://packagist.org/packages/statikbe/laravel-surveyhero)
-[![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/statikbe/laravel-surveyhero/run-tests?label=tests)](https://github.com/statikbe/laravel-surveyhero/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![GitHub Code Style Action Status](https://img.shields.io/github/workflow/status/statikbe/laravel-surveyhero/Fix%20PHP%20code%20style%20issues?label=code%20style)](https://github.com/statikbe/laravel-surveyhero/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
+[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/statikbe/laravel-surveyhero/.github/workflows/run-tests.yml?branch=main)](https://github.com/statikbe/laravel-surveyhero/actions?query=workflow%3Arun-tests+branch%3Amain)
+[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/statikbe/laravel-surveyhero/.github/workflows/fix-php-code-style-issues.yml?branch=main)](https://github.com/statikbe/laravel-surveyhero/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/statikbe/laravel-surveyhero.svg?style=flat-square)](https://packagist.org/packages/statikbe/laravel-surveyhero)
 
 This package allows you to import [Surveyhero](https://www.surveyhero.com) survey responses. 

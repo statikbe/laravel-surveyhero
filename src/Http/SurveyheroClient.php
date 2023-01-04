@@ -3,7 +3,6 @@
 namespace Statikbe\Surveyhero\Http;
 
 use Carbon\Carbon;
-use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 
 class SurveyheroClient
@@ -30,7 +29,7 @@ class SurveyheroClient
         if ($surveyLastUpdatedAt) {
             $queryStringArgs['last_updated_on[from]'] = $surveyLastUpdatedAt->toIso8601String();
         }
-        if (!empty($collectorIds)) {
+        if (! empty($collectorIds)) {
             $queryStringArgs['collector_id'] = $collectorIds;
         }
 
@@ -49,7 +48,7 @@ class SurveyheroClient
 
     public function getSurveyElements(string|int $surveyId, string $lang = null): array
     {
-        $questionsData = $this->fetchFromSurveyHero(sprintf('surveys/%s/elements%s', $surveyId, $lang ? '?lang=' . $lang : null));
+        $questionsData = $this->fetchFromSurveyHero(sprintf('surveys/%s/elements%s', $surveyId, $lang ? '?lang='.$lang : null));
         $questions = json_decode($questionsData->body());
 
         return $questions ? $questions->elements : [];
@@ -57,7 +56,7 @@ class SurveyheroClient
 
     public function getSurveyQuestions(string|int $surveyId, string $lang = null): array
     {
-        $questionsData = $this->fetchFromSurveyHero(sprintf('surveys/%s/questions%s', $surveyId, $lang ? '?lang=' . $lang : null));
+        $questionsData = $this->fetchFromSurveyHero(sprintf('surveys/%s/questions%s', $surveyId, $lang ? '?lang='.$lang : null));
         $questions = json_decode($questionsData->body());
 
         return $questions ? $questions->elements : [];
@@ -82,8 +81,8 @@ class SurveyheroClient
     {
         $body = [
             'event_type' => $eventType,
-            'url'        => $url,
-            'status'     => $status,
+            'url' => $url,
+            'status' => $status,
         ];
 
         $this->postToSurveyHero(sprintf('surveys/%s/webhooks', $surveyId), $body);
@@ -105,7 +104,7 @@ class SurveyheroClient
 
         $response = Http::retry(3, 600)
                         ->withBasicAuth(config('surveyhero.api_username'), config('surveyhero.api_password'))
-                        ->get(config('surveyhero.api_url') . $urlPath, $queryStringArgs);
+                        ->get(config('surveyhero.api_url').$urlPath, $queryStringArgs);
 
         $this->updateThrottle();
 
@@ -122,7 +121,7 @@ class SurveyheroClient
 
         $response = Http::retry(3, 600)
                         ->withBasicAuth(config('surveyhero.api_username'), config('surveyhero.api_password'))
-                        ->post(config('surveyhero.api_url') . $urlPath, $queryStringArgs);
+                        ->post(config('surveyhero.api_url').$urlPath, $queryStringArgs);
 
         $this->updateThrottle();
 
@@ -136,12 +135,13 @@ class SurveyheroClient
     /**
      * @throws \Exception
      */
-    private function deleteFromSurveyHero(string $urlPath, array $queryStringArgs = []): \Illuminate\Http\Client\Response {
+    private function deleteFromSurveyHero(string $urlPath, array $queryStringArgs = []): \Illuminate\Http\Client\Response
+    {
         $this->preventThrottle();
 
         $response = Http::retry(3, 600)
                         ->withBasicAuth(config('surveyhero.api_username'), config('surveyhero.api_password'))
-                        ->delete(config('surveyhero.api_url') . $urlPath, $queryStringArgs);
+                        ->delete(config('surveyhero.api_url').$urlPath, $queryStringArgs);
 
         $this->updateThrottle();
 
@@ -155,7 +155,7 @@ class SurveyheroClient
     //Ensure sleep between requests
     private function preventThrottle(): void
     {
-        if(cache(self::CACHE_LATEST_REQUEST_TIME_KEY)) {
+        if (cache(self::CACHE_LATEST_REQUEST_TIME_KEY)) {
             usleep(self::REQUEST_RATE_LIMIT_WAIT_TIME);
         }
     }
@@ -165,5 +165,4 @@ class SurveyheroClient
     {
         cache([self::CACHE_LATEST_REQUEST_TIME_KEY => now()->format('Y-m-d H:i:s.u')], 1);
     }
-
 }

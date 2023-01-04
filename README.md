@@ -35,7 +35,7 @@ php artisan migrate
 
 ## Upgrading to V2
 
-Upgrade guide available [here](UPGRADING.md)
+The data model changed in v2, so [an upgrade guide](UPGRADING.md) is available.
 
 ## Data model
 
@@ -120,7 +120,7 @@ You can overwrite the default table names and Eloquent model classes, if needed 
 
 ## Import surveys
 
-This command imports all surveys for a given survey ID, the survey IDs in the configuration file or all surveys.
+This command imports the survey for a given survey ID, the survey IDs in the configuration file or all surveys.
 
 ```shell
 php artisan surveyhero:import-surveys
@@ -147,7 +147,9 @@ If you want to reimport all surveys you can wipe them by using the flag `--fresh
 
 ## Question and collector mapping
 
-In order to start importing our survey question, answers and responses we need to set up a mapping between the API and our database.
+In order to start importing our survey questions, answers and responses, we need to set up a mapping between the API and our application. The mapping is generated from the Surveyhero API data. When you want to rename questions, answers and convert responses, you can customise this mapping. To make this more flexible, we store this mapping in the Survey data model in the database. You can then change this mapping in the database or you can overwrite the mapping (or only specific questions) by adding the mapping to the configuration file of the question mappings that need to be altered. 
+
+This mechanism merges the configuration file mapping into the mapping stored in the database. This allows you to more easily change the survey on Surveyhero and just reimport the mapping without having to change the configuration and have to redeploy your application.
 
 ### Generate mapping
 To automatically generate the mapping using the API, run the following command:
@@ -156,15 +158,17 @@ To automatically generate the mapping using the API, run the following command:
 php artisan surveyhero:map --updateDatabase
 ```
 
-This will generate a default mapping for your questions and collectors and save them to the surveys column in the database.
+This will generate a default question mapping for your questions and collectors and save them to the surveys data model in the database. The configured collectors on Surveyhero will also be copied to the database and can be changed to your preference.
 
 **You should run this command everytime changes are made to questions/answers/collectors in SurveyHero!**
 
-### Customize mapping
-#### Customize collectors
+### Customise mapping
+#### Customise collectors
 This is useful when you only want to retrieve responses from a certain collector. For example when you have separate collectors set up for your environments.
 e.g. by creating a collector per environment you can maintain 1 survey for your local development environment and production deployment.
 In that case you might add environment vars for the collector ID's in the `.env` file to ease configuration.
+
+If there are collectors configured in the configuration file, they will be used and will overrule the collectors stored in the survey model.
 
 ```php
 'question_mapping' => [
@@ -182,7 +186,7 @@ In that case you might add environment vars for the collector ID's in the `.env`
 
 Collectors in the config file will overwrite the ones automatically imported in the database. When no collectors key is present, we will default to the value in de database.
 
-#### Customize questions/answers
+#### Customise questions/answers
 Customizing the mapping can be useful to decide on your own question identifiers and answer values.
 To do this, add `questions` to the question_mapping in your config file and include the questions you want to set up a custom mapping for:
 

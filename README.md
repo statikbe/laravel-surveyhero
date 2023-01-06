@@ -35,6 +35,10 @@ php artisan migrate
 **NB:** If you want to customise the default data model, first edit the configuration file, see the 
 [Data Model Customisation section](#data-model-customisation).
 
+## Upgrading to V2
+
+The data model changed in v2, so [an upgrade guide](UPGRADING.md) is available.
+
 ## Data model
 
 ``` mermaid
@@ -43,6 +47,8 @@ SURVEY {
     num id
     num surveyhero_id
     string name
+    json collector_ids
+    json question_mapping
     datetime survey_last_imported
 }
 
@@ -114,44 +120,123 @@ SURVEYHERO_API_PASSWORD=qwertyuiopasdfghjklzxcvbnm
 You can overwrite the default table names and Eloquent model classes, if needed check the 
 [Data Model Customisation section](#data-model-customisation).
 
-### Question mapping
+## Import surveys
 
-Then you need to map the Surveyhero question IDs and the choice IDs to your question identifiers and choice values.
-The published configuration file contains an example mapping.
+This command imports the survey for a given survey ID, the survey IDs in the configuration file or all surveys.
 
-You can check the structure of your survey by calling the Surveyhero API on the following URL (replace `[survey_id]` 
-with the ID of your survey):
-
-```
-https://api.surveyhero.com/v1/surveys/[survey_id]/elements
+```shell
+php artisan surveyhero:import-surveys
 ```
 
-Each survey has a separate data structure in the `question_mapping` configuration variable:
+You can import a specific survey with the flag `--survey=1234567`.
+
+Or you can configure survey IDs in the `question_mapping` in the `surveyhero.php` configuration file.
+```php
+'question_mapping' => [
+    [
+        'survey_id' => 1234567,
+    ],
+    [
+        'survey_id' => 4897492,
+    ],
+    ...
+];
+```
+
+If you want to import all, add the flag `--all`.
+
+If you want to reimport all surveys you can wipe them by using the flag `--fresh`.
+
+## Question and collector mapping
+
+In order to start importing our survey questions, answers and responses, we need to set up a mapping between the API and our application. The mapping is generated from the Surveyhero API data. When you want to rename questions, answers and convert responses, you can customise this mapping. To make this more flexible, we store this mapping in the Survey data model in the database. You can then change this mapping in the database or you can overwrite the mapping (or only specific questions) by adding the mapping to the configuration file of the question mappings that need to be altered. 
+
+This mechanism merges the configuration file mapping into the mapping stored in the database. This allows you to more easily change the survey on Surveyhero and just reimport the mapping without having to change the configuration and have to redeploy your application.
+
+### Generate mapping
+To automatically generate the mapping using the API, run the following command:
+
+```shell
+php artisan surveyhero:map --updateDatabase
+```
+
+This will generate a default question mapping for your questions and collectors and save them to the surveys data model in the database. The configured collectors on Surveyhero will also be copied to the database and can be changed to your preference.
+
+**You should run this command everytime changes are made to questions/answers/collectors in SurveyHero!**
+
+### Customise mapping
+#### Customise collectors
+This is useful when you only want to retrieve responses from a certain collector. For example when you have separate collectors set up for your environments.
+e.g. by creating a collector per environment you can maintain 1 survey for your local development environment and production deployment.
+In that case you might add environment vars for the collector ID's in the `.env` file to ease configuration.
+
+If there are collectors configured in the configuration file, they will be used and will overrule the collectors stored in the survey model.
 
 ```php
 'question_mapping' => [
     [
         'survey_id' => 1234567,
-        'collectors' => [ 9876543 ], //optionally, see https://developer.surveyhero.com/api/#collector-api
-        'questions' => [
-            ... //see below
-        ]
-    ]
+        'collectors' => [986362,524948],
+    ],
+    [
+        'survey_id' => 4897492,
+        'collectors' => env('COLLECTOR_IDS'),
+    ],
+    ...
 ];
 ```
 
-It is used to identify which Surveyhero survey the mapping is for.
-You can optionally set [the collector ID's](https://developer.surveyhero.com/api/#collector-api) that will be used to import the responses. You can configure different
-collectors per survey in Surveyhero. This can be useful to distinguish the responses of different environments, 
-e.g. by creating a collector per environment you can maintain 1 survey for your local development environment and production deployment.
-In that case you might add environment vars for the collector ID's in the `.env` file to ease configuration.
+Collectors in the config file will overwrite the ones automatically imported in the database. When no collectors key is present, we will default to the value in de database.
+
+#### Customise questions/answers
+Customizing the mapping can be useful to decide on your own question identifiers and answer values.
+To do this, add `questions` to the question_mapping in your config file and include the questions you want to set up a custom mapping for:
+
+```php
+'question_mapping' => [
+    [
+        'survey_id' => 1234567,
+        'collectors' => [986362,524948],
+        'questions' => [
+            #example numeric input
+            1000005 => [
+                'question_id' => 1000005,
+                'type' => 'text',
+                'field' => 'custom_question_field_name',
+            ],
+            #example choice list
+            1000002 => [
+                'question_id' => 1000002,
+                'type' => 'choices',
+                'field' => 'another_custom_question_field_name',
+                'answer_mapping' => [
+                    13509166 => 10,
+                    13509167 => 1000,
+                    13509168 => 1337,
+                ],
+                'mapped_data_type' => 'int',
+            ],
+        ]
+    ],
+    ...
+];
+```
 
 Each question type has different specifications, so the mapping data structure is slightly different:
+
+You can generate the complete `question_mapping` that you can copy-paste from into your configuration file and further
+adjust there. Following command generates `surveyhero_mapping.php`in the project root. This file contains the PHP array. Run:
+
+```shell
+php artisan surveyhero:map --generateConfig
+ ```
+
+#### Summary of currently supported question types and their mapping structure:
 
 #### Text input
 
 ```php
-[
+1000005 => [
     'question_id' => 1000005,
     'type' => 'text',
     'field' => 'question_5',
@@ -163,7 +248,7 @@ The field is the identifier in your database to be able to more easily query the
 #### Numeric input
 
 ```php
-[
+1000006 => [
     'question_id' => 1000006,
     'type' => 'number',
     'field' => 'age',
@@ -176,7 +261,7 @@ Currently, only integer support is implemented.
 #### Choice list
 
 ```php
-[
+1000002 => [
     'question_id' => 1000002,
     'type' => 'choices',
     'field' => 'question_4',
@@ -196,19 +281,19 @@ data type of `answer_mapping`.
 #### Choice table
 
 ```php
-[
+1000001 => [
     'question_id' => 1000001,
     'type' => 'choice_table',
     'subquestion_mapping' => [
-        [
+        13509163 => [
             'question_id' => 13509163,
             'field' => 'question_1',
         ],
-        [
+        13509164 => [
             'question_id' => 13509164,
             'field' => 'question_2',
         ],
-        [
+        13509165 => [
             'question_id' => 13509165,
             'field' => 'question_3',
             'answer_mapping' => [
@@ -227,10 +312,37 @@ data type of `answer_mapping`.
 ]
 ```
 
-A choice table is a Likert scale type of question with a set of rows or subquestions. You need to map each row to a 
+A choice table is a Likert scale type of question with a set of rows or subquestions. You need to map each row to a
 subquestion with its own `question_id` and `field`. So each subquestion will become a `SurveyQuestionResponse` record.
 The `answer_mapping` operates identically to [Choice List](#choice-list). You can also specify an `answer_mapping` for
 a specific question, in case the mapping differs for that question, see `question_id` 13509165.
+
+### Import questions and answers
+
+This command imports all survey questions and answers associated with their (translated) label for a given survey ID or all surveys. You can schedule this for continuous
+updates.
+
+```shell
+php artisan surveyhero:import-questions-and-answers
+```
+
+You can configure a specific survey with the flag `--survey=22333`.
+If you want to reimport all survey responses you can wipe the SurveyQuestions and SurveyAnswers by using the
+flag `--fresh`.
+
+### Import responses
+
+This command imports all survey responses for a given survey ID or all surveys. You can schedule this for continuous
+updates.
+First you need to create at least one `Survey` record with a Surveyhero ID.
+
+```shell
+php artisan surveyhero:import-responses
+```
+
+You can configure a specific survey with the flag `--survey=22333`.
+If you want to reimport all survey responses you can wipe the SurveyResponses and SurveyQuestionResponses by using the
+flag `--fresh`.
 
 ### Link parameters mapping
 
@@ -271,60 +383,6 @@ Following parameters are optional in case you want to evaluate the link_paramete
  - `entity` represents the model you're querying on
  - `value` represents the field you're comparing on your model
  - `field` represents the field from your model to store in de database
-
-## Commands
-
-### Import surveys
-
-This command imports all surveys for a given survey ID, the survey IDs in the configuration file or all surveys. 
-
-```shell
-php artisan surveyhero:import-surveys
-```
-
-You can configure a specific survey with the flag `--survey=22333`.
-Or you can configure survey IDs in the `question_mapping` in the configuration file.
-If you want to import all, add the flag `--all`.
-
-If you want to reimport all surveys you can wipe them by using the flag `--fresh`.
-
-
-### Import responses
-
-This command imports all survey responses for a given survey ID or all surveys. You can schedule this for continuous 
-updates.
-First you need to create at least one `Survey` record with a Surveyhero ID.
-
-```shell
-php artisan surveyhero:import-responses
-```
-
-You can configure a specific survey with the flag `--survey=22333`.
-If you want to reimport all survey responses you can wipe the SurveyResponses and SurveyQuestionResponses by using the
-flag `--fresh`.
-
-### Import questions and answers
-
-This command imports all survey questions and answers associated with their (translated) label for a given survey ID or all surveys. You can schedule this for continuous
-updates.
-
-```shell
-php artisan surveyhero:import-questions-and-answers
-```
-
-You can configure a specific survey with the flag `--survey=22333`.
-If you want to reimport all survey responses you can wipe the SurveyQuestions and SurveyAnswers by using the
-flag `--fresh`.
-
-### Generate configuration question mapping
-
-You can generate the `question_mapping` variable for the configuration file. The command generates `surveyhero_mapping.php` 
-in the project root. This file contains the PHP array that you can copy-paste into your configuration file and further
-adjust there. You can use this as a starting point to create the question mapping. Run:
-
-```shell
-php artisan surveyhero:map
- ```
 
 ## Data Model Customisation
 
@@ -446,7 +504,7 @@ If you want to change the work sheets, you can change the queries in `query()`, 
   - there are no double question IDs.
   - there are no double answer IDs.
   - the data format for a question time is ok, i.e. are all fields there and are they the right type.
-  - all questions and answers are mapped by doing an API request.
+  - ~~all questions and answers are mapped by doing an API request.~~
 - Statistics calculator service to quickly query aggregates of responses of questions.
 
 ## Testing

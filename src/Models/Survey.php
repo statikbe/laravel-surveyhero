@@ -9,15 +9,21 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Statikbe\Surveyhero\Contracts\SurveyContract;
 use Statikbe\Surveyhero\SurveyheroRegistrar;
+use Statikbe\Surveyhero\Traits\HasCollectors;
+use Statikbe\Surveyhero\Traits\HasQuestionMapping;
 
 class Survey extends Model implements SurveyContract
 {
     use HasFactory;
+    use HasQuestionMapping;
+    use HasCollectors;
 
     protected $guarded = [];
 
     protected $casts = [
         'survey_last_imported' => 'datetime',
+        'question_mapping' => 'array',
+        'collector_ids' => 'array',
     ];
 
     public function getTable(): string

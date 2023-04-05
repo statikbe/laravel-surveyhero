@@ -42,20 +42,14 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
      */
     public function importSurveyResponses(SurveyContract $survey): ResponseImportInfo
     {
-        $surveyMapping = $this->surveyMappingService->getSurveyMapping($survey);
+        $surveyCollectorIds = $this->surveyMappingService->getSurveyCollectors($survey);
         $surveyQuestionMapping = $this->surveyMappingService->getSurveyQuestionMapping($survey);
         $responseImportInfo = new ResponseImportInfo();
 
         try {
             DB::beginTransaction();
 
-            //collector ids:
-            $collectorIds = [];
-            if (isset($surveyMapping['collectors'])) {
-                $collectorIds = $surveyMapping['collectors'];
-            }
-
-            $responses = $this->client->getSurveyResponses($survey->surveyhero_id, $survey->survey_last_imported, $collectorIds);
+            $responses = $this->client->getSurveyResponses($survey->surveyhero_id, $survey->survey_last_imported, $surveyCollectorIds);
 
             foreach ($responses as $response) {
                 $responseImportInfo->addInfo($this->importSurveyResponse($response->response_id, $survey, $surveyQuestionMapping));

@@ -53,10 +53,11 @@ class SurveyMappingService extends AbstractSurveyheroAPIService
                 if (! empty($mappedQuestions)) {
                     if (is_array(array_values($mappedQuestions)[0])) {
                         //multiple questions mapped:
+                        //TODO set question_id as array key. I dont think this code is currently being used @sten?
                         $mapping['questions'] = array_merge($mapping['questions'], $mappedQuestions);
                     } else {
                         //only one question mapped:
-                        $mapping['questions'][] = $mappedQuestions;
+                        $mapping['questions'][$mappedQuestions['question_id']] = $mappedQuestions;
                     }
                 }
                 $questionCounter++;
@@ -69,7 +70,7 @@ class SurveyMappingService extends AbstractSurveyheroAPIService
     }
 
     /**
-     * Returns the question mapping from the configuration for the given survey
+     * Returns the question mapping from the configuration/api for the given survey
      *
      * @param  SurveyContract  $survey
      * @return array
@@ -78,11 +79,31 @@ class SurveyMappingService extends AbstractSurveyheroAPIService
      */
     public function getSurveyQuestionMapping(SurveyContract $survey): array
     {
-        $surveyMapping = $this->getSurveyMapping($survey);
-        if (array_key_exists('questions', $surveyMapping)) {
-            return $surveyMapping['questions'];
+        $surveyQuestionMapping = $survey->getQuestionMapping();
+
+        if ($surveyQuestionMapping) {
+            return $surveyQuestionMapping;
         } else {
             throw SurveyNotMappedException::create($survey, 'Survey mapping found but its question mapping configuration is not well-formed.');
+        }
+    }
+
+    /**
+     * Returns the collectors from the configuration/api for the given survey
+     *
+     * @param  SurveyContract  $survey
+     * @return array
+     *
+     * @throws SurveyNotMappedException
+     */
+    public function getSurveyCollectors(SurveyContract $survey): array
+    {
+        $surveyCollectors = $survey->getCollectors();
+
+        if ($surveyCollectors) {
+            return $surveyCollectors;
+        } else {
+            throw SurveyNotMappedException::create($survey, 'Survey mapping found but its collector mapping configuration is not well-formed.');
         }
     }
 
@@ -94,7 +115,7 @@ class SurveyMappingService extends AbstractSurveyheroAPIService
      *
      * @throws SurveyNotMappedException
      */
-    public function getSurveyMapping(SurveyContract $survey): ?array
+    public function getSurveyMappingFromConfig(SurveyContract $survey): ?array
     {
         try {
             $foundSurveys = array_filter($this->questionMapping, function ($surveyMapping, $key) use ($survey) {

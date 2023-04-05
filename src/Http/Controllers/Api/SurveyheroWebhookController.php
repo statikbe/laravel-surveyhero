@@ -9,6 +9,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;
 use Statikbe\Surveyhero\Models\Survey;
 use Statikbe\Surveyhero\Services\SurveyResponseImportService;
+use Statikbe\Surveyhero\SurveyheroRegistrar;
 
 class SurveyheroWebhookController extends Controller
 {
@@ -25,17 +26,19 @@ class SurveyheroWebhookController extends Controller
         }
 
         //Filter out webhook calls from other collectors
-        $questionMapping = config('surveyhero.question_mapping');
-        if (count($questionMapping) == 0) {
+
+        //Check if response is from an imported survey, if not imported we do not import the response.
+        $survey = app(SurveyheroRegistrar::class)->getSurveyClass()->where('surveyhero_id', $responseData['survey_id'])->first();
+        if (! $survey) {
             return response()->json([
-                'error' => 'Question mapping not set up.',
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+                'message' => 'Response survey_id does not match imported survey. So we do not import this response.',
+            ], Response::HTTP_OK);
         }
 
+        $collectors = $survey->getCollectors();
+
         //Check if response is from a configured collector, if not configured we do not import the response.
-        $collectors = collect($questionMapping)->where('survey_id', $responseData['survey_id'])->pluck('collectors')->first();
-        Log::info($collectors);
-        if ($collectors && count($collectors) > 0 && ! in_array($responseData['collector_id'], $collectors)) {
+        if ($collectors && count($collectors) > 0 && ! in_array((int) $responseData['collector_id'], $collectors)) {
             return response()->json([
                 'message' => 'Response collector does not match configured collectors. So we do not import this response.',
             ], Response::HTTP_OK);

@@ -26,6 +26,10 @@ interface SurveyContract extends ModelContract
 
     public function hasResponses(): bool;
 
+    public function getQuestionMapping(): array;
+
+    public function getCollectors(): array;
+
     /**
      * Checks if the response timestamp is more recent than the last updated survey timestamp.
      *

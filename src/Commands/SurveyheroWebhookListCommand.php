@@ -37,6 +37,7 @@ class SurveyheroWebhookListCommand extends Command
         $surveys = $surveyQuery->get();
 
         foreach ($surveys as $survey) {
+            $this->comment("Webhooks for survey '$survey->name':");
             /* @var SurveyContract $survey */
             try {
                 $webhooks = $this->webhookService->listWebhooks($survey);

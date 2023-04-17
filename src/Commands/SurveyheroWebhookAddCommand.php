@@ -7,7 +7,7 @@ use Statikbe\Surveyhero\Contracts\SurveyContract;
 use Statikbe\Surveyhero\Services\SurveyWebhookService;
 use Statikbe\Surveyhero\SurveyheroRegistrar;
 
-class SurveyheroWebhookCommand extends Command
+class SurveyheroWebhookAddCommand extends Command
 {
     public $signature = 'surveyhero:add-webhooks
                         {--survey=all : The Surveyhero survey ID}

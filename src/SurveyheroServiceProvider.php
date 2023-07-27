@@ -27,6 +27,7 @@ class SurveyheroServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->hasViews()
             ->hasMigration('create_surveyhero_tables')
+            ->hasMigration('create_unique_surveyhero_id_indices')
             ->hasCommands([
                 SurveyheroSurveyImportCommand::class,
                 SurveyheroResponseImportCommand::class,

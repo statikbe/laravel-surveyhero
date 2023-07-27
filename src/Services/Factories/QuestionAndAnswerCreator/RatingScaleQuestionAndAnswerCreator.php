@@ -4,6 +4,7 @@ namespace Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator;
 
 use Statikbe\Surveyhero\Contracts\SurveyContract;
 use Statikbe\Surveyhero\Contracts\SurveyQuestionContract;
+use Statikbe\Surveyhero\Services\SurveyMappingService;
 use Statikbe\Surveyhero\SurveyheroRegistrar;
 
 class RatingScaleQuestionAndAnswerCreator extends AbstractQuestionAndAnswerCreator
@@ -22,6 +23,8 @@ class RatingScaleQuestionAndAnswerCreator extends AbstractQuestionAndAnswerCreat
         $minValue = $ratingScale->left->value;
         $maxValue = $ratingScale->right->value;
         $stepSize = $ratingScale->step_size;
+
+        $questionMapping = (new SurveyMappingService())->getQuestionMappingForSurvey($survey, $question->element_id);
 
         for ($i = $minValue; $i <= $maxValue; $i += $stepSize) {
             app(SurveyheroRegistrar::class)->getSurveyAnswerClass()::updateOrCreate(

@@ -15,7 +15,7 @@ class RatingScaleQuestionMapper extends AbstractQuestionMapper
             SurveyAnswerContract::CONVERTED_TYPE_STRING,
             $questionCounter);
 
-        if ($question->question->rating_scale->style == 'numerical_scale') {
+        if (in_array($question->question->rating_scale->style, ['numerical_scale', 'slider'])) {
             $questionData['mapped_data_type'] = SurveyAnswerContract::CONVERTED_TYPE_INT;
         }
 

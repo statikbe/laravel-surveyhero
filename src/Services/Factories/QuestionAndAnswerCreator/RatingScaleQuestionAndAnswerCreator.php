@@ -2,6 +2,7 @@
 
 namespace Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator;
 
+use Statikbe\Surveyhero\Contracts\SurveyAnswerContract;
 use Statikbe\Surveyhero\Contracts\SurveyContract;
 use Statikbe\Surveyhero\Contracts\SurveyQuestionContract;
 use Statikbe\Surveyhero\Services\SurveyMappingService;
@@ -25,17 +26,18 @@ class RatingScaleQuestionAndAnswerCreator extends AbstractQuestionAndAnswerCreat
         $stepSize = $ratingScale->step_size;
 
         $questionMapping = (new SurveyMappingService())->getQuestionMappingForSurvey($survey, $question->element_id);
+        $mappedDataType = $questionMapping['mapped_data_type'] ?? SurveyAnswerContract::CONVERTED_TYPE_INT;
 
         for ($i = $minValue; $i <= $maxValue; $i += $stepSize) {
+
             app(SurveyheroRegistrar::class)->getSurveyAnswerClass()::updateOrCreate(
                 [
                     'survey_question_id' => $surveyQuestion->id,
-                    'converted_int_value' => $i,
+                    //make sure the answer is searched for in the right mapped column:
+                    "converted_{$mappedDataType}_value" => $mappedDataType === SurveyAnswerContract::CONVERTED_TYPE_INT ? $i : str($i),
                 ],
                 [
-                    'survey_question_id' => $surveyQuestion->id,
                     'surveyhero_answer_id' => null,
-                    'converted_int_value' => $i,
                     'label' => [
                         $lang => $i,
                     ],

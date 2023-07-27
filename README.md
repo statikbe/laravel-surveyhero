@@ -451,6 +451,22 @@ With the command below you can add a webhook to your Survey:
 php artisan surveyhero:add-webhooks --eventType=response.completed --url=https://webhook.site/complete-response
 ```
 
+### List webhooks
+
+With the command below you can list all the webhooks of your Survey:
+
+```shell 
+php artisan surveyhero:list-webhooks --survey=12345
+```
+
+### Delete a webhook
+
+With the command below you can delete a webhook from your Survey:
+
+```shell 
+php artisan surveyhero:delete-webhook --survey=12345 --webhook=2553
+```
+
 ### Webhook handlers
 
 We have also implemented a default controller (`SurveyheroWebhookController.php`) to handle the webhook responses. Currently, it only supports the 

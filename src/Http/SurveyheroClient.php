@@ -4,6 +4,7 @@ namespace Statikbe\Surveyhero\Http;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
+use stdClass;
 
 class SurveyheroClient
 {
@@ -77,6 +78,13 @@ class SurveyheroClient
         return $languages ? $languages->languages : [];
     }
 
+    public function listWebhooks(string|int $surveyId): ?array
+    {
+        $webhookData = $this->fetchFromSurveyHero(sprintf('surveys/%s/webhooks', $surveyId));
+
+        return $webhookData->successful() ? json_decode($webhookData->body())->webhooks : null;
+    }
+
     public function createWebhook(string|int $surveyId, string $eventType, string $url, string $status = 'active')
     {
         $body = [
@@ -86,6 +94,13 @@ class SurveyheroClient
         ];
 
         $this->postToSurveyHero(sprintf('surveys/%s/webhooks', $surveyId), $body);
+    }
+
+    public function deleteWebhook(string|int $surveyId, string|int $webhookId): ?stdClass
+    {
+        $webhookData = $this->deleteFromSurveyHero(sprintf('surveys/%s/webhooks/%s', $surveyId, $webhookId));
+
+        return $webhookData->successful() ? json_decode($webhookData->body()) : null;
     }
 
     public function deleteResponse(string|int $surveyId, string|int $responseId)
@@ -98,6 +113,9 @@ class SurveyheroClient
         return Carbon::createFromFormat('Y-m-d\TH:i:s', substr($surveyheroTimestamp, 0, strpos($surveyheroTimestamp, '+')));
     }
 
+    /**
+     * @throws \Exception
+     */
     private function fetchFromSurveyHero(string $urlPath, array $queryStringArgs = []): \Illuminate\Http\Client\Response
     {
         $this->preventThrottle();
@@ -115,6 +133,9 @@ class SurveyheroClient
         throw new \Exception($response->body());
     }
 
+    /**
+     * @throws \Exception
+     */
     private function postToSurveyHero(string $urlPath, array $queryStringArgs = []): \Illuminate\Http\Client\Response
     {
         $this->preventThrottle();

@@ -8,7 +8,7 @@ return [
     'api_url' => env('SURVEYHERO_API_URL', 'https://api.surveyhero.com/v1/'),
 
     /**
-     * The Surveyhero API user name and password:
+     * The Surveyhero API username and password:
      */
     'api_username' => env('SURVEYHERO_API_USERNAME'),
     'api_password' => env('SURVEYHERO_API_PASSWORD'),

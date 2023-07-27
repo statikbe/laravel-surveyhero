@@ -8,7 +8,9 @@ use Statikbe\Surveyhero\Commands\SurveyheroMapperCommand;
 use Statikbe\Surveyhero\Commands\SurveyheroQuestionsAndAnswersImportCommand;
 use Statikbe\Surveyhero\Commands\SurveyheroResponseImportCommand;
 use Statikbe\Surveyhero\Commands\SurveyheroSurveyImportCommand;
-use Statikbe\Surveyhero\Commands\SurveyheroWebhookCommand;
+use Statikbe\Surveyhero\Commands\SurveyheroWebhookAddCommand;
+use Statikbe\Surveyhero\Commands\SurveyheroWebhookDeleteCommand;
+use Statikbe\Surveyhero\Commands\SurveyheroWebhookListCommand;
 use Statikbe\Surveyhero\Commands\SurveyResponseExportCommand;
 
 class SurveyheroServiceProvider extends PackageServiceProvider
@@ -30,7 +32,9 @@ class SurveyheroServiceProvider extends PackageServiceProvider
                 SurveyheroResponseImportCommand::class,
                 SurveyheroQuestionsAndAnswersImportCommand::class,
                 SurveyheroMapperCommand::class,
-                SurveyheroWebhookCommand::class,
+                SurveyheroWebhookAddCommand::class,
+                SurveyheroWebhookListCommand::class,
+                SurveyheroWebhookDeleteCommand::class,
                 SurveyResponseExportCommand::class,
             ]);
     }

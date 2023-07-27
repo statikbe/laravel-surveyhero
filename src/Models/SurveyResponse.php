@@ -15,9 +15,9 @@ class SurveyResponse extends Model implements SurveyResponseContract
 
     protected $guarded = [];
 
-    protected $dates = [
-        'survey_start_date',
-        'survey_last_updated',
+    protected $casts = [
+        'survey_start_date' => 'datetime',
+        'survey_last_updated' => 'datetime',
     ];
 
     public function getTable(): string

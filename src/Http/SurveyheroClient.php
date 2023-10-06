@@ -3,14 +3,13 @@
 namespace Statikbe\Surveyhero\Http;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use stdClass;
 
 class SurveyheroClient
 {
     const CACHE_LATEST_REQUEST_TIME_KEY = 'latest-surveyhero-api-request-time';
-
-    const REQUEST_RATE_LIMIT_WAIT_TIME = 60000;
 
     public function getSurveys(): array
     {
@@ -120,7 +119,7 @@ class SurveyheroClient
     {
         $this->preventThrottle();
 
-        $response = Http::retry(3, 600)
+        $response = Http::retry(3, 800)
                         ->withBasicAuth(config('surveyhero.api_username'), config('surveyhero.api_password'))
                         ->get(config('surveyhero.api_url').$urlPath, $queryStringArgs);
 
@@ -176,14 +175,17 @@ class SurveyheroClient
     //Ensure sleep between requests
     private function preventThrottle(): void
     {
-        if (cache(self::CACHE_LATEST_REQUEST_TIME_KEY)) {
-            usleep(self::REQUEST_RATE_LIMIT_WAIT_TIME);
+        if (Cache::has(self::CACHE_LATEST_REQUEST_TIME_KEY)) {
+            //usleep is in microseconds, 1000000 is 1s.
+            //Surveyhero only allows 2 requests per second.
+            $sleepTime = 1000000 - (Carbon::now()->getTimestampMs() - Cache::get(self::CACHE_LATEST_REQUEST_TIME_KEY)) * 1000;
+            usleep($sleepTime);
         }
     }
 
     //Set latest request time with 1s TTL
     private function updateThrottle(): void
     {
-        cache([self::CACHE_LATEST_REQUEST_TIME_KEY => now()->format('Y-m-d H:i:s.u')], 1);
+        Cache::put(self::CACHE_LATEST_REQUEST_TIME_KEY, Carbon::now()->getTimestampMs(), 1);
     }
 }

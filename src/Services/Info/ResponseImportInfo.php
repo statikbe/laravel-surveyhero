@@ -51,7 +51,7 @@ class ResponseImportInfo
         $this->unimportedQuestions[$questionId] = $errorInfo;
     }
 
-    public function increateTotalResponses()
+    public function increaseTotalResponses()
     {
         $this->totalResponsesImported++;
     }

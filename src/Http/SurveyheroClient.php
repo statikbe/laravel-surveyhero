@@ -77,6 +77,13 @@ class SurveyheroClient
         return $languages ? $languages->languages : [];
     }
 
+    public function getResumeLink(string|int $surveyId, string|int $responseId): ?string
+    {
+        $resumeData = $this->fetchFromSurveyHero("surveys/$surveyId/responses/$responseId/resume");
+
+        return $resumeData->successful() ? json_decode($resumeData->body())->url : null;
+    }
+
     public function listWebhooks(string|int $surveyId): ?array
     {
         $webhookData = $this->fetchFromSurveyHero(sprintf('surveys/%s/webhooks', $surveyId));
@@ -145,11 +152,11 @@ class SurveyheroClient
 
         $this->updateThrottle();
 
-        if ($response->successful()) {
-            return $response;
+        if (!$response->successful()) {
+            throw new \Exception($response->body());
         }
 
-        throw new \Exception($response->body());
+        return $response;
     }
 
     /**
@@ -178,7 +185,7 @@ class SurveyheroClient
         if (Cache::has(self::CACHE_LATEST_REQUEST_TIME_KEY)) {
             //usleep is in microseconds, 1000000 is 1s.
             //Surveyhero only allows 2 requests per second.
-            $sleepTime = 1000000 - (Carbon::now()->getTimestampMs() - Cache::get(self::CACHE_LATEST_REQUEST_TIME_KEY)) * 1000;
+            $sleepTime = abs(1000000 - (Carbon::now()->getTimestampMs() - Cache::get(self::CACHE_LATEST_REQUEST_TIME_KEY)) * 1000);
             usleep($sleepTime);
         }
     }

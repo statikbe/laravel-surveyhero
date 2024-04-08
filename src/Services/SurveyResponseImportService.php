@@ -121,7 +121,7 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
                 }
             }
 
-            $importInfo->increateTotalResponses();
+            $importInfo->increaseTotalResponses();
 
             //increase survey last updated timestamp:
             $responseLastUpdatedOn = $this->client->transformAPITimestamp($responseAnswers->last_updated_on);

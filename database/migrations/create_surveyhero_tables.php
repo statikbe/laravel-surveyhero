@@ -22,6 +22,7 @@ class CreateSurveyheroTables extends Migration
             $table->json('collector_ids')->nullable();
             $table->json('question_mapping')->nullable();
             $table->datetime('survey_last_imported')->nullable();
+            $table->boolean('use_resume_link')->default(false);
 
             $table->timestamps();
         });
@@ -35,6 +36,7 @@ class CreateSurveyheroTables extends Migration
             $table->string('survey_language')->nullable();
             $table->boolean('survey_completed')->default(false);
             $table->json('surveyhero_link_parameters')->nullable();
+            $table->string('resume_link')->nullable();
 
             $table->foreignId($tableNames['surveys']['foreign_key'])
                 ->constrained($tableNames['surveys']['name'])
@@ -63,7 +65,7 @@ class CreateSurveyheroTables extends Migration
                 ->constrained($tableNames['survey_questions']['name'])
                 ->onDelete('cascade');
             $table->bigInteger('surveyhero_answer_id')->nullable();
-            $table->string('converted_string_value')->nullable();
+            $table->text('converted_string_value')->nullable();
             $table->integer('converted_int_value')->nullable();
             $table->json('label')->nullable();
             $table->timestamps();

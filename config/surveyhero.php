@@ -96,6 +96,7 @@ return [
         [
             'survey_id' => 1234567,
             'collectors' => [9876543], //optionally, see https://developer.surveyhero.com/api/#collector-api
+            'use_resume_link' => false,
             'questions' => [
                 1000001 => [
                     'question_id' => 1000001,

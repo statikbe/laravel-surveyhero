@@ -37,10 +37,17 @@ class SurveyImportService extends AbstractSurveyheroAPIService
 
     public function updateOrCreateSurvey(\stdClass $surveyheroSurvey): SurveyContract
     {
+        //check if the config has settings for this survey:
+        $questionMapping = collect(config('surveyhero.question_mapping'));
+        $surveyConfig = $questionMapping->filter(function ($elem) use ($surveyheroSurvey) {
+            return $elem['survey_id'] == $surveyheroSurvey->survey_id;
+        })->first();
+
         return app(SurveyheroRegistrar::class)->getSurveyClass()::updateOrCreate([
             'surveyhero_id' => $surveyheroSurvey->survey_id,
         ], [
             'name' => $surveyheroSurvey->title,
+            'use_resume_link' => data_get($surveyConfig, 'use_resume_link', false),
         ]);
     }
 }

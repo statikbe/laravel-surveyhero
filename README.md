@@ -1,4 +1,4 @@
-<p align="center"><img src="documentation/img/banner-laravel-surveyhero.png" alt="Laravel Surveyhero"></p>
+<p style="text-align: center;"><img src="documentation/img/banner-laravel-surveyhero.png" alt="Laravel Surveyhero"></p>
 
 # Import Surveyhero responses into the Laravel database
 
@@ -50,6 +50,7 @@ SURVEY {
     json collector_ids
     json question_mapping
     datetime survey_last_imported
+    boolean use_resume_link
 }
 
 SURVEY_QUESTIONS {
@@ -78,6 +79,7 @@ SURVEY_RESPONSE {
     string survey_language
     bool survey_completed
     json surveyhero_link_parameters
+    string resume_link
     num survey_id FK
 }
 SURVEY_QUESTION_RESPONSE {	
@@ -197,6 +199,7 @@ To do this, add `questions` to the question_mapping in your config file and incl
     [
         'survey_id' => 1234567,
         'collectors' => [986362,524948],
+        'use_resume_link' => true,
         'questions' => [
             #example numeric input
             1000005 => [

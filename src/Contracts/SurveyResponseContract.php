@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $survey_language
  * @property bool $survey_completed
  * @property int $survey_id
+ * @property string $resume_link
  * @property SurveyContract $survey
  * @property Collection $surveyQuestionResponses
  */

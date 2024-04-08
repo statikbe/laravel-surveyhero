@@ -159,6 +159,12 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
             }
         }
 
+        //add resume link if configured:
+        if($survey->use_resume_link) {
+            $resumeLink = $this->client->getResumeLink($survey->surveyhero_id, $surveyheroResponse->response_id);
+            $responseData['resume_link'] = $resumeLink;
+        }
+
         return app(SurveyheroRegistrar::class)->getSurveyResponseClass()::updateOrCreate([
             'id' => $existingResponse->id ?? null,
         ], $responseData);

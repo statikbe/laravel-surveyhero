@@ -32,9 +32,6 @@ interface SurveyContract extends ModelContract
 
     /**
      * Checks if the response timestamp is more recent than the last updated survey timestamp.
-     *
-     * @param  string  $responseLastUpdatedIsoTimestamp
-     * @return bool
      */
     public function doesResponseNeedsToBeUpdated(string $responseLastUpdatedIsoTimestamp): bool;
 }

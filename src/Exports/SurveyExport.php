@@ -10,7 +10,7 @@ use Statikbe\Surveyhero\Exports\Sheets\AnswersSheet;
 use Statikbe\Surveyhero\Exports\Sheets\QuestionsSheet;
 use Statikbe\Surveyhero\Exports\Sheets\ResponsesSheet;
 
-class SurveyExport implements WithMultipleSheets, ShouldAutoSize
+class SurveyExport implements ShouldAutoSize, WithMultipleSheets
 {
     use Exportable;
 
@@ -47,7 +47,6 @@ class SurveyExport implements WithMultipleSheets, ShouldAutoSize
      * Override default worksheets list.
      *
      * @param  array<object>  $sheets
-     * @return void
      */
     public function setSheets(array $sheets): void
     {

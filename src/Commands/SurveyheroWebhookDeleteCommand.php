@@ -15,9 +15,6 @@ class SurveyheroWebhookDeleteCommand extends Command
 
     public $description = 'Delete Surveyhero webhooks';
 
-    /**
-     * @var \Statikbe\Surveyhero\Services\SurveyWebhookService
-     */
     private SurveyWebhookService $webhookService;
 
     public function __construct(SurveyWebhookService $webhookService)

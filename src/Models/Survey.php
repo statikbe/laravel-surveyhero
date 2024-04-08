@@ -14,9 +14,9 @@ use Statikbe\Surveyhero\Traits\HasQuestionMapping;
 
 class Survey extends Model implements SurveyContract
 {
+    use HasCollectors;
     use HasFactory;
     use HasQuestionMapping;
-    use HasCollectors;
 
     protected $guarded = [];
 

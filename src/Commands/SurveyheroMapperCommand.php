@@ -16,9 +16,6 @@ class SurveyheroMapperCommand extends Command
 
     public $description = 'Map all questions and answers linked to configured surveys.';
 
-    /**
-     * @var \Statikbe\Surveyhero\Services\SurveyMappingService
-     */
     private SurveyMappingService $mappingService;
 
     public function __construct(SurveyMappingService $surveyMappingService)

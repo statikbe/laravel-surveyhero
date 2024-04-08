@@ -16,9 +16,6 @@ class SurveyheroWebhookAddCommand extends Command
 
     public $description = 'Automatically generate webhooks for survey responses on your desired URL.';
 
-    /**
-     * @var \Statikbe\Surveyhero\Services\SurveyWebhookService
-     */
     private SurveyWebhookService $webhookService;
 
     public function __construct(SurveyWebhookService $webhookService)

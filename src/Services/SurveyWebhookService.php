@@ -9,7 +9,6 @@ class SurveyWebhookService extends AbstractSurveyheroAPIService
     /**
      * Lists all webhooks for a certain Surveyhero survey
      *
-     * @param  SurveyContract  $survey
      * @return void
      */
     public function listWebhooks(SurveyContract $survey): ?array
@@ -19,9 +18,6 @@ class SurveyWebhookService extends AbstractSurveyheroAPIService
 
     /**
      * Creates a webhook for Surveyhero to notify on the given event type.
-     *
-     * @param  SurveyContract  $survey
-     * @return void
      */
     public function createWebhook(SurveyContract $survey, string $eventType, string $url): void
     {
@@ -30,10 +26,6 @@ class SurveyWebhookService extends AbstractSurveyheroAPIService
 
     /**
      * Deletes a webhooks for a certain Surveyhero survey
-     *
-     * @param  SurveyContract  $survey
-     * @param  string|int  $webhookId
-     * @return void
      */
     public function deleteWebhook(SurveyContract $survey, string|int $webhookId): void
     {

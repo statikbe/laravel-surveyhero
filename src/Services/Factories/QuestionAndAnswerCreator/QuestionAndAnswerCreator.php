@@ -9,11 +9,6 @@ use Statikbe\Surveyhero\Exceptions\AnswerNotMappedException;
 interface QuestionAndAnswerCreator
 {
     /**
-     * @param  \stdClass  $question
-     * @param  SurveyContract  $survey
-     * @param  string  $lang
-     * @return SurveyQuestionContract|array
-     *
      * @throws AnswerNotMappedException
      */
     public function updateOrCreateQuestionAndAnswer(\stdClass $question, SurveyContract $survey, string $lang): SurveyQuestionContract|array;

@@ -11,7 +11,7 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 use Statikbe\Surveyhero\Contracts\SurveyContract;
 use Statikbe\Surveyhero\Contracts\SurveyQuestionContract;
 
-class QuestionsSheet implements FromQuery, WithTitle, WithHeadings, WithMapping, ShouldAutoSize
+class QuestionsSheet implements FromQuery, ShouldAutoSize, WithHeadings, WithMapping, WithTitle
 {
     private SurveyContract $survey;
 
@@ -63,7 +63,6 @@ class QuestionsSheet implements FromQuery, WithTitle, WithHeadings, WithMapping,
 
     /**
      * @param  SurveyQuestionContract  $surveyQuestion
-     * @return array
      */
     public function map($surveyQuestion): array
     {

@@ -16,6 +16,7 @@ class InputQuestionAndAnswerCreator extends AbstractQuestionAndAnswerCreator
     public function updateOrCreateQuestionAndAnswer(\stdClass $question, SurveyContract $survey, string $lang): SurveyQuestionContract|array
     {
         $surveyQuestion = $this->updateOrCreateQuestion($survey, $lang, $question->element_id, $question->question->question_text);
+
         //the answer is different for each user entry, so we cannot save answers for this type of question.
         return $surveyQuestion;
     }

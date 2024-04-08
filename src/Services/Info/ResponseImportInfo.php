@@ -66,49 +66,31 @@ class ResponseImportInfo
         return ! empty($this->unimportedAnswers);
     }
 
-    /**
-     * @return int
-     */
     public function getTotalResponsesImported(): int
     {
         return $this->totalResponsesImported;
     }
 
-    /**
-     * @param  int  $totalResponsesImported
-     */
     public function setTotalResponsesImported(int $totalResponsesImported): void
     {
         $this->totalResponsesImported = $totalResponsesImported;
     }
 
-    /**
-     * @return array
-     */
     public function getUnimportedQuestions(): array
     {
         return $this->unimportedQuestions;
     }
 
-    /**
-     * @return array
-     */
     public function getUnimportedAnswers(): array
     {
         return $this->unimportedAnswers;
     }
 
-    /**
-     * @return Carbon|null
-     */
     public function getSurveyLastUpdatedAt(): ?Carbon
     {
         return $this->surveyLastUpdatedAt;
     }
 
-    /**
-     * @param  Carbon|null  $surveyLastUpdatedAt
-     */
     public function setSurveyLastUpdatedAt(?Carbon $surveyLastUpdatedAt): void
     {
         if ($surveyLastUpdatedAt) {

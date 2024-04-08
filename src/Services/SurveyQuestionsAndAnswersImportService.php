@@ -13,8 +13,6 @@ use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\RatingScaleQ
 class SurveyQuestionsAndAnswersImportService extends AbstractSurveyheroAPIService
 {
     /**
-     * @param  SurveyContract  $survey
-     *
      * @throws \Exception
      */
     public function importSurveyQuestionsAndAnswers(SurveyContract $survey): array
@@ -49,7 +47,7 @@ class SurveyQuestionsAndAnswersImportService extends AbstractSurveyheroAPIServic
         return $notImported;
     }
 
-    private function getQuestionAndAnswerCreator(string $surveyheroFieldType): QuestionAndAnswerCreator|null
+    private function getQuestionAndAnswerCreator(string $surveyheroFieldType): ?QuestionAndAnswerCreator
     {
         return match ($surveyheroFieldType) {
             ChoiceListQuestionAndAnswerCreator::TYPE => new ChoiceListQuestionAndAnswerCreator(),

@@ -25,8 +25,6 @@ interface ModelContract
 
     /**
      * Returns the table name of the model.
-     *
-     * @return string
      */
     public function getTable(): string;
 }

@@ -9,7 +9,6 @@ use Statikbe\Surveyhero\SurveyheroRegistrar;
 class SurveyImportService extends AbstractSurveyheroAPIService
 {
     /**
-     * @param  Collection|null  $surveyIdsToImport
      * @return array{ 'imported': array<int>, 'notImported': array<int> }
      */
     public function importSurveys(?Collection $surveyIdsToImport): array

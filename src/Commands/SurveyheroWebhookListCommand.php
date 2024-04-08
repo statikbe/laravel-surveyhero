@@ -14,9 +14,6 @@ class SurveyheroWebhookListCommand extends Command
 
     public $description = 'List webhooks for Surveyhero surveys';
 
-    /**
-     * @var \Statikbe\Surveyhero\Services\SurveyWebhookService
-     */
     private SurveyWebhookService $webhookService;
 
     public function __construct(SurveyWebhookService $webhookService)
@@ -42,7 +39,7 @@ class SurveyheroWebhookListCommand extends Command
             try {
                 $webhooks = $this->webhookService->listWebhooks($survey);
                 $webhookData = [];
-                foreach($webhooks as $webhook) {
+                foreach ($webhooks as $webhook) {
                     $webhookData[] = [
                         $webhook->webhook_id,
                         $webhook->event_type,
@@ -52,7 +49,7 @@ class SurveyheroWebhookListCommand extends Command
                     ];
                 }
                 $this->table(
-                    ['Webhook id','Event type','Url','Status','Created'],
+                    ['Webhook id', 'Event type', 'Url', 'Status', 'Created'],
                     $webhookData
                 );
             } catch (\Exception $e) {

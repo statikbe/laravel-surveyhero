@@ -25,8 +25,6 @@ class SurveyMappingService extends AbstractSurveyheroAPIService
     /**
      * Creates a basic question mapping based on the API to kickstart the configuration.
      *
-     * @param  SurveyContract  $survey
-     * @return array
      *
      * @see SurveyheroMapperCommand
      */
@@ -72,8 +70,6 @@ class SurveyMappingService extends AbstractSurveyheroAPIService
     /**
      * Returns the question mapping from the configuration/api for the given survey
      *
-     * @param  SurveyContract  $survey
-     * @return array
      *
      * @throws SurveyNotMappedException
      */
@@ -91,8 +87,6 @@ class SurveyMappingService extends AbstractSurveyheroAPIService
     /**
      * Returns the collectors from the configuration/api for the given survey
      *
-     * @param  SurveyContract  $survey
-     * @return array
      *
      * @throws SurveyNotMappedException
      */
@@ -110,8 +104,6 @@ class SurveyMappingService extends AbstractSurveyheroAPIService
     /**
      * Returns the survey mapping from the configuration for the given survey.
      *
-     * @param  SurveyContract  $survey
-     * @return array|null
      *
      * @throws SurveyNotMappedException
      */
@@ -137,9 +129,6 @@ class SurveyMappingService extends AbstractSurveyheroAPIService
     /**
      * Returns the question mapping from the configuration for a given survey and question ID.
      *
-     * @param  SurveyContract  $survey
-     * @param  int|string  $questionId
-     * @return array|null
      *
      * @throws SurveyNotMappedException
      */
@@ -155,10 +144,6 @@ class SurveyMappingService extends AbstractSurveyheroAPIService
 
     /**
      * Returns the question mapping based on all question mappings for a survey and the question ID.
-     *
-     * @param  array  $surveyQuestionMapping
-     * @param  int|string  $questionId
-     * @return array|null
      */
     public function getQuestionMapping(array $surveyQuestionMapping, int|string $questionId): ?array
     {
@@ -175,9 +160,8 @@ class SurveyMappingService extends AbstractSurveyheroAPIService
     /**
      * Returns the subquestion mapping for questions with subquestions.
      *
-     * @param  string|int  $questionId The subquestion ID.
+     * @param  string|int  $questionId  The subquestion ID.
      * @param  array  $surveyQuestionMapping  The question mapping. It needs to have a subquestion_mapping key.
-     * @return array
      */
     public function getSubquestionMapping(string|int $questionId, array $surveyQuestionMapping): array
     {
@@ -193,11 +177,6 @@ class SurveyMappingService extends AbstractSurveyheroAPIService
     }
 
     /**
-     * @param  SurveyContract  $survey
-     * @param  string  $questionId
-     * @param  string|null  $subquestionId
-     * @return string
-     *
      * @throws QuestionNotMappedException
      * @throws SurveyNotMappedException
      */

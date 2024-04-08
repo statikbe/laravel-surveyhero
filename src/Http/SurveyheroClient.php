@@ -46,7 +46,7 @@ class SurveyheroClient
         return $answerData->successful() ? json_decode($answerData->body()) : null;
     }
 
-    public function getSurveyElements(string|int $surveyId, string $lang = null): array
+    public function getSurveyElements(string|int $surveyId, ?string $lang = null): array
     {
         $questionsData = $this->fetchFromSurveyHero(sprintf('surveys/%s/elements%s', $surveyId, $lang ? '?lang='.$lang : null));
         $questions = json_decode($questionsData->body());
@@ -54,7 +54,7 @@ class SurveyheroClient
         return $questions ? $questions->elements : [];
     }
 
-    public function getSurveyQuestions(string|int $surveyId, string $lang = null): array
+    public function getSurveyQuestions(string|int $surveyId, ?string $lang = null): array
     {
         $questionsData = $this->fetchFromSurveyHero(sprintf('surveys/%s/questions%s', $surveyId, $lang ? '?lang='.$lang : null));
         $questions = json_decode($questionsData->body());
@@ -120,8 +120,8 @@ class SurveyheroClient
         $this->preventThrottle();
 
         $response = Http::retry(3, 800)
-                        ->withBasicAuth(config('surveyhero.api_username'), config('surveyhero.api_password'))
-                        ->get(config('surveyhero.api_url').$urlPath, $queryStringArgs);
+            ->withBasicAuth(config('surveyhero.api_username'), config('surveyhero.api_password'))
+            ->get(config('surveyhero.api_url').$urlPath, $queryStringArgs);
 
         $this->updateThrottle();
 
@@ -140,8 +140,8 @@ class SurveyheroClient
         $this->preventThrottle();
 
         $response = Http::retry(3, 600)
-                        ->withBasicAuth(config('surveyhero.api_username'), config('surveyhero.api_password'))
-                        ->post(config('surveyhero.api_url').$urlPath, $queryStringArgs);
+            ->withBasicAuth(config('surveyhero.api_username'), config('surveyhero.api_password'))
+            ->post(config('surveyhero.api_url').$urlPath, $queryStringArgs);
 
         $this->updateThrottle();
 
@@ -160,8 +160,8 @@ class SurveyheroClient
         $this->preventThrottle();
 
         $response = Http::retry(3, 600)
-                        ->withBasicAuth(config('surveyhero.api_username'), config('surveyhero.api_password'))
-                        ->delete(config('surveyhero.api_url').$urlPath, $queryStringArgs);
+            ->withBasicAuth(config('surveyhero.api_username'), config('surveyhero.api_password'))
+            ->delete(config('surveyhero.api_url').$urlPath, $queryStringArgs);
 
         $this->updateThrottle();
 

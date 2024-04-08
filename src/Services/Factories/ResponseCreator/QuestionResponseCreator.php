@@ -8,9 +8,6 @@ use Statikbe\Surveyhero\Contracts\SurveyResponseContract;
 interface QuestionResponseCreator
 {
     /**
-     * @param  \stdClass  $surveyheroQuestionResponse
-     * @param  SurveyResponseContract  $response
-     * @param  array  $questionMapping
      * @return SurveyQuestionResponseContract|array<int, SurveyQuestionResponseContract>
      *
      * @throws \Statikbe\Surveyhero\Exceptions\AnswerNotImportedException
@@ -18,6 +15,6 @@ interface QuestionResponseCreator
      * @throws \Statikbe\Surveyhero\Exceptions\QuestionNotImportedException
      */
     public function updateOrCreateQuestionResponse(\stdClass $surveyheroQuestionResponse,
-                                                   SurveyResponseContract $response,
-                                                   array $questionMapping): SurveyQuestionResponseContract|array;
+        SurveyResponseContract $response,
+        array $questionMapping): SurveyQuestionResponseContract|array;
 }

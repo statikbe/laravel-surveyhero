@@ -14,9 +14,6 @@ class SurveyheroSurveyImportCommand extends Command
 
     public $description = 'Retrieve surveys from SurveyHero API and save in the database.';
 
-    /**
-     * @var \Statikbe\Surveyhero\Services\SurveyImportService
-     */
     private SurveyImportService $importService;
 
     public function __construct(SurveyImportService $surveyImportService)

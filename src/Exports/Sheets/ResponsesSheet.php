@@ -10,7 +10,7 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Statikbe\Surveyhero\Contracts\SurveyContract;
 
-class ResponsesSheet implements FromCollection, WithTitle, WithHeadings, ShouldAutoSize
+class ResponsesSheet implements FromCollection, ShouldAutoSize, WithHeadings, WithTitle
 {
     private SurveyContract $survey;
 

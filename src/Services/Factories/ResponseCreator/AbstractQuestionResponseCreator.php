@@ -14,15 +14,9 @@ use Statikbe\Surveyhero\SurveyheroRegistrar;
 
 abstract class AbstractQuestionResponseCreator implements QuestionResponseCreator
 {
-    /**
-     * @param  string|int  $surveyheroQuestionId
-     * @param  SurveyResponseContract  $response
-     * @param  string|int|null  $surveyheroAnswerId
-     * @return SurveyQuestionResponseContract|null
-     */
     protected function findExistingQuestionResponse(string|int $surveyheroQuestionId,
-                                                    SurveyResponseContract $response,
-                                                    string|int $surveyheroAnswerId = null): ?SurveyQuestionResponseContract
+        SurveyResponseContract $response,
+        string|int|null $surveyheroAnswerId = null): ?SurveyQuestionResponseContract
     {
         $query = app(SurveyheroRegistrar::class)->getSurveyQuestionResponseClass()::whereHas('surveyQuestion', function ($q) use ($surveyheroQuestionId) {
             $q->where('surveyhero_question_id', $surveyheroQuestionId);
@@ -37,13 +31,8 @@ abstract class AbstractQuestionResponseCreator implements QuestionResponseCreato
         return $query->first();
     }
 
-    /**
-     * @param  string|int  $surveyheroQuestionId
-     * @param  SurveyResponseContract  $response
-     * @return Collection
-     */
     protected function findAllExistingQuestionResponses(string|int $surveyheroQuestionId,
-                                                        SurveyResponseContract $response): Collection
+        SurveyResponseContract $response): Collection
     {
         $query = app(SurveyheroRegistrar::class)->getSurveyQuestionResponseClass()::whereHas('surveyQuestion', function ($q) use ($surveyheroQuestionId) {
             $q->where('surveyhero_question_id', $surveyheroQuestionId);
@@ -53,9 +42,6 @@ abstract class AbstractQuestionResponseCreator implements QuestionResponseCreato
     }
 
     /**
-     * @param  string  $surveyheroQuestionId
-     * @return SurveyQuestionContract
-     *
      * @throws QuestionNotImportedException
      */
     protected function findSurveyQuestion(string $surveyheroQuestionId): SurveyQuestionContract
@@ -82,14 +68,11 @@ abstract class AbstractQuestionResponseCreator implements QuestionResponseCreato
     }
 
     /**
-     * @param  SurveyQuestionContract  $question
-     * @param  SurveyResponseContract  $response
-     * @param  SurveyAnswerContract|null  $answer
      * @return array{ 'survey_question_id': int, 'survey_response_id': int }
      */
     protected function createSurveyQuestionResponseData(SurveyQuestionContract $question,
-                                                        SurveyResponseContract $response,
-                                                        ?SurveyAnswerContract $answer): array
+        SurveyResponseContract $response,
+        ?SurveyAnswerContract $answer): array
     {
         return [
             'survey_question_id' => $question->id,
@@ -99,11 +82,6 @@ abstract class AbstractQuestionResponseCreator implements QuestionResponseCreato
     }
 
     /**
-     * @param  mixed  $mappedChoice
-     * @param  string  $dataType
-     * @param  array  $responseData
-     * @param  \stdClass|null  $surveyheroChoice
-     *
      * @throws AnswerNotMappedException
      */
     protected function setChoiceAndConvertToDataType(mixed $mappedChoice,
@@ -157,7 +135,7 @@ abstract class AbstractQuestionResponseCreator implements QuestionResponseCreato
 
     protected function transformInputToDataType(mixed $input, string $dataType): mixed
     {
-        switch($dataType) {
+        switch ($dataType) {
             case SurveyAnswerContract::CONVERTED_TYPE_INT:
                 return intval($input);
             case SurveyAnswerContract::CONVERTED_TYPE_STRING:

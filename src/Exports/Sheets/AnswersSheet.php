@@ -12,7 +12,7 @@ use Statikbe\Surveyhero\Contracts\SurveyAnswerContract;
 use Statikbe\Surveyhero\Contracts\SurveyContract;
 use Statikbe\Surveyhero\SurveyheroRegistrar;
 
-class AnswersSheet implements FromQuery, WithTitle, WithHeadings, WithMapping, ShouldAutoSize
+class AnswersSheet implements FromQuery, ShouldAutoSize, WithHeadings, WithMapping, WithTitle
 {
     private SurveyContract $survey;
 
@@ -73,7 +73,6 @@ class AnswersSheet implements FromQuery, WithTitle, WithHeadings, WithMapping, S
 
     /**
      * @param  SurveyAnswerContract  $surveyAnswer
-     * @return array
      */
     public function map($surveyAnswer): array
     {

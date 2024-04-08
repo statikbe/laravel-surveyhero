@@ -22,9 +22,6 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
 {
     const SURVEYHERO_STATUS_COMPLETED = 'completed';
 
-    /**
-     * @var \Statikbe\Surveyhero\Services\SurveyMappingService
-     */
     private SurveyMappingService $surveyMappingService;
 
     public function __construct(SurveyMappingService $surveyMappingService)
@@ -34,9 +31,6 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
     }
 
     /**
-     * @param  SurveyContract  $survey
-     * @return ResponseImportInfo
-     *
      * @throws ResponseCreatorNotImplemented
      * @throws SurveyNotMappedException
      */
@@ -75,15 +69,12 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
     }
 
     /**
-     * @param $responseId
-     * @param  SurveyContract  $survey
-     * @param  array|null  $surveyQuestionMapping
-     * @return ResponseImportInfo | null       A list of surveyhero question ids that could not be imported.
+     * @return ResponseImportInfo | null A list of surveyhero question ids that could not be imported.
      *
      * @throws ResponseCreatorNotImplemented
      * @throws SurveyNotMappedException
      */
-    public function importSurveyResponse($responseId, SurveyContract $survey, array $surveyQuestionMapping = null): ResponseImportInfo|null
+    public function importSurveyResponse($responseId, SurveyContract $survey, ?array $surveyQuestionMapping = null): ?ResponseImportInfo
     {
         $importInfo = new ResponseImportInfo();
 

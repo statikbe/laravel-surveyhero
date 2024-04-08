@@ -36,8 +36,6 @@ class SurveyheroRegistrar
 
     /**
      * Get an instance of the survey class.
-     *
-     * @return SurveyContract
      */
     public function getSurveyClass(): SurveyContract
     {
@@ -55,8 +53,6 @@ class SurveyheroRegistrar
 
     /**
      * Get an instance of the survey question class.
-     *
-     * @return SurveyQuestionContract
      */
     public function getSurveyQuestionClass(): SurveyQuestionContract
     {
@@ -74,8 +70,6 @@ class SurveyheroRegistrar
 
     /**
      * Get an instance of the survey answer class.
-     *
-     * @return SurveyAnswerContract
      */
     public function getSurveyAnswerClass(): SurveyAnswerContract
     {
@@ -93,8 +87,6 @@ class SurveyheroRegistrar
 
     /**
      * Get an instance of the survey class.
-     *
-     * @return SurveyResponseContract
      */
     public function getSurveyResponseClass(): SurveyResponseContract
     {
@@ -112,8 +104,6 @@ class SurveyheroRegistrar
 
     /**
      * Get an instance of the survey question response class.
-     *
-     * @return SurveyQuestionResponseContract
      */
     public function getSurveyQuestionResponseClass(): SurveyQuestionResponseContract
     {

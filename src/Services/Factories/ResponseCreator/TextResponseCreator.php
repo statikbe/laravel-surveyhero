@@ -15,8 +15,8 @@ class TextResponseCreator extends AbstractQuestionResponseCreator
      * {@inheritDoc}
      */
     public function updateOrCreateQuestionResponse(\stdClass $surveyheroQuestionResponse,
-                                                   SurveyResponseContract $response,
-                                                   array $questionMapping): SurveyQuestionResponseContract|array
+        SurveyResponseContract $response,
+        array $questionMapping): SurveyQuestionResponseContract|array
     {
         /* Config question_mapping data structure:
          * [

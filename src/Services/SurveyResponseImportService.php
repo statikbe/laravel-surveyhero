@@ -5,6 +5,8 @@ namespace Statikbe\Surveyhero\Services;
 use Illuminate\Support\Facades\DB;
 use Statikbe\Surveyhero\Contracts\SurveyContract;
 use Statikbe\Surveyhero\Contracts\SurveyResponseContract;
+use Statikbe\Surveyhero\Events\SurveyResponseImported;
+use Statikbe\Surveyhero\Events\SurveyResponseIncompletelyImported;
 use Statikbe\Surveyhero\Exceptions\AnswerNotImportedException;
 use Statikbe\Surveyhero\Exceptions\AnswerNotMappedException;
 use Statikbe\Surveyhero\Exceptions\QuestionNotImportedException;
@@ -126,6 +128,14 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
             //increase survey last updated timestamp:
             $responseLastUpdatedOn = $this->client->transformAPITimestamp($responseAnswers->last_updated_on);
             $importInfo->setSurveyLastUpdatedAt($responseLastUpdatedOn);
+
+            //dispatch event:
+            if($surveyResponse->survey_completed){
+                SurveyResponseImported::dispatch($surveyResponse);
+            }
+            else {
+                SurveyResponseIncompletelyImported::dispatch($surveyResponse);
+            }
         }
 
         return $importInfo;

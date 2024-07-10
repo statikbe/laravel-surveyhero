@@ -512,9 +512,16 @@ In the `SurveyExportService` you can change the `createSurveyExport()` function 
 If you want to add more sheets, you can set the sheets by setting `setSheets()` on `SurveyExport`. 
 If you want to change the work sheets, you can change the queries in `query()`, the title in `setTitle()`, etc.  
 
+## Events
+
+The following events are implemented:
+
+- __SurveyResponseImported:__ dispatched when a survey response is imported successfully. 
+- __SurveyResponseIncompletelyImported:__ dispatched when a survey response is imported successfully but the data was incomplete.
+
 ## Ideas for future improvements
 
-- Add more commands to manage webhooks
+- ~~Add more commands to manage webhooks~~
 - Add more default indices to the migration.
 - Support more Surveyhero question types.
 - Support more converted value data types, e.g. double.

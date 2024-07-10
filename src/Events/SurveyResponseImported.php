@@ -7,7 +7,6 @@ use Illuminate\Contracts\Events\ShouldDispatchAfterCommit;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use Statikbe\Surveyhero\Contracts\SurveyResponseContract;
-use Statikbe\Surveyhero\Models\SurveyResponse;
 
 class SurveyResponseImported implements ShouldDispatchAfterCommit
 {

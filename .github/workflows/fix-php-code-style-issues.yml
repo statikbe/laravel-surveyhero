@@ -16,7 +16,6 @@ jobs:
           ref: ${{ github.head_ref }}
           token: ${{ secrets.PAT }}
 
-
       - name: Fix PHP code style issues
         uses: aglipanci/laravel-pint-action@2.4
 

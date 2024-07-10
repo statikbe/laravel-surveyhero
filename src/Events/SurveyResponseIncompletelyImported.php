@@ -17,7 +17,7 @@ class SurveyResponseIncompletelyImported implements ShouldDispatchAfterCommit
         private SurveyResponseContract $surveyResponse
     ) {}
 
-    public function getSurveyResponse(): SurveyResponse
+    public function getSurveyResponse(): SurveyResponseContract
     {
         return $this->surveyResponse;
     }

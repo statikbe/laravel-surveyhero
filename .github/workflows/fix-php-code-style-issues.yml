@@ -6,11 +6,16 @@ jobs:
   php-code-styling:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
+          token: ${{ secrets.PAT }}
+
 
       - name: Fix PHP code style issues
         uses: aglipanci/laravel-pint-action@2.4
@@ -19,3 +24,4 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: Fix styling
+

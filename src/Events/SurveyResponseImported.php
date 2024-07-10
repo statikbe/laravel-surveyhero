@@ -3,11 +3,11 @@
 namespace Statikbe\Surveyhero\Events;
 
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Contracts\Events\ShouldDispatchAfterCommit;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use Statikbe\Surveyhero\Contracts\SurveyResponseContract;
 use Statikbe\Surveyhero\Models\SurveyResponse;
-use Illuminate\Contracts\Events\ShouldDispatchAfterCommit;
 
 class SurveyResponseImported implements ShouldDispatchAfterCommit
 {
@@ -15,7 +15,7 @@ class SurveyResponseImported implements ShouldDispatchAfterCommit
 
     public function __construct(
         private SurveyResponseContract $surveyResponse
-    ){}
+    ) {}
 
     public function getSurveyResponse(): SurveyResponse
     {

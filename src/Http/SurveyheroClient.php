@@ -152,7 +152,7 @@ class SurveyheroClient
 
         $this->updateThrottle();
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             throw new \Exception($response->body());
         }
 

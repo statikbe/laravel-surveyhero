@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property Carbon|null $survey_last_imported
  * @property Carbon $created_at
  * @property Carbon $updated_at
- * @property boolean $use_resume_link
+ * @property bool $use_resume_link
  * @property Collection $surveyResponses
  * @property Collection $surveyQuestions
  */

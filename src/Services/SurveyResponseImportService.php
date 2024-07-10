@@ -130,10 +130,9 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
             $importInfo->setSurveyLastUpdatedAt($responseLastUpdatedOn);
 
             //dispatch event:
-            if($surveyResponse->survey_completed){
+            if ($surveyResponse->survey_completed) {
                 SurveyResponseImported::dispatch($surveyResponse);
-            }
-            else {
+            } else {
                 SurveyResponseIncompletelyImported::dispatch($surveyResponse);
             }
         }
@@ -170,7 +169,7 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
         }
 
         //add resume link if configured:
-        if($survey->use_resume_link) {
+        if ($survey->use_resume_link) {
             $resumeLink = $this->client->getResumeLink($survey->surveyhero_id, $surveyheroResponse->response_id);
             $responseData['resume_link'] = $resumeLink;
         }

@@ -34,7 +34,7 @@ class SurveyheroResponseImportCommand extends Command
             $this->deleteResponses();
         }
 
-        $importInfo = new ResponseImportInfo();
+        $importInfo = new ResponseImportInfo;
 
         $surveyId = trim($this->option('survey'));
 

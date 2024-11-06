@@ -201,10 +201,10 @@ class SurveyMappingService extends AbstractSurveyheroAPIService
     private function getQuestionMapper(string $surveyheroFieldType): ?QuestionMapper
     {
         return match ($surveyheroFieldType) {
-            InputQuestionMapper::TYPE => new InputQuestionMapper(),
-            RatingScaleQuestionMapper::TYPE => new RatingScaleQuestionMapper(),
-            ChoiceListQuestionMapper::TYPE => new ChoiceListQuestionMapper(),
-            ChoiceTableQuestionMapper::TYPE => new ChoiceTableQuestionMapper(),
+            InputQuestionMapper::TYPE => new InputQuestionMapper,
+            RatingScaleQuestionMapper::TYPE => new RatingScaleQuestionMapper,
+            ChoiceListQuestionMapper::TYPE => new ChoiceListQuestionMapper,
+            ChoiceTableQuestionMapper::TYPE => new ChoiceTableQuestionMapper,
             default => null,
         };
     }

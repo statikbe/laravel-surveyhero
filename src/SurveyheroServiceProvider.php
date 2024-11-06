@@ -45,7 +45,7 @@ class SurveyheroServiceProvider extends PackageServiceProvider
         parent::packageBooted();
 
         $this->app->singleton(SurveyheroRegistrar::class, function ($app) {
-            return new SurveyheroRegistrar();
+            return new SurveyheroRegistrar;
         });
     }
 }

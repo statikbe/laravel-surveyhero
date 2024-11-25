@@ -25,4 +25,6 @@ interface SurveyAnswerContract extends ModelContract
      * Translate a variable with $key to $locale
      */
     public function translate(string $key, string $locale = '', bool $useFallbackLocale = true): mixed;
+
+    public function convertedValue(): int|string|null;
 }

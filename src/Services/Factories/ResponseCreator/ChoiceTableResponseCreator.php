@@ -78,7 +78,7 @@ class ChoiceTableResponseCreator extends AbstractQuestionResponseCreator
          */
 
         $responseList = [];
-        $mappingService = new SurveyMappingService();
+        $mappingService = new SurveyMappingService;
 
         foreach ($surveyheroQuestionResponse->choice_table as $surveyheroChoiceQuestion) {
             $subquestionMapping = $mappingService->getSubquestionMapping($surveyheroChoiceQuestion->row_id, $questionMapping);

@@ -50,10 +50,10 @@ class SurveyQuestionsAndAnswersImportService extends AbstractSurveyheroAPIServic
     private function getQuestionAndAnswerCreator(string $surveyheroFieldType): ?QuestionAndAnswerCreator
     {
         return match ($surveyheroFieldType) {
-            ChoiceListQuestionAndAnswerCreator::TYPE => new ChoiceListQuestionAndAnswerCreator(),
-            ChoiceTableQuestionAndAnswerCreator::TYPE => new ChoiceTableQuestionAndAnswerCreator(),
-            RatingScaleQuestionAndAnswerCreator::TYPE => new RatingScaleQuestionAndAnswerCreator(),
-            InputQuestionAndAnswerCreator::TYPE => new InputQuestionAndAnswerCreator(),
+            ChoiceListQuestionAndAnswerCreator::TYPE => new ChoiceListQuestionAndAnswerCreator,
+            ChoiceTableQuestionAndAnswerCreator::TYPE => new ChoiceTableQuestionAndAnswerCreator,
+            RatingScaleQuestionAndAnswerCreator::TYPE => new RatingScaleQuestionAndAnswerCreator,
+            InputQuestionAndAnswerCreator::TYPE => new InputQuestionAndAnswerCreator,
             default => null,
         };
     }

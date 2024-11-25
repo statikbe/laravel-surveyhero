@@ -40,7 +40,7 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
     {
         $surveyCollectorIds = $this->surveyMappingService->getSurveyCollectors($survey);
         $surveyQuestionMapping = $this->surveyMappingService->getSurveyQuestionMapping($survey);
-        $responseImportInfo = new ResponseImportInfo();
+        $responseImportInfo = new ResponseImportInfo;
 
         try {
             DB::beginTransaction();
@@ -78,7 +78,7 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
      */
     public function importSurveyResponse($responseId, SurveyContract $survey, ?array $surveyQuestionMapping = null): ?ResponseImportInfo
     {
-        $importInfo = new ResponseImportInfo();
+        $importInfo = new ResponseImportInfo;
 
         if (! $surveyQuestionMapping) {
             $surveyQuestionMapping = $this->surveyMappingService->getSurveyQuestionMapping($survey);
@@ -187,10 +187,10 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
     private function getQuestionResponseCreator(string $surveyheroFieldType): ?QuestionResponseCreator
     {
         return match ($surveyheroFieldType) {
-            TextResponseCreator::TYPE => new TextResponseCreator(),
-            NumberResponseCreator::TYPE => new NumberResponseCreator(),
-            ChoicesResponseCreator::TYPE => new ChoicesResponseCreator(),
-            ChoiceTableResponseCreator::TYPE => new ChoiceTableResponseCreator(),
+            TextResponseCreator::TYPE => new TextResponseCreator,
+            NumberResponseCreator::TYPE => new NumberResponseCreator,
+            ChoicesResponseCreator::TYPE => new ChoicesResponseCreator,
+            ChoiceTableResponseCreator::TYPE => new ChoiceTableResponseCreator,
             default => null,
         };
     }

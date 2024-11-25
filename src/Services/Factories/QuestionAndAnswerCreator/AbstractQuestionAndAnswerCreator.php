@@ -27,14 +27,14 @@ abstract class AbstractQuestionAndAnswerCreator implements QuestionAndAnswerCrea
                     $lang => $label ?? '',
                 ],
                 'surveyhero_element_id' => $questionId,
-                'field' => (new SurveyMappingService())->findQuestionField($survey, $questionId, $subquestionId),
+                'field' => (new SurveyMappingService)->findQuestionField($survey, $questionId, $subquestionId),
             ]);
     }
 
     protected function getChoiceMapping(string|int $choiceId, string|int $questionId, array $questionMapping): int|string|null
     {
         $answerMapping = $questionMapping['answer_mapping'];
-        $mappingService = new SurveyMappingService();
+        $mappingService = new SurveyMappingService;
 
         if ($questionMapping['question_id'] !== $questionId && isset($questionMapping['subquestion_mapping'])) {
             $subquestionMapping = $mappingService->getSubquestionMapping($questionId, $questionMapping);

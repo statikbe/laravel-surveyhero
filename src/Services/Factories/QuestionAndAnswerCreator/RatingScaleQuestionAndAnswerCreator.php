@@ -25,7 +25,7 @@ class RatingScaleQuestionAndAnswerCreator extends AbstractQuestionAndAnswerCreat
         $maxValue = $ratingScale->right->value;
         $stepSize = $ratingScale->step_size;
 
-        $questionMapping = (new SurveyMappingService())->getQuestionMappingForSurvey($survey, $question->element_id);
+        $questionMapping = (new SurveyMappingService)->getQuestionMappingForSurvey($survey, $question->element_id);
         $mappedDataType = $questionMapping['mapped_data_type'] ?? SurveyAnswerContract::CONVERTED_TYPE_INT;
 
         for ($i = $minValue; $i <= $maxValue; $i += $stepSize) {

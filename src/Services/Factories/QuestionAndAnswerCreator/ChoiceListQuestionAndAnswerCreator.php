@@ -29,7 +29,7 @@ class ChoiceListQuestionAndAnswerCreator extends AbstractQuestionAndAnswerCreato
                 ],
             ];
 
-            $questionMapping = (new SurveyMappingService())->getQuestionMappingForSurvey($survey, $question->element_id);
+            $questionMapping = (new SurveyMappingService)->getQuestionMappingForSurvey($survey, $question->element_id);
             $mappedChoice = $this->getChoiceMapping($choice->choice_id, $question->element_id, $questionMapping);
 
             $this->setChoiceAndConvertToDataType($mappedChoice, $questionMapping['mapped_data_type'], $responseData, $choice);

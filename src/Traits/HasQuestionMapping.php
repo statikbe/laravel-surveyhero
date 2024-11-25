@@ -11,7 +11,7 @@ trait HasQuestionMapping
     public function getQuestionMapping(): array
     {
         if (! $this->mergedQuestionMapping) {
-            $surveyMappingService = new SurveyMappingService();
+            $surveyMappingService = new SurveyMappingService;
             $surveyMappingConfig = $surveyMappingService->getSurveyMappingFromConfig($this);
             $surveyMappingDatabase = $this->question_mapping;
 

@@ -11,7 +11,7 @@ trait HasCollectors
     public function getCollectors(): array
     {
         if (! $this->collectors) {
-            $surveyMappingService = new SurveyMappingService();
+            $surveyMappingService = new SurveyMappingService;
             $surveyMappingConfig = $surveyMappingService->getSurveyMappingFromConfig($this);
             $surveyCollectors = $this->collector_ids;
 

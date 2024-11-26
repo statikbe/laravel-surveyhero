@@ -195,7 +195,8 @@ class SurveyMappingService extends AbstractSurveyheroAPIService
             }
         }
         //in case nothing is found there is no mapping for the question -> throw error
-        throw QuestionNotMappedException::create($subquestionId ?? $questionId, 'The question mapping has no field');
+        $errorQuestion = $subquestionId ?? $questionId;
+        throw QuestionNotMappedException::create($errorQuestion, "The question mapping for question {$errorQuestion} has no field.");
     }
 
     private function getQuestionMapper(string $surveyheroFieldType): ?QuestionMapper

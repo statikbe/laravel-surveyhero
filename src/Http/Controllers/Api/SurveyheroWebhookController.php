@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;
+use Statikbe\Surveyhero\Exceptions\UnwantedResponseNotImportedException;
 use Statikbe\Surveyhero\Models\Survey;
 use Statikbe\Surveyhero\Services\Info\ResponseImportInfo;
 use Statikbe\Surveyhero\Services\SurveyResponseImportService;
@@ -69,7 +70,14 @@ class SurveyheroWebhookController extends Controller
             return response()->json([
                 'message' => 'Response imported.',
             ], Response::HTTP_OK);
-        } catch (\Exception $ex) {
+        }
+        catch (UnwantedResponseNotImportedException $ex) {
+            // the response is not imported but that is our decision and Surveyhero does not need to retry.
+            return response()->json([
+                'message' => 'Response not imported.',
+            ], Response::HTTP_OK);
+        }
+        catch (\Exception $ex) {
             report($ex);
 
             return response()->json([
@@ -78,10 +86,16 @@ class SurveyheroWebhookController extends Controller
         }
     }
 
+    /**
+     * Extend this controller and override this function if you want to add extra functionality before the import.
+     * e.g. deal with link_parameters
+     * If you do not want to import the response data, you can throw an UnwantedResponseNotImportedException.
+     *
+     * @throws UnwantedResponseNotImportedException
+     */
     protected function handlePreImport(Survey $survey, array $collectors, array $responseData):void
     {
-        // extend this controller and override this function if you want to add extra functionality before the import.
-        // e.g. deal with link_parameters
+
     }
 
     protected function handlePostImport(Survey $survey, array $collectors, array $responseData, ResponseImportInfo $responseInfo):void

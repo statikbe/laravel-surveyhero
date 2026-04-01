@@ -8,6 +8,7 @@ use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;
 use Statikbe\Surveyhero\Models\Survey;
+use Statikbe\Surveyhero\Services\Info\ResponseImportInfo;
 use Statikbe\Surveyhero\Services\SurveyResponseImportService;
 use Statikbe\Surveyhero\SurveyheroRegistrar;
 
@@ -19,7 +20,11 @@ class SurveyheroWebhookController extends Controller
 
         //Check if response data is valid
         $responseData = $request->input('data');
-        if (! ($responseData && isset($responseData['collector_id']) && isset($responseData['response_id']) && isset($responseData['survey_id']))) {
+        if (! $this->isValidResponseData($responseData)) {
+            Log::error('Surveyhero response data is not valid.', [
+                'response_data' => $responseData,
+            ]);
+
             return response()->json([
                 'error' => 'Surveyhero response data is not valid.',
             ], Response::HTTP_BAD_REQUEST);
@@ -27,9 +32,13 @@ class SurveyheroWebhookController extends Controller
 
         //Filter out webhook calls from other collectors
 
-        //Check if response is from an imported survey, if not imported we do not import the response.
+        //Check if response is from an imported survey, if not imported, we do not import the response.
         $survey = app(SurveyheroRegistrar::class)->getSurveyClass()->where('surveyhero_id', $responseData['survey_id'])->first();
         if (! $survey) {
+            Log::error('Response survey_id does not match imported survey. So we do not import this response.', [
+                'surveyhero_survey_id' => $responseData['survey_id'],
+            ]);
+
             return response()->json([
                 'message' => 'Response survey_id does not match imported survey. So we do not import this response.',
             ], Response::HTTP_OK);
@@ -37,27 +46,51 @@ class SurveyheroWebhookController extends Controller
 
         $collectors = $survey->getCollectors();
 
-        //Check if response is from a configured collector, if not configured we do not import the response.
+        //Check if response is from a configured collector, if not configured, we do not import the response.
         if ($collectors && count($collectors) > 0 && ! in_array((int) $responseData['collector_id'], $collectors)) {
+            Log::error('Response collector does not match configured collectors. So we do not import this response.', [
+                'response_data' => $responseData,
+                'configured_collectors' => $collectors]);
+
             return response()->json([
                 'message' => 'Response collector does not match configured collectors. So we do not import this response.',
             ], Response::HTTP_OK);
         }
 
         try {
+            $this->handlePreImport($survey, $collectors, $responseData);
+
             //Import response
-            $surveyHeroService->importSurveyResponse($responseData['response_id'], Survey::where('surveyhero_id', $responseData['survey_id'])->first());
+            $responseImportInfo = $surveyHeroService->importSurveyResponse($responseData['response_id'], $survey);
             Log::info('Surveyhero webhook import finished.');
+
+            $this->handlePostImport($survey, $collectors, $responseData, $responseImportInfo);
 
             return response()->json([
                 'message' => 'Response imported.',
             ], Response::HTTP_OK);
         } catch (\Exception $ex) {
-            Log::error($ex);
+            report($ex);
 
             return response()->json([
                 'error' => "Import exception: {$ex->getMessage()}",
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    protected function handlePreImport(Survey $survey, array $collectors, array $responseData):void
+    {
+        // extend this controller and override this function if you want to add extra functionality before the import.
+        // e.g. deal with link_parameters
+    }
+
+    protected function handlePostImport(Survey $survey, array $collectors, array $responseData, ResponseImportInfo $responseInfo):void
+    {
+        // extend this controller and override this function if you want to add extra functionality after the import.
+    }
+
+    protected function isValidResponseData(?array $responseData)
+    {
+        return ($responseData && isset($responseData['collector_id']) && isset($responseData['response_id']) && isset($responseData['survey_id']));
     }
 }

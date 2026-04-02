@@ -11,7 +11,7 @@ class CreateSurveyheroTables extends Migration
         $tableNames = config('surveyhero.table_names');
 
         if (empty($tableNames)) {
-            throw new \Exception('Error: config/surveyhero.php not loaded. Check your config file, run [php artisan config:clear] and try again.');
+            throw new Exception('Error: config/surveyhero.php not loaded. Check your config file, run [php artisan config:clear] and try again.');
         }
 
         Schema::create($tableNames['surveys']['name'], function (Blueprint $table) {

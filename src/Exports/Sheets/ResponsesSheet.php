@@ -66,7 +66,7 @@ class ResponsesSheet implements FromCollection, ShouldAutoSize, WithHeadings, Wi
             $selectRows[] = $responsesTable['name'].'.'.$extraResponseColumn;
         }
 
-        //TODO filter on link parameters
+        // TODO filter on link parameters
         return DB::table($responsesTable['name'])
             ->join($questionResponseTable['name'], $questionResponseTable['name'].'.'.$responsesTable['foreign_key'], '=', $responsesTable['name'].'.id')
             ->join($questionTable['name'], $questionResponseTable['name'].'.'.$questionTable['foreign_key'], '=', $questionTable['name'].'.id')
@@ -83,10 +83,10 @@ class ResponsesSheet implements FromCollection, ShouldAutoSize, WithHeadings, Wi
             'surveyhero_response_id',
         ];
 
-        //link parameters
+        // link parameters
         $headings = array_merge($headings, $this->linkParameters);
 
-        //extra response columns
+        // extra response columns
         $headings = array_merge($headings, $this->extraResponseColumns);
 
         foreach ($this->survey->surveyQuestions as $question) {
@@ -118,7 +118,7 @@ class ResponsesSheet implements FromCollection, ShouldAutoSize, WithHeadings, Wi
         $responseData = [
             $key,
         ];
-        //link parameters
+        // link parameters
         $linkParameterValues = [];
         foreach ($this->linkParameters as $linkParameter) {
             foreach ($responses as $response) {
@@ -135,7 +135,7 @@ class ResponsesSheet implements FromCollection, ShouldAutoSize, WithHeadings, Wi
             }
         }
 
-        //extra response colummns:
+        // extra response colummns:
         $extraResponseValues = [];
         foreach ($this->extraResponseColumns as $extraResponseColumn) {
             foreach ($responses as $response) {
@@ -151,7 +151,7 @@ class ResponsesSheet implements FromCollection, ShouldAutoSize, WithHeadings, Wi
             }
         }
 
-        //questions
+        // questions
         foreach ($this->questionFields as $questionField) {
             $answers = [];
             foreach ($responses as $response) {

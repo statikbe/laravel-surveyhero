@@ -21,7 +21,7 @@ class SurveyImportService extends AbstractSurveyheroAPIService
 
         foreach ($surveyheroSurveys as $surveyheroSurvey) {
             if ($surveyIdsToImport && $surveyIdsToImport->isNotEmpty()) {
-                //only import the  surveys
+                // only import the  surveys
                 if ($surveyIdsToImport->contains($surveyheroSurvey->survey_id)) {
                     $survey = $this->updateOrCreateSurvey($surveyheroSurvey);
                     $response['imported'][] = $survey->surveyhero_id;
@@ -37,7 +37,7 @@ class SurveyImportService extends AbstractSurveyheroAPIService
 
     public function updateOrCreateSurvey(\stdClass $surveyheroSurvey): SurveyContract
     {
-        //check if the config has settings for this survey:
+        // check if the config has settings for this survey:
         $questionMapping = collect(config('surveyhero.question_mapping'));
         $surveyConfig = $questionMapping->filter(function ($elem) use ($surveyheroSurvey) {
             return $elem['survey_id'] == $surveyheroSurvey->survey_id;

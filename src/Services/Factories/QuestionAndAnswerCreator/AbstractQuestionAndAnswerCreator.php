@@ -6,14 +6,16 @@ use Statikbe\Surveyhero\Contracts\SurveyAnswerContract;
 use Statikbe\Surveyhero\Contracts\SurveyContract;
 use Statikbe\Surveyhero\Contracts\SurveyQuestionContract;
 use Statikbe\Surveyhero\Exceptions\AnswerNotMappedException;
+use Statikbe\Surveyhero\Exceptions\QuestionNotMappedException;
+use Statikbe\Surveyhero\Exceptions\SurveyNotMappedException;
 use Statikbe\Surveyhero\Services\SurveyMappingService;
 use Statikbe\Surveyhero\SurveyheroRegistrar;
 
 abstract class AbstractQuestionAndAnswerCreator implements QuestionAndAnswerCreator
 {
     /**
-     * @throws \Statikbe\Surveyhero\Exceptions\QuestionNotMappedException
-     * @throws \Statikbe\Surveyhero\Exceptions\SurveyNotMappedException
+     * @throws QuestionNotMappedException
+     * @throws SurveyNotMappedException
      */
     public function updateOrCreateQuestion(SurveyContract $survey, string $lang, string $questionId, ?string $label, ?string $subquestionId = null): SurveyQuestionContract
     {
@@ -57,7 +59,7 @@ abstract class AbstractQuestionAndAnswerCreator implements QuestionAndAnswerCrea
         array &$responseData,
         \stdClass $surveyheroChoice): void
     {
-        //if the choice is not mapped try to set the label as string:
+        // if the choice is not mapped try to set the label as string:
         if (! $mappedChoice) {
             if ($dataType === SurveyAnswerContract::CONVERTED_TYPE_STRING) {
                 $responseData['converted_string_value'] = $surveyheroChoice->label;

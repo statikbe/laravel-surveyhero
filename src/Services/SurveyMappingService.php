@@ -46,15 +46,15 @@ class SurveyMappingService extends AbstractSurveyheroAPIService
             $mapper = $this->getQuestionMapper($question->question->type);
 
             if ($mapper) {
-                //a mapper can return one question or multiple.
+                // a mapper can return one question or multiple.
                 $mappedQuestions = $mapper->mapQuestion($question, $questionCounter);
                 if (! empty($mappedQuestions)) {
                     if (is_array(array_values($mappedQuestions)[0])) {
-                        //multiple questions mapped:
-                        //TODO set question_id as array key. I dont think this code is currently being used @sten?
+                        // multiple questions mapped:
+                        // TODO set question_id as array key. I dont think this code is currently being used @sten?
                         $mapping['questions'] = array_merge($mapping['questions'], $mappedQuestions);
                     } else {
-                        //only one question mapped:
+                        // only one question mapped:
                         $mapping['questions'][$mappedQuestions['question_id']] = $mappedQuestions;
                     }
                 }
@@ -194,7 +194,7 @@ class SurveyMappingService extends AbstractSurveyheroAPIService
                 return $foundSubquestion['field'];
             }
         }
-        //in case nothing is found there is no mapping for the question -> throw error
+        // in case nothing is found there is no mapping for the question -> throw error
         $errorQuestion = $subquestionId ?? $questionId;
         throw QuestionNotMappedException::create($errorQuestion, "The question mapping for question {$errorQuestion} has no field.");
     }

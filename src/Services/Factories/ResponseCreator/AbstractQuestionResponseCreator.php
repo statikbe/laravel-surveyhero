@@ -89,7 +89,7 @@ abstract class AbstractQuestionResponseCreator implements QuestionResponseCreato
         array &$responseData,
         ?\stdClass $surveyheroChoice): void
     {
-        //if the choice is not mapped try to set the label as string:
+        // if the choice is not mapped try to set the label as string:
         if (! $mappedChoice && $surveyheroChoice) {
             if ($dataType === SurveyAnswerContract::CONVERTED_TYPE_STRING) {
                 $responseData['converted_string_value'] = $surveyheroChoice->label;
@@ -110,7 +110,7 @@ abstract class AbstractQuestionResponseCreator implements QuestionResponseCreato
 
     protected function fetchOrCreateInputAnswer(SurveyQuestionContract $surveyQuestion, string $answerDataType, mixed $inputAnswer): SurveyAnswerContract
     {
-        //fetch or create answer:
+        // fetch or create answer:
         $answerData = [];
         $this->setChoiceAndConvertToDataType($this->transformInputToDataType($inputAnswer, $answerDataType),
             $answerDataType,

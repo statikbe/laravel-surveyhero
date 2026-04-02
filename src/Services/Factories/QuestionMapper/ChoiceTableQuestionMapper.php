@@ -52,7 +52,7 @@ class ChoiceTableQuestionMapper extends AbstractQuestionMapper
             $choiceCounter++;
         }
 
-        //create subquestions:
+        // create subquestions:
         $subquestionIndex = 1;
         foreach ($question->question->choice_table->rows as $rowQuestion) {
             $mapping['subquestion_mapping'][$rowQuestion->row_id] = [

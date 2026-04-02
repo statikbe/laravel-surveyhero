@@ -4,6 +4,9 @@ namespace Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator;
 
 use Statikbe\Surveyhero\Contracts\SurveyContract;
 use Statikbe\Surveyhero\Contracts\SurveyQuestionContract;
+use Statikbe\Surveyhero\Exceptions\AnswerNotMappedException;
+use Statikbe\Surveyhero\Exceptions\QuestionNotMappedException;
+use Statikbe\Surveyhero\Exceptions\SurveyNotMappedException;
 use Statikbe\Surveyhero\Services\SurveyMappingService;
 use Statikbe\Surveyhero\SurveyheroRegistrar;
 
@@ -12,9 +15,9 @@ class ChoiceListQuestionAndAnswerCreator extends AbstractQuestionAndAnswerCreato
     const TYPE = 'choice_list';
 
     /**
-     * @throws \Statikbe\Surveyhero\Exceptions\AnswerNotMappedException
-     * @throws \Statikbe\Surveyhero\Exceptions\QuestionNotMappedException
-     * @throws \Statikbe\Surveyhero\Exceptions\SurveyNotMappedException
+     * @throws AnswerNotMappedException
+     * @throws QuestionNotMappedException
+     * @throws SurveyNotMappedException
      */
     public function updateOrCreateQuestionAndAnswer(\stdClass $question, SurveyContract $survey, string $lang): SurveyQuestionContract|array
     {

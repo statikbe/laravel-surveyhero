@@ -5,6 +5,8 @@ namespace Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator;
 use Statikbe\Surveyhero\Contracts\SurveyAnswerContract;
 use Statikbe\Surveyhero\Contracts\SurveyContract;
 use Statikbe\Surveyhero\Contracts\SurveyQuestionContract;
+use Statikbe\Surveyhero\Exceptions\QuestionNotMappedException;
+use Statikbe\Surveyhero\Exceptions\SurveyNotMappedException;
 use Statikbe\Surveyhero\Services\SurveyMappingService;
 use Statikbe\Surveyhero\SurveyheroRegistrar;
 
@@ -13,8 +15,8 @@ class RatingScaleQuestionAndAnswerCreator extends AbstractQuestionAndAnswerCreat
     const TYPE = 'rating_scale';
 
     /**
-     * @throws \Statikbe\Surveyhero\Exceptions\SurveyNotMappedException
-     * @throws \Statikbe\Surveyhero\Exceptions\QuestionNotMappedException
+     * @throws SurveyNotMappedException
+     * @throws QuestionNotMappedException
      */
     public function updateOrCreateQuestionAndAnswer(\stdClass $question, SurveyContract $survey, string $lang): SurveyQuestionContract|array
     {
@@ -33,7 +35,7 @@ class RatingScaleQuestionAndAnswerCreator extends AbstractQuestionAndAnswerCreat
             app(SurveyheroRegistrar::class)->getSurveyAnswerClass()::updateOrCreate(
                 [
                     'survey_question_id' => $surveyQuestion->id,
-                    //make sure the answer is searched for in the right mapped column:
+                    // make sure the answer is searched for in the right mapped column:
                     "converted_{$mappedDataType}_value" => $mappedDataType === SurveyAnswerContract::CONVERTED_TYPE_INT ? $i : str($i),
                 ],
                 [

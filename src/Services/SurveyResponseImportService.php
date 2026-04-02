@@ -51,7 +51,7 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
                 $responseImportInfo->addInfo($this->importSurveyResponse($response->response_id, $survey, $surveyQuestionMapping));
             }
 
-            //update new survey last updated timestamp:
+            // update new survey last updated timestamp:
             if ($responseImportInfo->getSurveyLastUpdatedAt()) {
                 if (! $survey->survey_last_imported) {
                     $survey->survey_last_imported = $responseImportInfo->getSurveyLastUpdatedAt();
@@ -86,7 +86,7 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
 
         $responseAnswers = $this->client->getSurveyResponseAnswers($survey->surveyhero_id, $responseId);
         if ($responseAnswers && $survey->doesResponseNeedsToBeUpdated($responseAnswers->last_updated_on)) {
-            //do not import already imported data that is not updated.
+            // do not import already imported data that is not updated.
             /* @var SurveyResponseContract $existingResponseRecord */
             $existingResponseRecord = app(SurveyheroRegistrar::class)->getSurveyResponseClass()::where('surveyhero_id', $responseId)->first();
             if ($existingResponseRecord && $existingResponseRecord->survey_completed) {
@@ -104,15 +104,15 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
                             $questionResponseCreator->updateOrCreateQuestionResponse($answer, $surveyResponse, $questionMapping);
                         } catch (AnswerNotMappedException $ex) {
                             $importInfo->addUnimportedAnswer($ex->answerId, $ex->getMessage());
-                            //set survey response as incomplete, because we could not completely import it.
+                            // set survey response as incomplete, because we could not completely import it.
                             $this->setResponseAsIncomplete($surveyResponse);
                         } catch (QuestionNotImportedException $ex) {
                             $importInfo->addUnimportedQuestion($answer->element_id, $ex->getMessage());
-                            //set survey response as incomplete, because we could not completely import it.
+                            // set survey response as incomplete, because we could not completely import it.
                             $this->setResponseAsIncomplete($surveyResponse);
                         } catch (AnswerNotImportedException $ex) {
                             $importInfo->addUnimportedAnswer($answer->element_id, $ex->getMessage());
-                            //set survey response as incomplete, because we could not completely import it.
+                            // set survey response as incomplete, because we could not completely import it.
                             $this->setResponseAsIncomplete($surveyResponse);
                         }
                     } else {
@@ -125,11 +125,11 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
 
             $importInfo->increaseTotalResponses();
 
-            //increase survey last updated timestamp:
+            // increase survey last updated timestamp:
             $responseLastUpdatedOn = $this->client->transformAPITimestamp($responseAnswers->last_updated_on);
             $importInfo->setSurveyLastUpdatedAt($responseLastUpdatedOn);
 
-            //dispatch event:
+            // dispatch event:
             if ($surveyResponse->survey_completed) {
                 SurveyResponseImported::dispatch($surveyResponse);
             } else {
@@ -152,23 +152,23 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
             'surveyhero_link_parameters' => json_encode($surveyheroResponse->link_parameters),
         ];
 
-        //map link parameters:
+        // map link parameters:
         if (isset($surveyheroResponse->link_parameters)) {
             $linkParametersConfig = config('surveyhero.surveyhero_link_parameters_mapping', []);
             foreach ($linkParametersConfig as $surveyheroLinkParameter => $settings) {
                 if (isset($surveyheroResponse->link_parameters->{$surveyheroLinkParameter})) {
                     if (isset($settings['entity']) && isset($settings['value']) && isset($settings['field'])) {
-                        //Map parameter to value of associated model
+                        // Map parameter to value of associated model
                         $responseData[$settings['name']] = optional($settings['entity']::where($settings['value'], $surveyheroResponse->link_parameters->{$surveyheroLinkParameter})->first())->id;
                     } else {
-                        //map parameter directly to database column
+                        // map parameter directly to database column
                         $responseData[$settings['name']] = $surveyheroResponse->link_parameters->{$surveyheroLinkParameter};
                     }
                 }
             }
         }
 
-        //add resume link if configured:
+        // add resume link if configured:
         if ($survey->use_resume_link) {
             $resumeLink = $this->client->getResumeLink($survey->surveyhero_id, $surveyheroResponse->response_id);
             $responseData['resume_link'] = $resumeLink;

@@ -15,7 +15,7 @@ trait HasQuestionMapping
             $surveyMappingConfig = $surveyMappingService->getSurveyMappingFromConfig($this);
             $surveyMappingDatabase = $this->question_mapping;
 
-            //Merge database mapping with config mapping. Config mapping gets priority.
+            // Merge database mapping with config mapping. Config mapping gets priority.
             $this->mergedQuestionMapping = array_replace_recursive($surveyMappingDatabase ?? [], $surveyMappingConfig['questions'] ?? []);
         }
 

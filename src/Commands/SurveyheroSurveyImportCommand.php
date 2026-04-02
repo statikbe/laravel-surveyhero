@@ -41,7 +41,7 @@ class SurveyheroSurveyImportCommand extends Command
                 ->select('surveyhero_id')
                 ->get();
         }
-        //if no survey id is passed as arg, we check if there is a mapping and import there surveys, otherwise we import all.
+        // if no survey id is passed as arg, we check if there is a mapping and import there surveys, otherwise we import all.
         else {
             $questionMapping = config('surveyhero.question_mapping');
             $surveyIdsToImport = collect(array_map(function ($elem) {

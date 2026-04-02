@@ -1,5 +1,11 @@
 <?php
 
+use Statikbe\Surveyhero\Models\Survey;
+use Statikbe\Surveyhero\Models\SurveyAnswer;
+use Statikbe\Surveyhero\Models\SurveyQuestion;
+use Statikbe\Surveyhero\Models\SurveyQuestionResponse;
+use Statikbe\Surveyhero\Models\SurveyResponse;
+
 // config for Statikbe/Surveyhero
 return [
     /**
@@ -19,11 +25,11 @@ return [
      * data model.
      */
     'models' => [
-        'survey' => Statikbe\Surveyhero\Models\Survey::class,
-        'survey_question' => Statikbe\Surveyhero\Models\SurveyQuestion::class,
-        'survey_answer' => Statikbe\Surveyhero\Models\SurveyAnswer::class,
-        'survey_response' => Statikbe\Surveyhero\Models\SurveyResponse::class,
-        'survey_question_response' => Statikbe\Surveyhero\Models\SurveyQuestionResponse::class,
+        'survey' => Survey::class,
+        'survey_question' => SurveyQuestion::class,
+        'survey_answer' => SurveyAnswer::class,
+        'survey_response' => SurveyResponse::class,
+        'survey_question_response' => SurveyQuestionResponse::class,
     ],
 
     /**
@@ -95,7 +101,7 @@ return [
     'question_mapping' => [
         [
             'survey_id' => 1234567,
-            'collectors' => [9876543], //optionally, see https://developer.surveyhero.com/api/#collector-api
+            'collectors' => [9876543], // optionally, see https://developer.surveyhero.com/api/#collector-api
             'use_resume_link' => false,
             'questions' => [
                 1000001 => [
@@ -125,7 +131,7 @@ return [
                         13509164 => 2,
                         13509165 => 3,
                     ],
-                    'mapped_data_type' => 'int', //can also be string if the values are strings in answer_mapping
+                    'mapped_data_type' => 'int', // can also be string if the values are strings in answer_mapping
                 ],
                 1000002 => [
                     'question_id' => 1000002,
@@ -136,7 +142,7 @@ return [
                         13509167 => 2,
                         13509168 => 3,
                     ],
-                    'mapped_data_type' => 'int', //can also be string if the values are strings in answer_mapping
+                    'mapped_data_type' => 'int', // can also be string if the values are strings in answer_mapping
                 ],
 
                 1000005 => [

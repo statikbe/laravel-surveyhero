@@ -15,7 +15,7 @@ trait HasCollectors
             $surveyMappingConfig = $surveyMappingService->getSurveyMappingFromConfig($this);
             $surveyCollectors = $this->collector_ids;
 
-            //Take collectors from config if defined, otherwise use collectors from API
+            // Take collectors from config if defined, otherwise use collectors from API
             $this->collectors = isset($surveyMappingConfig['collectors']) && ! empty($surveyMappingConfig['collectors']) ? $surveyMappingConfig['collectors'] : $surveyCollectors;
         }
 

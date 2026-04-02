@@ -35,7 +35,7 @@ class SurveyExport implements ShouldAutoSize, WithMultipleSheets
             return $this->sheets;
         }
 
-        //default config:
+        // default config:
         return [
             new QuestionsSheet($this->survey),
             new AnswersSheet($this->survey),

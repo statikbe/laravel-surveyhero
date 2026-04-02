@@ -96,14 +96,14 @@ class ChoiceTableResponseCreator extends AbstractQuestionResponseCreator
                 ], $responseData);
                 $responseList[] = $questionResponse;
 
-                //remove from list of not updated responses:
+                // remove from list of not updated responses:
                 if ($notUpdatedResponses->contains($questionResponse->id)) {
                     $index = $notUpdatedResponses->search(fn ($item) => $item->id === $questionResponse->id);
                     $notUpdatedResponses->pull($index);
                 }
             }
 
-            //remove all not updated responses:
+            // remove all not updated responses:
             foreach ($notUpdatedResponses as $notUpdatedResponse) {
                 /* @var SurveyQuestionResponseContract $notUpdatedResponse */
                 $notUpdatedResponse->delete();

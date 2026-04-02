@@ -2,6 +2,8 @@
 
 namespace Statikbe\Surveyhero\Contracts;
 
+use Illuminate\Database\Eloquent\Builder;
+
 /**
  * @property int $id
  */
@@ -10,7 +12,7 @@ interface ModelContract
     /**
      * Begin querying the model.
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public static function query();
 

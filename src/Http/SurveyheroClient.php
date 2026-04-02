@@ -3,6 +3,7 @@
 namespace Statikbe\Surveyhero\Http;
 
 use Carbon\Carbon;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use stdClass;
@@ -39,7 +40,7 @@ class SurveyheroClient
         return $responses ? $responses->responses : [];
     }
 
-    public function getSurveyResponseAnswers(string|int $surveyId, string|int $responseId): ?\stdClass
+    public function getSurveyResponseAnswers(string|int $surveyId, string|int $responseId): ?stdClass
     {
         $answerData = $this->fetchFromSurveyHero(sprintf('surveys/%s/responses/%s', $surveyId, $responseId));
 
@@ -122,7 +123,7 @@ class SurveyheroClient
     /**
      * @throws \Exception
      */
-    private function fetchFromSurveyHero(string $urlPath, array $queryStringArgs = []): \Illuminate\Http\Client\Response
+    private function fetchFromSurveyHero(string $urlPath, array $queryStringArgs = []): Response
     {
         $this->preventThrottle();
 
@@ -142,7 +143,7 @@ class SurveyheroClient
     /**
      * @throws \Exception
      */
-    private function postToSurveyHero(string $urlPath, array $queryStringArgs = []): \Illuminate\Http\Client\Response
+    private function postToSurveyHero(string $urlPath, array $queryStringArgs = []): Response
     {
         $this->preventThrottle();
 
@@ -162,7 +163,7 @@ class SurveyheroClient
     /**
      * @throws \Exception
      */
-    private function deleteFromSurveyHero(string $urlPath, array $queryStringArgs = []): \Illuminate\Http\Client\Response
+    private function deleteFromSurveyHero(string $urlPath, array $queryStringArgs = []): Response
     {
         $this->preventThrottle();
 
@@ -178,19 +179,19 @@ class SurveyheroClient
         throw new \Exception($response->body());
     }
 
-    //Prevent API rate limiting: max 2 requests per second
-    //Ensure sleep between requests
+    // Prevent API rate limiting: max 2 requests per second
+    // Ensure sleep between requests
     private function preventThrottle(): void
     {
         if (Cache::has(self::CACHE_LATEST_REQUEST_TIME_KEY)) {
-            //usleep is in microseconds, 1000000 is 1s.
-            //Surveyhero only allows 2 requests per second.
+            // usleep is in microseconds, 1000000 is 1s.
+            // Surveyhero only allows 2 requests per second.
             $sleepTime = abs(1000000 - (Carbon::now()->getTimestampMs() - Cache::get(self::CACHE_LATEST_REQUEST_TIME_KEY)) * 1000);
             usleep($sleepTime);
         }
     }
 
-    //Set latest request time with 1s TTL
+    // Set latest request time with 1s TTL
     private function updateThrottle(): void
     {
         Cache::put(self::CACHE_LATEST_REQUEST_TIME_KEY, Carbon::now()->getTimestampMs(), 1);

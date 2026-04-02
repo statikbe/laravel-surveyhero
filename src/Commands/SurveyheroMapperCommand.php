@@ -93,7 +93,7 @@ class SurveyheroMapperCommand extends Command
     {
         $dump = var_export($data, true);
 
-        //Add question_id keys to questions array. This is necessary for merging with the api config
+        // Add question_id keys to questions array. This is necessary for merging with the api config
         $dump = preg_replace('#(?:\A|\n)([ ]*)array \(#i', $data['question_id'].' => [', $dump, 1);
         $dump = preg_replace('#(?:\A|\n)([ ]*)array \(#i', '[', $dump); // Starts
         $dump = preg_replace('#\n([ ]*)\),#', "\n$1],", $dump); // Ends

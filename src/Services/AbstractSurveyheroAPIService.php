@@ -10,7 +10,7 @@ class AbstractSurveyheroAPIService
 
     public function __construct()
     {
-        $this->client = new SurveyheroClient;
+        $this->client = app(SurveyheroClient::class);
     }
 
     public function getApiClient(): SurveyheroClient

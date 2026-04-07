@@ -12,6 +12,7 @@ use Statikbe\Surveyhero\Commands\SurveyheroWebhookAddCommand;
 use Statikbe\Surveyhero\Commands\SurveyheroWebhookDeleteCommand;
 use Statikbe\Surveyhero\Commands\SurveyheroWebhookListCommand;
 use Statikbe\Surveyhero\Commands\SurveyResponseExportCommand;
+use Statikbe\Surveyhero\Http\SurveyheroClient;
 
 class SurveyheroServiceProvider extends PackageServiceProvider
 {
@@ -28,6 +29,7 @@ class SurveyheroServiceProvider extends PackageServiceProvider
             ->hasViews()
             ->hasMigration('create_surveyhero_tables')
             ->hasMigration('create_unique_surveyhero_id_indices')
+            ->runsMigrations()
             ->hasCommands([
                 SurveyheroSurveyImportCommand::class,
                 SurveyheroResponseImportCommand::class,
@@ -47,5 +49,7 @@ class SurveyheroServiceProvider extends PackageServiceProvider
         $this->app->singleton(SurveyheroRegistrar::class, function ($app) {
             return new SurveyheroRegistrar;
         });
+
+        $this->app->singleton(SurveyheroClient::class, fn () => new SurveyheroClient);
     }
 }

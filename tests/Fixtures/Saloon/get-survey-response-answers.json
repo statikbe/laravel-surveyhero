@@ -1,0 +1,8 @@
+{
+    "statusCode": 200,
+    "headers": {
+        "Content-Type": "application/json"
+    },
+    "data": "{\"response_id\":9001,\"status\":\"completed\",\"started_on\":\"2024-06-01T10:00:00+00:00\",\"last_updated_on\":\"2024-06-01T11:00:00+00:00\",\"language\":{\"code\":\"en\"},\"link_parameters\":{},\"answers\":[{\"element_id\":1000002,\"question_text\":\"In which department do you work?\",\"type\":\"choices\",\"choices\":[{\"choice_id\":13509166,\"label\":\"Department A\"}]},{\"element_id\":1000005,\"question_text\":\"Describe your role\",\"type\":\"text\",\"text\":\"Software Engineer\"},{\"element_id\":1000006,\"question_text\":\"Your age\",\"type\":\"number\",\"number\":32}]}",
+    "context": []
+}

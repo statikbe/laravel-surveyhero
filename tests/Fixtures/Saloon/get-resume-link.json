@@ -1,0 +1,8 @@
+{
+    "statusCode": 200,
+    "headers": {
+        "Content-Type": "application/json"
+    },
+    "data": "{\"url\":\"https://surveyhero.com/r/abc123def456\"}",
+    "context": []
+}

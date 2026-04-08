@@ -29,6 +29,10 @@ class SurveyDTO implements WithResponse
             number_of_questions: $data->number_of_questions ?? 0,
             number_of_collectors: $data->number_of_collectors ?? 0,
             number_of_responses: $data->number_of_responses ?? 0
+            created_on: $data->created_on,
+            number_of_questions: $data->number_of_questions,
+            number_of_collectors: $data->number_of_collectors,
+            number_of_responses: $data->number_of_responses
         );
     }
 }

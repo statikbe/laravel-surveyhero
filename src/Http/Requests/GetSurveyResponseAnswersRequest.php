@@ -6,6 +6,7 @@ use Saloon\Enums\Method;
 use Saloon\Http\Request;
 use Saloon\Http\Response;
 use Statikbe\Surveyhero\Http\DTO\SurveyResponseAnswersDTO;
+use Symfony\Component\HttpFoundation\Response as HttpResponse;
 
 class GetSurveyResponseAnswersRequest extends Request
 {
@@ -24,5 +25,14 @@ class GetSurveyResponseAnswersRequest extends Request
     public function createDtoFromResponse(Response $response): SurveyResponseAnswersDTO
     {
         return SurveyResponseAnswersDTO::fromResponseObject($response->object());
+    }
+
+    public function hasRequestFailed(Response $response): ?bool
+    {
+        if ($response->status() === HttpResponse::HTTP_NOT_FOUND) {
+            return false;
+        }
+
+        return null;
     }
 }

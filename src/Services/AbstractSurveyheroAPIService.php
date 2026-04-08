@@ -6,12 +6,9 @@ use Statikbe\Surveyhero\Http\SurveyheroClient;
 
 class AbstractSurveyheroAPIService
 {
-    protected SurveyheroClient $client;
-
-    public function __construct()
-    {
-        $this->client = app(SurveyheroClient::class);
-    }
+    public function __construct(
+        protected readonly SurveyheroClient $client
+    ) {}
 
     public function getApiClient(): SurveyheroClient
     {

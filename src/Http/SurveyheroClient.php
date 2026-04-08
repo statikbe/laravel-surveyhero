@@ -23,6 +23,7 @@ use Statikbe\Surveyhero\Http\Requests\GetSurveyResponseAnswersRequest;
 use Statikbe\Surveyhero\Http\Requests\GetSurveyResponsesRequest;
 use Statikbe\Surveyhero\Http\Requests\GetSurveysRequest;
 use Statikbe\Surveyhero\Http\Requests\ListWebhooksRequest;
+use Symfony\Component\HttpFoundation\Response as HttpResponse;
 
 class SurveyheroClient
 {
@@ -61,7 +62,7 @@ class SurveyheroClient
     {
         $response = $this->connector->send(new GetSurveyResponseAnswersRequest($surveyId, $responseId));
 
-        if ($response->status() === 404) {
+        if ($response->status() === HttpResponse::HTTP_NOT_FOUND) {
             return null;
         }
 
@@ -118,7 +119,7 @@ class SurveyheroClient
     {
         $response = $this->connector->send(new GetResumeLinkRequest($surveyId, $responseId));
 
-        if ($response->status() === 404) {
+        if ($response->status() === HttpResponse::HTTP_NOT_FOUND) {
             return null;
         }
 

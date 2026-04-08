@@ -4,6 +4,13 @@ namespace Statikbe\Surveyhero\Http;
 
 use Carbon\Carbon;
 use Statikbe\Surveyhero\Http\Connector\SurveyheroConnector;
+use Statikbe\Surveyhero\Http\DTO\SurveyCollectorDTO;
+use Statikbe\Surveyhero\Http\DTO\SurveyDTO;
+use Statikbe\Surveyhero\Http\DTO\SurveyElementDTO;
+use Statikbe\Surveyhero\Http\DTO\SurveyLanguageDTO;
+use Statikbe\Surveyhero\Http\DTO\SurveyResponseAnswersDTO;
+use Statikbe\Surveyhero\Http\DTO\SurveyResponseDTO;
+use Statikbe\Surveyhero\Http\DTO\WebhookDTO;
 use Statikbe\Surveyhero\Http\Requests\CreateWebhookRequest;
 use Statikbe\Surveyhero\Http\Requests\DeleteResponseRequest;
 use Statikbe\Surveyhero\Http\Requests\DeleteWebhookRequest;
@@ -16,7 +23,6 @@ use Statikbe\Surveyhero\Http\Requests\GetSurveyResponseAnswersRequest;
 use Statikbe\Surveyhero\Http\Requests\GetSurveyResponsesRequest;
 use Statikbe\Surveyhero\Http\Requests\GetSurveysRequest;
 use Statikbe\Surveyhero\Http\Requests\ListWebhooksRequest;
-use stdClass;
 
 class SurveyheroClient
 {
@@ -24,17 +30,20 @@ class SurveyheroClient
         private readonly SurveyheroConnector $connector
     ) {}
 
-    public function __construct(private readonly SurveyheroConfig $config) {}
-
+    /**
+     * @return array<int, SurveyDTO>
+     */
     public function getSurveys(): array
     {
         $response = $this->connector->send(new GetSurveysRequest);
         $response->throw();
-        $data = $response->object();
 
-        return $data ? $data->surveys : [];
+        return $response->dto();
     }
 
+    /**
+     * @return array<int, SurveyResponseDTO>
+     */
     public function getSurveyResponses(
         string|int $surveyId,
         ?Carbon $surveyLastUpdatedAt,
@@ -44,12 +53,11 @@ class SurveyheroClient
             new GetSurveyResponsesRequest($surveyId, $surveyLastUpdatedAt, $collectorIds)
         );
         $response->throw();
-        $data = $response->object();
 
-        return $data ? $data->responses : [];
+        return $response->dto();
     }
 
-    public function getSurveyResponseAnswers(string|int $surveyId, string|int $responseId): ?stdClass
+    public function getSurveyResponseAnswers(string|int $surveyId, string|int $responseId): ?SurveyResponseAnswersDTO
     {
         $response = $this->connector->send(new GetSurveyResponseAnswersRequest($surveyId, $responseId));
 
@@ -59,43 +67,51 @@ class SurveyheroClient
 
         $response->throw();
 
-        return $response->object();
+        return $response->dto();
     }
 
+    /**
+     * @return array<int, SurveyElementDTO>
+     */
     public function getSurveyElements(string|int $surveyId, ?string $lang = null): array
     {
         $response = $this->connector->send(new GetSurveyElementsRequest($surveyId, $lang));
         $response->throw();
-        $data = $response->object();
 
-        return $data ? $data->elements : [];
+        return $response->dto();
     }
 
+    /**
+     * @return array<int, SurveyElementDTO>
+     */
     public function getSurveyQuestions(string|int $surveyId, ?string $lang = null): array
     {
         $response = $this->connector->send(new GetSurveyQuestionsRequest($surveyId, $lang));
         $response->throw();
-        $data = $response->object();
 
-        return $data ? $data->elements : [];
+        return $response->dto();
     }
 
+    /**
+     * @return array<int, SurveyCollectorDTO>
+     */
     public function getSurveyCollectors(string|int $surveyId): array
     {
         $response = $this->connector->send(new GetSurveyCollectorsRequest($surveyId));
         $response->throw();
-        $data = $response->object();
 
-        return $data && isset($data->collectors) ? $data->collectors : [];
+        return $response->dto();
     }
 
+    /**
+     * @return array<int, SurveyLanguageDTO>
+     */
     public function getSurveyLanguages(string|int $surveyId): array
     {
         $response = $this->connector->send(new GetSurveyLanguagesRequest($surveyId));
         $response->throw();
-        $data = $response->object();
 
-        return $data ? $data->languages : [];
+        return $response->dto();
     }
 
     public function getResumeLink(string|int $surveyId, string|int $responseId): ?string
@@ -112,13 +128,15 @@ class SurveyheroClient
         return $data && isset($data->url) ? $data->url : null;
     }
 
+    /**
+     * @return array<int, WebhookDTO>
+     */
     public function listWebhooks(string|int $surveyId): array
     {
         $response = $this->connector->send(new ListWebhooksRequest($surveyId));
         $response->throw();
-        $data = $response->object();
 
-        return $data && isset($data->webhooks) ? $data->webhooks : [];
+        return $response->dto();
     }
 
     public function createWebhook(string|int $surveyId, string $eventType, string $url, string $status = 'active'): void

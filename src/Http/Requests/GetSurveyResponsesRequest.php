@@ -5,6 +5,8 @@ namespace Statikbe\Surveyhero\Http\Requests;
 use Carbon\Carbon;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
+use Saloon\Http\Response;
+use Statikbe\Surveyhero\Http\DTO\SurveyResponseDTO;
 
 class GetSurveyResponsesRequest extends Request
 {
@@ -34,5 +36,22 @@ class GetSurveyResponsesRequest extends Request
         }
 
         return $query;
+    }
+
+    /**
+     * @return array<int, SurveyResponseDTO>
+     */
+    public function createDtoFromResponse(Response $response): array
+    {
+        $data = $response->object();
+
+        if (! isset($data->responses) || ! is_array($data->responses)) {
+            return [];
+        }
+
+        return array_map(
+            fn (object $response) => SurveyResponseDTO::fromResponseObject($response),
+            $data->responses
+        );
     }
 }

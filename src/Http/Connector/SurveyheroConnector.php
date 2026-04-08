@@ -16,21 +16,6 @@ class SurveyheroConnector extends Connector
     use AcceptsJson;
     use HasRateLimits;
 
-    /**
-     * The number of times a request should be retried if a failure response is returned.
-     */
-    public ?int $tries = 3;
-
-    /**
-     * The interval in milliseconds Saloon should wait between retries.
-     */
-    public ?int $retryInterval = 500;
-
-    /**
-     * Should Saloon use exponential backoff during retries?
-     */
-    public ?bool $useExponentialBackoff = true;
-
     public function resolveBaseUrl(): string
     {
         $baseUrl = config('surveyhero.api_url');

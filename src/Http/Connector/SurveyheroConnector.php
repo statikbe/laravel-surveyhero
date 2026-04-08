@@ -49,6 +49,18 @@ class SurveyheroConnector extends Connector
 
     protected function handleTooManyAttempts(Response $response, Limit $limit): void
     {
-        sleep(1);
+        if ($response->status() !== 429) {
+            return;
+        }
+
+        // Check for Retry-After header (in seconds)
+        $retryAfter = $response->header('Retry-After');
+
+        if ($retryAfter !== null && is_numeric($retryAfter)) {
+            $limit->exceeded(releaseInSeconds: (int) $retryAfter);
+        } else {
+            // Default: wait 1 second if no Retry-After header is provided
+            $limit->exceeded(releaseInSeconds: 1);
+        }
     }
 }

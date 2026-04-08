@@ -24,7 +24,7 @@ class WebhookDTO implements WithResponse
             event_type: $data->event_type,
             url: $data->url,
             status: $data->status,
-            created_on: $data->created_on
+            created_on: $data->created_on ?? ''
         );
     }
 }

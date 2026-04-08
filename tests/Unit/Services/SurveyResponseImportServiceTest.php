@@ -22,12 +22,11 @@ function makeSurveyResponseImportService(array $mockResponses): SurveyResponseIm
     $mockClient = new MockClient($mockResponses);
     $connector = new SurveyheroConnector;
     $connector->withMockClient($mockClient);
-    $apiClient = new SurveyheroClient;
-    $apiClient->setConnector($connector);
+    $apiClient = new SurveyheroClient($connector);
 
     app()->instance(SurveyheroClient::class, $apiClient);
 
-    return new SurveyResponseImportService(new SurveyMappingService);
+    return new SurveyResponseImportService($apiClient, new SurveyMappingService($apiClient));
 }
 
 function createSurveyWithQuestions(): Survey

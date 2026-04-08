@@ -13,12 +13,11 @@ function makeSurveyImportService(array $mockResponses): SurveyImportService
     $mockClient = new MockClient($mockResponses);
     $connector = new SurveyheroConnector;
     $connector->withMockClient($mockClient);
-    $apiClient = new SurveyheroClient;
-    $apiClient->setConnector($connector);
+    $apiClient = new SurveyheroClient($connector);
 
     app()->instance(SurveyheroClient::class, $apiClient);
 
-    return new SurveyImportService;
+    return new SurveyImportService($apiClient);
 }
 
 it('imports all surveys from the API', function () {

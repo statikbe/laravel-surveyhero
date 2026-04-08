@@ -1,5 +1,7 @@
 <?php
 
+use Carbon\Carbon;
+use Saloon\Exceptions\Request\RequestException;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
 use Statikbe\Surveyhero\Http\Connector\SurveyheroConnector;
@@ -22,8 +24,7 @@ function makeClientWithMock(array $responses): array
     $mockClient = new MockClient($responses);
     $connector = new SurveyheroConnector;
     $connector->withMockClient($mockClient);
-    $client = new SurveyheroClient;
-    $client->setConnector($connector);
+    $client = new SurveyheroClient($connector);
 
     return [$client, $mockClient];
 }
@@ -120,7 +121,7 @@ it('throws on collectors failure', function () {
         GetSurveyCollectorsRequest::class => MockResponse::make([], 500),
     ]);
 
-    expect(fn () => $client->getSurveyCollectors(1234567))->toThrow(\Saloon\Exceptions\Request\RequestException::class);
+    expect(fn () => $client->getSurveyCollectors(1234567))->toThrow(RequestException::class);
 });
 
 it('returns survey languages', function () {
@@ -197,9 +198,9 @@ it('deletes a response', function () {
 });
 
 it('transforms a surveyhero timestamp to a Carbon instance', function () {
-    $client = new SurveyheroClient;
+    $client = new SurveyheroClient(new SurveyheroConnector);
     $carbon = $client->transformAPITimestamp('2024-06-01T11:00:00+00:00');
 
-    expect($carbon)->toBeInstanceOf(\Carbon\Carbon::class)
+    expect($carbon)->toBeInstanceOf(Carbon::class)
         ->and($carbon->format('Y-m-d H:i:s'))->toBe('2024-06-01 11:00:00');
 });

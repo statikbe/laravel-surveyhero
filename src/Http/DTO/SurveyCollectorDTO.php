@@ -23,16 +23,17 @@ class SurveyCollectorDTO implements WithResponse
     {
         // Extract type-specific data (e.g., survey_link, access_codes, etc.)
         $typeData = null;
-        if (isset($data->{$data->type}) && is_object($data->{$data->type})) {
-            $typeData = $data->{$data->type};
+        $type = $data->type ?? 'unknown';
+        if (isset($data->{$type}) && is_object($data->{$type})) {
+            $typeData = $data->{$type};
         }
 
         return new self(
             collector_id: $data->collector_id,
-            name: $data->name,
-            created_on: $data->created_on,
-            status: $data->status,
-            type: $data->type,
+            name: $data->name ?? '',
+            created_on: $data->created_on ?? '',
+            status: $data->status ?? '',
+            type: $type,
             type_data: $typeData,
             number_of_responses: $data->number_of_responses ?? null
         );

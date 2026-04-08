@@ -28,8 +28,8 @@ class SurveyResponseDTO implements WithResponse
     {
         return new self(
             response_id: $data->response_id,
-            collector_id: $data->collector_id,
-            survey_id: $data->survey_id,
+            collector_id: $data->collector_id ?? 0,
+            survey_id: $data->survey_id ?? 0,
             started_on: $data->started_on,
             last_updated_on: $data->last_updated_on,
             email_address: $data->email_address ?? null,
@@ -37,7 +37,7 @@ class SurveyResponseDTO implements WithResponse
             link_parameters: $data->link_parameters ?? null,
             language: $data->language ?? null,
             ip_address: $data->ip_address ?? null,
-            meta_data: $data->meta_data,
+            meta_data: $data->meta_data ?? (object) [],
             status: $data->status
         );
     }

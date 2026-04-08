@@ -7,7 +7,6 @@ use Statikbe\Surveyhero\Http\Requests\GetSurveyLanguagesRequest;
 use Statikbe\Surveyhero\Http\Requests\GetSurveyQuestionsRequest;
 use Statikbe\Surveyhero\Http\SurveyheroClient;
 use Statikbe\Surveyhero\Models\Survey;
-use Statikbe\Surveyhero\Models\SurveyAnswer;
 use Statikbe\Surveyhero\Models\SurveyQuestion;
 use Statikbe\Surveyhero\Services\SurveyQuestionsAndAnswersImportService;
 
@@ -16,12 +15,11 @@ function makeSurveyQuestionsService(array $mockResponses): SurveyQuestionsAndAns
     $mockClient = new MockClient($mockResponses);
     $connector = new SurveyheroConnector;
     $connector->withMockClient($mockClient);
-    $apiClient = new SurveyheroClient;
-    $apiClient->setConnector($connector);
+    $apiClient = new SurveyheroClient($connector);
 
     app()->instance(SurveyheroClient::class, $apiClient);
 
-    return new SurveyQuestionsAndAnswersImportService;
+    return new SurveyQuestionsAndAnswersImportService($apiClient);
 }
 
 it('imports questions for each survey language', function () {
@@ -87,6 +85,8 @@ it('updates existing questions on re-import', function () {
 
     $service->importSurveyQuestionsAndAnswers($survey);
     $questionCountAfterFirst = SurveyQuestion::count();
+
+    usleep(1_100_000);
 
     $service->importSurveyQuestionsAndAnswers($survey);
     expect(SurveyQuestion::count())->toBe($questionCountAfterFirst);

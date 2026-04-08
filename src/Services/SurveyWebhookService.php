@@ -11,7 +11,7 @@ class SurveyWebhookService extends AbstractSurveyheroAPIService
      *
      * @return void
      */
-    public function listWebhooks(SurveyContract $survey): ?array
+    public function listWebhooks(SurveyContract $survey): array
     {
         return $this->client->listWebhooks($survey->surveyhero_id);
     }

@@ -4,6 +4,8 @@ namespace Statikbe\Surveyhero\Http\Requests;
 
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
+use Saloon\Http\Response;
+use Statikbe\Surveyhero\Http\DTO\SurveyResponseAnswersDTO;
 
 class GetSurveyResponseAnswersRequest extends Request
 {
@@ -17,5 +19,10 @@ class GetSurveyResponseAnswersRequest extends Request
     public function resolveEndpoint(): string
     {
         return "surveys/{$this->surveyId}/responses/{$this->responseId}";
+    }
+
+    public function createDtoFromResponse(Response $response): SurveyResponseAnswersDTO
+    {
+        return SurveyResponseAnswersDTO::fromResponseObject($response->object());
     }
 }

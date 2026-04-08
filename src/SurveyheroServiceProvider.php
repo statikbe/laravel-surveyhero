@@ -12,7 +12,7 @@ use Statikbe\Surveyhero\Commands\SurveyheroWebhookAddCommand;
 use Statikbe\Surveyhero\Commands\SurveyheroWebhookDeleteCommand;
 use Statikbe\Surveyhero\Commands\SurveyheroWebhookListCommand;
 use Statikbe\Surveyhero\Commands\SurveyResponseExportCommand;
-use Statikbe\Surveyhero\Http\SurveyheroClient;
+use Statikbe\Surveyhero\Http\Connector\SurveyheroConnector;
 
 class SurveyheroServiceProvider extends PackageServiceProvider
 {
@@ -49,6 +49,6 @@ class SurveyheroServiceProvider extends PackageServiceProvider
             return new SurveyheroRegistrar;
         });
 
-        $this->app->singleton(SurveyheroClient::class, fn () => new SurveyheroClient);
+        $this->app->singleton(SurveyheroConnector::class);
     }
 }

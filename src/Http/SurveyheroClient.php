@@ -20,17 +20,9 @@ use stdClass;
 
 class SurveyheroClient
 {
-    private SurveyheroConnector $connector;
-
-    public function __construct()
-    {
-        $this->connector = new SurveyheroConnector;
-    }
-
-    public function setConnector(SurveyheroConnector $connector): void
-    {
-        $this->connector = $connector;
-    }
+    public function __construct(
+        private readonly SurveyheroConnector $connector
+    ) {}
 
     public function getSurveys(): array
     {

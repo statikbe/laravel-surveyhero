@@ -6,6 +6,7 @@ use Saloon\Http\Auth\BasicAuthenticator;
 use Saloon\Http\Connector;
 use Saloon\Http\Response;
 use Saloon\RateLimitPlugin\Contracts\RateLimitStore;
+use Saloon\RateLimitPlugin\Helpers\RetryAfterHelper;
 use Saloon\RateLimitPlugin\Limit;
 use Saloon\RateLimitPlugin\Stores\LaravelCacheStore;
 use Saloon\RateLimitPlugin\Traits\HasRateLimits;
@@ -53,14 +54,9 @@ class SurveyheroConnector extends Connector
             return;
         }
 
-        // Check for Retry-After header (in seconds)
-        $retryAfter = $response->header('Retry-After');
-
-        if ($retryAfter !== null && is_numeric($retryAfter)) {
-            $limit->exceeded(releaseInSeconds: (int) $retryAfter);
-        } else {
-            // Default: wait 1 second if no Retry-After header is provided
-            $limit->exceeded(releaseInSeconds: 1);
-        }
+        // Parse Retry-After header (handles both delta seconds and HTTP-date formats)
+        $limit->exceeded(
+            releaseInSeconds: RetryAfterHelper::parse($response->header('Retry-After')),
+        );
     }
 }

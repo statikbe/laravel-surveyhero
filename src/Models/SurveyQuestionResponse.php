@@ -6,11 +6,20 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Statikbe\Surveyhero\Contracts\SurveyQuestionResponseContract;
+use Statikbe\Surveyhero\Database\Factories\SurveyQuestionResponseFactory;
 use Statikbe\Surveyhero\SurveyheroRegistrar;
 
 class SurveyQuestionResponse extends Model implements SurveyQuestionResponseContract
 {
     use HasFactory;
+
+    /**
+     * Create a new factory instance for the model.
+     */
+    protected static function newFactory(): SurveyQuestionResponseFactory
+    {
+        return new SurveyQuestionResponseFactory;
+    }
 
     protected $guarded = [];
 

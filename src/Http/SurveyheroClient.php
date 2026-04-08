@@ -110,7 +110,14 @@ class SurveyheroClient
     {
         $response = $this->connector->send(new GetResumeLinkRequest($surveyId, $responseId));
 
-        return $response->successful() ? $response->object()->url : null;
+        if ($response->status() === 404) {
+            return null;
+        }
+
+        $response->throw();
+        $data = $response->object();
+
+        return $data && isset($data->url) ? $data->url : null;
     }
 
     public function listWebhooks(string|int $surveyId): array
@@ -142,6 +149,6 @@ class SurveyheroClient
 
     public function transformAPITimestamp(string $surveyheroTimestamp): Carbon
     {
-        return Carbon::createFromFormat('Y-m-d\TH:i:s', substr($surveyheroTimestamp, 0, strpos($surveyheroTimestamp, '+')));
+        return Carbon::parse($surveyheroTimestamp);
     }
 }

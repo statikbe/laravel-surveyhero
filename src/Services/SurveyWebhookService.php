@@ -8,8 +8,6 @@ class SurveyWebhookService extends AbstractSurveyheroAPIService
 {
     /**
      * Lists all webhooks for a certain Surveyhero survey
-     *
-     * @return void
      */
     public function listWebhooks(SurveyContract $survey): array
     {

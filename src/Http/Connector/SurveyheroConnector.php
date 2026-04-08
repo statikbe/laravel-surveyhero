@@ -19,13 +19,7 @@ class SurveyheroConnector extends Connector
 
     public function resolveBaseUrl(): string
     {
-        $baseUrl = config('surveyhero.api_url');
-
-        if (is_string($baseUrl) && trim($baseUrl) !== '') {
-            return $baseUrl;
-        }
-
-        return 'https://api.surveyhero.com/v1/';
+        return config('surveyhero.api_url');
     }
 
     protected function defaultAuth(): BasicAuthenticator
@@ -55,8 +49,12 @@ class SurveyheroConnector extends Connector
         }
 
         // Parse Retry-After header (handles both delta seconds and HTTP-date formats)
+        // Falls back to configured seconds if no header is provided
         $limit->exceeded(
-            releaseInSeconds: RetryAfterHelper::parse($response->header('Retry-After')),
+            releaseInSeconds: RetryAfterHelper::parse(
+                $response->header('Retry-After'),
+                config('surveyhero.rate_limit_fallback_seconds', 60)
+            ),
         );
     }
 }

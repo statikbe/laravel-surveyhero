@@ -14,6 +14,11 @@ return [
     'api_url' => env('SURVEYHERO_API_URL', 'https://api.surveyhero.com/v1/'),
 
     /**
+     * Fallback seconds to wait when rate limited and no Retry-After header is provided.
+     */
+    'rate_limit_fallback_seconds' => env('SURVEYHERO_RATE_LIMIT_FALLBACK', 60),
+
+    /**
      * The Surveyhero API username and password:
      */
     'api_username' => env('SURVEYHERO_API_USERNAME'),

@@ -12,8 +12,8 @@ class SurveyLanguageDTO implements WithResponse
     public function __construct(
         public readonly string $name,
         public readonly string $code,
-        public readonly bool $isDefault,
-        public readonly bool $isActive
+        public readonly bool $is_default,
+        public readonly bool $is_active
     ) {}
 
     public static function fromResponseObject(object $data): self
@@ -21,8 +21,8 @@ class SurveyLanguageDTO implements WithResponse
         return new self(
             name: $data->name,
             code: $data->code,
-            isDefault: $data->is_default,
-            isActive: $data->is_active
+            is_default: $data->is_default,
+            is_active: $data->is_active
         );
     }
 }

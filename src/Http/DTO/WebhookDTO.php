@@ -10,21 +10,21 @@ class WebhookDTO implements WithResponse
     use HasResponse;
 
     public function __construct(
-        public readonly int $webhookId,
-        public readonly string $eventType,
+        public readonly int $webhook_id,
+        public readonly string $event_type,
         public readonly string $url,
         public readonly string $status,
-        public readonly string $createdOn
+        public readonly string $created_on
     ) {}
 
     public static function fromResponseObject(object $data): self
     {
         return new self(
-            webhookId: $data->webhook_id,
-            eventType: $data->event_type,
+            webhook_id: $data->webhook_id,
+            event_type: $data->event_type,
             url: $data->url,
             status: $data->status,
-            createdOn: $data->created_on
+            created_on: $data->created_on
         );
     }
 }

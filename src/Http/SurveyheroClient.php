@@ -59,7 +59,13 @@ class SurveyheroClient
     {
         $response = $this->connector->send(new GetSurveyResponseAnswersRequest($surveyId, $responseId));
 
-        return $response->successful() ? $response->object() : null;
+        if ($response->status() === 404) {
+            return null;
+        }
+
+        $response->throw();
+
+        return $response->object();
     }
 
     public function getSurveyElements(string|int $surveyId, ?string $lang = null): array
@@ -80,11 +86,13 @@ class SurveyheroClient
         return $data ? $data->elements : [];
     }
 
-    public function getSurveyCollectors(string|int $surveyId): ?array
+    public function getSurveyCollectors(string|int $surveyId): array
     {
         $response = $this->connector->send(new GetSurveyCollectorsRequest($surveyId));
+        $response->throw();
+        $data = $response->object();
 
-        return $response->successful() ? $response->object()->collectors : null;
+        return $data && isset($data->collectors) ? $data->collectors : [];
     }
 
     public function getSurveyLanguages(string|int $surveyId): array
@@ -103,11 +111,13 @@ class SurveyheroClient
         return $response->successful() ? $response->object()->url : null;
     }
 
-    public function listWebhooks(string|int $surveyId): ?array
+    public function listWebhooks(string|int $surveyId): array
     {
         $response = $this->connector->send(new ListWebhooksRequest($surveyId));
+        $response->throw();
+        $data = $response->object();
 
-        return $response->successful() ? $response->object()->webhooks : null;
+        return $data && isset($data->webhooks) ? $data->webhooks : [];
     }
 
     public function createWebhook(string|int $surveyId, string $eventType, string $url, string $status = 'active'): void
@@ -116,11 +126,10 @@ class SurveyheroClient
         $response->throw();
     }
 
-    public function deleteWebhook(string|int $surveyId, string|int $webhookId): ?stdClass
+    public function deleteWebhook(string|int $surveyId, string|int $webhookId): void
     {
         $response = $this->connector->send(new DeleteWebhookRequest($surveyId, $webhookId));
-
-        return $response->successful() ? $response->object() : null;
+        $response->throw();
     }
 
     public function deleteResponse(string|int $surveyId, string|int $responseId): void

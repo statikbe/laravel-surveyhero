@@ -17,7 +17,7 @@ class SurveyheroConnector extends Connector
 
     public function resolveBaseUrl(): string
     {
-        return config('surveyhero.api_url', 'https://api.surveyhero.com/v1/');
+        return config('surveyhero.api_url') ?? 'https://api.surveyhero.com/v1/';
     }
 
     protected function defaultAuth(): BasicAuthenticator

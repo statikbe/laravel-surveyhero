@@ -115,12 +115,12 @@ it('returns survey collectors', function () {
     $mockClient->assertSent(GetSurveyCollectorsRequest::class);
 });
 
-it('returns null for collectors on failure', function () {
+it('throws on collectors failure', function () {
     [$client] = makeClientWithMock([
         GetSurveyCollectorsRequest::class => MockResponse::make([], 500),
     ]);
 
-    expect($client->getSurveyCollectors(1234567))->toBeNull();
+    expect(fn () => $client->getSurveyCollectors(1234567))->toThrow(\Saloon\Exceptions\Request\RequestException::class);
 });
 
 it('returns survey languages', function () {
@@ -176,15 +176,14 @@ it('creates a webhook', function () {
     $mockClient->assertSent(CreateWebhookRequest::class);
 });
 
-it('deletes a webhook and returns the response object', function () {
+it('deletes a webhook', function () {
     [$client, $mockClient] = makeClientWithMock([
         DeleteWebhookRequest::class => MockResponse::fixture('delete-webhook'),
     ]);
 
-    $result = $client->deleteWebhook(1234567, 555);
+    $client->deleteWebhook(1234567, 555);
 
     $mockClient->assertSent(DeleteWebhookRequest::class);
-    expect($result)->toBeObject();
 });
 
 it('deletes a response', function () {

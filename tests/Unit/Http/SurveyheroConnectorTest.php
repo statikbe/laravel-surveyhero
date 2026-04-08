@@ -12,7 +12,7 @@ it('resolves base url from config', function () {
 });
 
 it('uses the default surveyhero api url when none is configured', function () {
-    config()->set('surveyhero.api_url', 'https://api.surveyhero.com/v1/');
+    config()->set('surveyhero.api_url', null);
     $connector = new SurveyheroConnector;
 
     expect($connector->resolveBaseUrl())->toBe('https://api.surveyhero.com/v1/');

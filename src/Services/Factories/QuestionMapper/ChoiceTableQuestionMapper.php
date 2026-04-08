@@ -3,12 +3,13 @@
 namespace Statikbe\Surveyhero\Services\Factories\QuestionMapper;
 
 use Statikbe\Surveyhero\Contracts\SurveyAnswerContract;
+use Statikbe\Surveyhero\Http\DTO\SurveyElementDTO;
 
 class ChoiceTableQuestionMapper extends AbstractQuestionMapper
 {
     const TYPE = 'choice_table';
 
-    public function mapQuestion(\stdClass $question, int $questionCounter): array
+    public function mapQuestion(SurveyElementDTO $question, int $questionCounter): array
     {
         /*
          * [

@@ -10,34 +10,34 @@ class SurveyResponseDTO implements WithResponse
     use HasResponse;
 
     public function __construct(
-        public readonly int $responseId,
-        public readonly int $collectorId,
-        public readonly int $surveyId,
-        public readonly string $startedOn,
-        public readonly string $lastUpdatedOn,
-        public readonly ?string $emailAddress,
-        public readonly ?object $recipientData,
-        public readonly ?object $linkParameters,
+        public readonly int $response_id,
+        public readonly int $collector_id,
+        public readonly int $survey_id,
+        public readonly string $started_on,
+        public readonly string $last_updated_on,
+        public readonly ?string $email_address,
+        public readonly ?object $recipient_data,
+        public readonly ?object $link_parameters,
         public readonly ?object $language,
-        public readonly ?string $ipAddress,
-        public readonly object $metaData,
+        public readonly ?string $ip_address,
+        public readonly object $meta_data,
         public readonly string $status
     ) {}
 
     public static function fromResponseObject(object $data): self
     {
         return new self(
-            responseId: $data->response_id,
-            collectorId: $data->collector_id,
-            surveyId: $data->survey_id,
-            startedOn: $data->started_on,
-            lastUpdatedOn: $data->last_updated_on,
-            emailAddress: $data->email_address ?? null,
-            recipientData: $data->recipient_data ?? null,
-            linkParameters: $data->link_parameters ?? null,
+            response_id: $data->response_id,
+            collector_id: $data->collector_id,
+            survey_id: $data->survey_id,
+            started_on: $data->started_on,
+            last_updated_on: $data->last_updated_on,
+            email_address: $data->email_address ?? null,
+            recipient_data: $data->recipient_data ?? null,
+            link_parameters: $data->link_parameters ?? null,
             language: $data->language ?? null,
-            ipAddress: $data->ip_address ?? null,
-            metaData: $data->meta_data,
+            ip_address: $data->ip_address ?? null,
+            meta_data: $data->meta_data,
             status: $data->status
         );
     }

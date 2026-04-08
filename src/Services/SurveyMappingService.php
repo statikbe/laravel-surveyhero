@@ -6,6 +6,7 @@ use Statikbe\Surveyhero\Contracts\SurveyContract;
 use Statikbe\Surveyhero\Exceptions\QuestionMapperNotImplementedException;
 use Statikbe\Surveyhero\Exceptions\QuestionNotMappedException;
 use Statikbe\Surveyhero\Exceptions\SurveyNotMappedException;
+use Statikbe\Surveyhero\Http\SurveyheroClient;
 use Statikbe\Surveyhero\Services\Factories\QuestionMapper\ChoiceListQuestionMapper;
 use Statikbe\Surveyhero\Services\Factories\QuestionMapper\ChoiceTableQuestionMapper;
 use Statikbe\Surveyhero\Services\Factories\QuestionMapper\InputQuestionMapper;
@@ -16,10 +17,10 @@ class SurveyMappingService extends AbstractSurveyheroAPIService
 {
     private array $questionMapping;
 
-    public function __construct()
+    public function __construct(?SurveyheroClient $client = null)
     {
-        parent::__construct();
-        $this->questionMapping = $this->config->getQuestionMapping();
+        parent::__construct($client ?? app(SurveyheroClient::class));
+        $this->questionMapping = config('surveyhero.question_mapping', []);
     }
 
     /**

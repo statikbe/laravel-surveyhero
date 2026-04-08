@@ -10,9 +10,13 @@ use Statikbe\Surveyhero\SurveyheroServiceProvider;
 class TestCase extends Orchestra
 {
     use RefreshDatabase;
+
     protected function setUp(): void
     {
         parent::setUp();
+
+        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        $this->artisan('migrate')->run();
 
         Factory::guessFactoryNamesUsing(
             fn (string $modelName) => 'Statikbe\\Surveyhero\\Database\\Factories\\'.class_basename($modelName).'Factory'

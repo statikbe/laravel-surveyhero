@@ -10,13 +10,13 @@ class SurveyCollectorDTO implements WithResponse
     use HasResponse;
 
     public function __construct(
-        public readonly int $collectorId,
+        public readonly int $collector_id,
         public readonly string $name,
-        public readonly string $createdOn,
+        public readonly string $created_on,
         public readonly string $status,
         public readonly string $type,
-        public readonly ?object $typeData = null,
-        public readonly ?int $numberOfResponses = null
+        public readonly ?object $type_data = null,
+        public readonly ?int $number_of_responses = null
     ) {}
 
     public static function fromResponseObject(object $data): self
@@ -28,13 +28,13 @@ class SurveyCollectorDTO implements WithResponse
         }
 
         return new self(
-            collectorId: $data->collector_id,
+            collector_id: $data->collector_id,
             name: $data->name,
-            createdOn: $data->created_on,
+            created_on: $data->created_on,
             status: $data->status,
             type: $data->type,
-            typeData: $typeData,
-            numberOfResponses: $data->number_of_responses ?? null
+            type_data: $typeData,
+            number_of_responses: $data->number_of_responses ?? null
         );
     }
 }

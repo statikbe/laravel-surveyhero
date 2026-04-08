@@ -10,7 +10,7 @@ class SurveyElementDTO implements WithResponse
     use HasResponse;
 
     public function __construct(
-        public readonly int $elementId,
+        public readonly int $element_id,
         public readonly string $type,
         public readonly ?object $question = null,
         public readonly ?object $text = null,
@@ -22,7 +22,7 @@ class SurveyElementDTO implements WithResponse
     public static function fromResponseObject(object $data): self
     {
         return new self(
-            elementId: $data->element_id,
+            element_id: $data->element_id,
             type: $data->type,
             question: $data->question ?? null,
             text: $data->text ?? null,

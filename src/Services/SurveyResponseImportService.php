@@ -120,6 +120,8 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
                     }
                 } else {
                     $importInfo->addUnimportedQuestion($answer->element_id, 'No question mapping available in configuration file.');
+                    // set survey response as incomplete, because we could not completely import it.
+                    $this->setResponseAsIncomplete($surveyResponse);
                 }
             }
 

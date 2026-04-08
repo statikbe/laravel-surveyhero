@@ -49,10 +49,6 @@ class SurveyheroServiceProvider extends PackageServiceProvider
             return new SurveyheroRegistrar;
         });
 
-        $this->app->singleton(SurveyheroConfig::class);
-
-        $this->app->singleton(SurveyheroClient::class, fn ($app) => new SurveyheroClient(
-            $app->make(SurveyheroConfig::class)
-        ));
+        $this->app->singleton(SurveyheroClient::class, fn () => new SurveyheroClient);
     }
 }

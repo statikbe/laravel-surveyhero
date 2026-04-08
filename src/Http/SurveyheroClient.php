@@ -3,24 +3,44 @@
 namespace Statikbe\Surveyhero\Http;
 
 use Carbon\Carbon;
-use Illuminate\Http\Client\Response;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Http;
-use Statikbe\Surveyhero\SurveyheroConfig;
+use Statikbe\Surveyhero\Http\Connector\SurveyheroConnector;
+use Statikbe\Surveyhero\Http\Requests\CreateWebhookRequest;
+use Statikbe\Surveyhero\Http\Requests\DeleteResponseRequest;
+use Statikbe\Surveyhero\Http\Requests\DeleteWebhookRequest;
+use Statikbe\Surveyhero\Http\Requests\GetResumeLinkRequest;
+use Statikbe\Surveyhero\Http\Requests\GetSurveyCollectorsRequest;
+use Statikbe\Surveyhero\Http\Requests\GetSurveyElementsRequest;
+use Statikbe\Surveyhero\Http\Requests\GetSurveyLanguagesRequest;
+use Statikbe\Surveyhero\Http\Requests\GetSurveyQuestionsRequest;
+use Statikbe\Surveyhero\Http\Requests\GetSurveyResponseAnswersRequest;
+use Statikbe\Surveyhero\Http\Requests\GetSurveyResponsesRequest;
+use Statikbe\Surveyhero\Http\Requests\GetSurveysRequest;
+use Statikbe\Surveyhero\Http\Requests\ListWebhooksRequest;
 use stdClass;
 
 class SurveyheroClient
 {
-    const CACHE_LATEST_REQUEST_TIME_KEY = 'latest-surveyhero-api-request-time';
+    private SurveyheroConnector $connector;
+
+    public function __construct()
+    {
+        $this->connector = new SurveyheroConnector;
+    }
+
+    public function setConnector(SurveyheroConnector $connector): void
+    {
+        $this->connector = $connector;
+    }
 
     public function __construct(private readonly SurveyheroConfig $config) {}
 
     public function getSurveys(): array
     {
-        $responsesData = $this->fetchFromSurveyHero('surveys');
-        $surveys = json_decode($responsesData->body());
+        $response = $this->connector->send(new GetSurveysRequest);
+        $response->throw();
+        $data = $response->object();
 
-        return $surveys ? $surveys->surveys : [];
+        return $data ? $data->surveys : [];
     }
 
     public function getSurveyResponses(
@@ -28,185 +48,100 @@ class SurveyheroClient
         ?Carbon $surveyLastUpdatedAt,
         array $collectorIds = []
     ): array {
-        $url = sprintf('surveys/%s/responses', $surveyId);
-        $queryStringArgs = [];
-        if ($surveyLastUpdatedAt) {
-            $queryStringArgs['last_updated_on[from]'] = $surveyLastUpdatedAt->toIso8601String();
-        }
-        if (! empty($collectorIds)) {
-            $queryStringArgs['collector_id'] = $collectorIds;
-        }
+        $response = $this->connector->send(
+            new GetSurveyResponsesRequest($surveyId, $surveyLastUpdatedAt, $collectorIds)
+        );
+        $response->throw();
+        $data = $response->object();
 
-        $responsesData = $this->fetchFromSurveyHero($url, $queryStringArgs);
-        $responses = json_decode($responsesData->body());
-
-        return $responses ? $responses->responses : [];
+        return $data ? $data->responses : [];
     }
 
     public function getSurveyResponseAnswers(string|int $surveyId, string|int $responseId): ?stdClass
     {
-        $answerData = $this->fetchFromSurveyHero(sprintf('surveys/%s/responses/%s', $surveyId, $responseId));
+        $response = $this->connector->send(new GetSurveyResponseAnswersRequest($surveyId, $responseId));
 
-        return $answerData->successful() ? json_decode($answerData->body()) : null;
+        if ($response->status() === 404) {
+            return null;
+        }
+
+        $response->throw();
+
+        return $response->object();
     }
 
     public function getSurveyElements(string|int $surveyId, ?string $lang = null): array
     {
-        $questionsData = $this->fetchFromSurveyHero(sprintf('surveys/%s/elements%s', $surveyId, $lang ? '?lang='.$lang : null));
-        $questions = json_decode($questionsData->body());
+        $response = $this->connector->send(new GetSurveyElementsRequest($surveyId, $lang));
+        $response->throw();
+        $data = $response->object();
 
-        return $questions ? $questions->elements : [];
+        return $data ? $data->elements : [];
     }
 
     public function getSurveyQuestions(string|int $surveyId, ?string $lang = null): array
     {
-        $questionsData = $this->fetchFromSurveyHero(sprintf('surveys/%s/questions%s', $surveyId, $lang ? '?lang='.$lang : null));
-        $questions = json_decode($questionsData->body());
+        $response = $this->connector->send(new GetSurveyQuestionsRequest($surveyId, $lang));
+        $response->throw();
+        $data = $response->object();
 
-        return $questions ? $questions->elements : [];
+        return $data ? $data->elements : [];
     }
 
-    public function getSurveyCollectors(string|int $surveyId): ?array
+    public function getSurveyCollectors(string|int $surveyId): array
     {
-        $collectorData = $this->fetchFromSurveyHero(sprintf('surveys/%s/collectors', $surveyId));
+        $response = $this->connector->send(new GetSurveyCollectorsRequest($surveyId));
+        $response->throw();
+        $data = $response->object();
 
-        return $collectorData->successful() ? json_decode($collectorData->body())->collectors : null;
+        return $data && isset($data->collectors) ? $data->collectors : [];
     }
 
     public function getSurveyLanguages(string|int $surveyId): array
     {
-        $questionsData = $this->fetchFromSurveyHero(sprintf('surveys/%s/languages', $surveyId));
-        $languages = json_decode($questionsData->body());
+        $response = $this->connector->send(new GetSurveyLanguagesRequest($surveyId));
+        $response->throw();
+        $data = $response->object();
 
-        return $languages ? $languages->languages : [];
+        return $data ? $data->languages : [];
     }
 
     public function getResumeLink(string|int $surveyId, string|int $responseId): ?string
     {
-        $resumeData = $this->fetchFromSurveyHero("surveys/$surveyId/responses/$responseId/resume");
+        $response = $this->connector->send(new GetResumeLinkRequest($surveyId, $responseId));
 
-        return $resumeData->successful() ? json_decode($resumeData->body())->url : null;
+        return $response->successful() ? $response->object()->url : null;
     }
 
-    public function listWebhooks(string|int $surveyId): ?array
+    public function listWebhooks(string|int $surveyId): array
     {
-        $webhookData = $this->fetchFromSurveyHero(sprintf('surveys/%s/webhooks', $surveyId));
+        $response = $this->connector->send(new ListWebhooksRequest($surveyId));
+        $response->throw();
+        $data = $response->object();
 
-        return $webhookData->successful() ? json_decode($webhookData->body())->webhooks : null;
+        return $data && isset($data->webhooks) ? $data->webhooks : [];
     }
 
-    public function createWebhook(string|int $surveyId, string $eventType, string $url, string $status = 'active')
+    public function createWebhook(string|int $surveyId, string $eventType, string $url, string $status = 'active'): void
     {
-        $body = [
-            'event_type' => $eventType,
-            'url' => $url,
-            'status' => $status,
-        ];
-
-        $this->postToSurveyHero(sprintf('surveys/%s/webhooks', $surveyId), $body);
+        $response = $this->connector->send(new CreateWebhookRequest($surveyId, $eventType, $url, $status));
+        $response->throw();
     }
 
-    public function deleteWebhook(string|int $surveyId, string|int $webhookId): ?stdClass
+    public function deleteWebhook(string|int $surveyId, string|int $webhookId): void
     {
-        $webhookData = $this->deleteFromSurveyHero(sprintf('surveys/%s/webhooks/%s', $surveyId, $webhookId));
-
-        return $webhookData->successful() ? json_decode($webhookData->body()) : null;
+        $response = $this->connector->send(new DeleteWebhookRequest($surveyId, $webhookId));
+        $response->throw();
     }
 
-    public function deleteResponse(string|int $surveyId, string|int $responseId)
+    public function deleteResponse(string|int $surveyId, string|int $responseId): void
     {
-        $this->deleteFromSurveyHero(sprintf('surveys/%s/responses/%s', $surveyId, $responseId));
+        $response = $this->connector->send(new DeleteResponseRequest($surveyId, $responseId));
+        $response->throw();
     }
 
     public function transformAPITimestamp(string $surveyheroTimestamp): Carbon
     {
         return Carbon::createFromFormat('Y-m-d\TH:i:s', substr($surveyheroTimestamp, 0, strpos($surveyheroTimestamp, '+')));
-    }
-
-    private function assertCredentialsConfigured(): void
-    {
-        if ($this->config->getApiUsername() === null || $this->config->getApiPassword() === null) {
-            throw new \RuntimeException('Surveyhero API credentials are not configured. Set SURVEYHERO_API_USERNAME and SURVEYHERO_API_PASSWORD.');
-        }
-    }
-
-    /**
-     * @throws \Exception
-     */
-    private function fetchFromSurveyHero(string $urlPath, array $queryStringArgs = []): Response
-    {
-        $this->assertCredentialsConfigured();
-        $this->preventThrottle();
-
-        $response = Http::retry(3, 800)
-            ->withBasicAuth($this->config->getApiUsername(), $this->config->getApiPassword())
-            ->get($this->config->getApiUrl().$urlPath, $queryStringArgs);
-
-        $this->updateThrottle();
-
-        if ($response->successful()) {
-            return $response;
-        }
-
-        throw new \Exception($response->body());
-    }
-
-    /**
-     * @throws \Exception
-     */
-    private function postToSurveyHero(string $urlPath, array $queryStringArgs = []): Response
-    {
-        $this->assertCredentialsConfigured();
-        $this->preventThrottle();
-
-        $response = Http::retry(3, 600)
-            ->withBasicAuth($this->config->getApiUsername(), $this->config->getApiPassword())
-            ->post($this->config->getApiUrl().$urlPath, $queryStringArgs);
-
-        $this->updateThrottle();
-
-        if (! $response->successful()) {
-            throw new \Exception($response->body());
-        }
-
-        return $response;
-    }
-
-    /**
-     * @throws \Exception
-     */
-    private function deleteFromSurveyHero(string $urlPath, array $queryStringArgs = []): Response
-    {
-        $this->assertCredentialsConfigured();
-        $this->preventThrottle();
-
-        $response = Http::retry(3, 600)
-            ->withBasicAuth($this->config->getApiUsername(), $this->config->getApiPassword())
-            ->delete($this->config->getApiUrl().$urlPath, $queryStringArgs);
-
-        $this->updateThrottle();
-
-        if ($response->successful()) {
-            return $response;
-        }
-        throw new \Exception($response->body());
-    }
-
-    // Prevent API rate limiting: max 2 requests per second
-    // Ensure sleep between requests
-    private function preventThrottle(): void
-    {
-        if (Cache::has(self::CACHE_LATEST_REQUEST_TIME_KEY)) {
-            // usleep is in microseconds, 1000000 is 1s.
-            // Surveyhero only allows 2 requests per second.
-            $sleepTime = abs(1000000 - (Carbon::now()->getTimestampMs() - Cache::get(self::CACHE_LATEST_REQUEST_TIME_KEY)) * 1000);
-            usleep($sleepTime);
-        }
-    }
-
-    // Set latest request time with 1s TTL
-    private function updateThrottle(): void
-    {
-        Cache::put(self::CACHE_LATEST_REQUEST_TIME_KEY, Carbon::now()->getTimestampMs(), 1);
     }
 }

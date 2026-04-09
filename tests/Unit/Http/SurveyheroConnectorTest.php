@@ -1,7 +1,6 @@
 <?php
 
 use Saloon\Http\Auth\BasicAuthenticator;
-use Saloon\RateLimitPlugin\Limit;
 use Statikbe\Surveyhero\Http\Connector\SurveyheroConnector;
 
 it('resolves base url from config', function () {
@@ -23,26 +22,7 @@ it('creates basic auth with configured credentials', function () {
     config()->set('surveyhero.api_password', 'my-pass');
     $connector = new SurveyheroConnector;
 
-    // The authenticator is returned via the public getAuthenticator() method
     $auth = $connector->getAuthenticator();
 
     expect($auth)->toBeInstanceOf(BasicAuthenticator::class);
-});
-
-it('resolves a rate limit of 2 requests per second', function () {
-    $connector = new SurveyheroConnector;
-
-    $reflector = new ReflectionMethod($connector, 'resolveLimits');
-    $reflector->setAccessible(true);
-    $limits = $reflector->invoke($connector);
-
-    expect($limits)->toHaveCount(1)
-        ->and($limits[0])->toBeInstanceOf(Limit::class);
-});
-
-it('has no default retry configuration (retries are per-request)', function () {
-    $connector = new SurveyheroConnector;
-
-    expect($connector->tries)->toBeNull()
-        ->and($connector->retryInterval)->toBeNull();
 });

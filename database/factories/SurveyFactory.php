@@ -12,8 +12,8 @@ class SurveyFactory extends Factory
     public function definition(): array
     {
         return [
-            'surveyhero_id' => $this->faker->unique()->numerify('#######'),
-            'name' => $this->faker->sentence(3),
+            'surveyhero_id' => fake()->unique()->numerify('#######'),
+            'name' => fake()->sentence(3),
             'use_resume_link' => false,
         ];
     }

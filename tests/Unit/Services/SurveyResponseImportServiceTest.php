@@ -1,11 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Event;
-use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
 use Statikbe\Surveyhero\Events\SurveyResponseImported;
 use Statikbe\Surveyhero\Events\SurveyResponseIncompletelyImported;
-use Statikbe\Surveyhero\Http\Connector\SurveyheroConnector;
 use Statikbe\Surveyhero\Http\Requests\GetSurveyResponseAnswersRequest;
 use Statikbe\Surveyhero\Http\Requests\GetSurveyResponsesRequest;
 use Statikbe\Surveyhero\Http\SurveyheroClient;
@@ -17,17 +15,14 @@ use Statikbe\Surveyhero\Models\SurveyResponse;
 use Statikbe\Surveyhero\Services\SurveyMappingService;
 use Statikbe\Surveyhero\Services\SurveyResponseImportService;
 
-function makeSurveyResponseImportService(array $mockResponses): SurveyResponseImportService
-{
-    $mockClient = new MockClient($mockResponses);
-    $connector = new SurveyheroConnector;
-    $connector->withMockClient($mockClient);
-    $apiClient = new SurveyheroClient($connector);
-
+beforeEach(function () {
+    [$apiClient] = $this->makeSurveyheroClient([
+        GetSurveyResponsesRequest::class => MockResponse::fixture('get-survey-responses'),
+        GetSurveyResponseAnswersRequest::class => MockResponse::fixture('get-survey-response-answers'),
+    ]);
     app()->instance(SurveyheroClient::class, $apiClient);
-
-    return new SurveyResponseImportService($apiClient, new SurveyMappingService($apiClient));
-}
+    $this->service = new SurveyResponseImportService($apiClient, new SurveyMappingService($apiClient));
+});
 
 function createSurveyWithQuestions(): Survey
 {
@@ -66,12 +61,8 @@ function createSurveyWithQuestions(): Survey
 
 it('imports a completed response and creates a SurveyResponse record', function () {
     $survey = createSurveyWithQuestions();
-    $service = makeSurveyResponseImportService([
-        GetSurveyResponsesRequest::class => MockResponse::fixture('get-survey-responses'),
-        GetSurveyResponseAnswersRequest::class => MockResponse::fixture('get-survey-response-answers'),
-    ]);
 
-    $info = $service->importSurveyResponses($survey);
+    $info = $this->service->importSurveyResponses($survey);
 
     expect(SurveyResponse::count())->toBe(1)
         ->and($info->getTotalResponsesImported())->toBe(1);
@@ -84,12 +75,8 @@ it('imports a completed response and creates a SurveyResponse record', function 
 
 it('creates question responses for each mapped answer', function () {
     $survey = createSurveyWithQuestions();
-    $service = makeSurveyResponseImportService([
-        GetSurveyResponsesRequest::class => MockResponse::fixture('get-survey-responses'),
-        GetSurveyResponseAnswersRequest::class => MockResponse::fixture('get-survey-response-answers'),
-    ]);
 
-    $service->importSurveyResponses($survey);
+    $this->service->importSurveyResponses($survey);
 
     // 3 answers in the fixture: 1 choices + 1 text + 1 number
     expect(SurveyQuestionResponse::count())->toBe(3);
@@ -103,12 +90,7 @@ it('skips an already-completed response on re-import', function () {
         'survey_completed' => true,
     ]);
 
-    $service = makeSurveyResponseImportService([
-        GetSurveyResponsesRequest::class => MockResponse::fixture('get-survey-responses'),
-        GetSurveyResponseAnswersRequest::class => MockResponse::fixture('get-survey-response-answers'),
-    ]);
-
-    $info = $service->importSurveyResponses($survey);
+    $info = $this->service->importSurveyResponses($survey);
 
     // 0 new responses imported (already done)
     expect($info->getTotalResponsesImported())->toBe(0);
@@ -119,12 +101,8 @@ it('dispatches SurveyResponseImported event for completed response', function ()
     Event::fake([SurveyResponseImported::class, SurveyResponseIncompletelyImported::class]);
 
     $survey = createSurveyWithQuestions();
-    $service = makeSurveyResponseImportService([
-        GetSurveyResponsesRequest::class => MockResponse::fixture('get-survey-responses'),
-        GetSurveyResponseAnswersRequest::class => MockResponse::fixture('get-survey-response-answers'),
-    ]);
 
-    $service->importSurveyResponses($survey);
+    $this->service->importSurveyResponses($survey);
 
     Event::assertDispatched(SurveyResponseImported::class);
     Event::assertNotDispatched(SurveyResponseIncompletelyImported::class);
@@ -136,12 +114,7 @@ it('dispatches SurveyResponseIncompletelyImported when a question is not importe
     // Survey with no questions imported → all answers will have unimported questions
     $survey = Survey::factory()->create(['surveyhero_id' => 1234567]);
 
-    $service = makeSurveyResponseImportService([
-        GetSurveyResponsesRequest::class => MockResponse::fixture('get-survey-responses'),
-        GetSurveyResponseAnswersRequest::class => MockResponse::fixture('get-survey-response-answers'),
-    ]);
-
-    $service->importSurveyResponses($survey);
+    $this->service->importSurveyResponses($survey);
 
     Event::assertDispatched(SurveyResponseIncompletelyImported::class);
 });
@@ -150,12 +123,7 @@ it('updates the survey_last_imported timestamp after import', function () {
     $survey = createSurveyWithQuestions();
     expect($survey->survey_last_imported)->toBeNull();
 
-    $service = makeSurveyResponseImportService([
-        GetSurveyResponsesRequest::class => MockResponse::fixture('get-survey-responses'),
-        GetSurveyResponseAnswersRequest::class => MockResponse::fixture('get-survey-response-answers'),
-    ]);
-
-    $service->importSurveyResponses($survey);
+    $this->service->importSurveyResponses($survey);
 
     $survey->refresh();
     expect($survey->survey_last_imported)->not->toBeNull();

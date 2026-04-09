@@ -14,10 +14,10 @@ class SurveyAnswerFactory extends Factory
     {
         return [
             'survey_question_id' => SurveyQuestion::factory(),
-            'surveyhero_answer_id' => $this->faker->unique()->numerify('########'),
+            'surveyhero_answer_id' => fake()->unique()->numerify('########'),
             'converted_string_value' => null,
-            'converted_int_value' => $this->faker->numberBetween(1, 5),
-            'label' => ['en' => $this->faker->word()],
+            'converted_int_value' => fake()->numberBetween(1, 5),
+            'label' => ['en' => fake()->word()],
         ];
     }
 }

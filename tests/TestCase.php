@@ -27,10 +27,9 @@ class TestCase extends Orchestra
     public function getEnvironmentSetUp($app)
     {
         config()->set('database.default', 'testing');
-
-        /*
-        $migration = include __DIR__.'/../database/migrations/create_laravel-surveyhero_table.php.stub';
-        $migration->up();
-        */
+        config()->set('surveyhero.api_url', 'https://api.surveyhero.com/v1/');
+        config()->set('surveyhero.api_username', 'test-user');
+        config()->set('surveyhero.api_password', 'test-pass');
+        config()->set('surveyhero.rate_limit_fallback_seconds', 60);
     }
 }

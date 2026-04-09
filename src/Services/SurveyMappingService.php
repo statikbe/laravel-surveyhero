@@ -19,7 +19,7 @@ class SurveyMappingService extends AbstractSurveyheroAPIService
     public function __construct()
     {
         parent::__construct();
-        $this->questionMapping = config('surveyhero.question_mapping', []);
+        $this->questionMapping = $this->config->getQuestionMapping();
     }
 
     /**

@@ -6,11 +6,14 @@ use Carbon\Carbon;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Statikbe\Surveyhero\SurveyheroConfig;
 use stdClass;
 
 class SurveyheroClient
 {
     const CACHE_LATEST_REQUEST_TIME_KEY = 'latest-surveyhero-api-request-time';
+
+    public function __construct(private readonly SurveyheroConfig $config) {}
 
     public function getSurveys(): array
     {
@@ -128,8 +131,8 @@ class SurveyheroClient
         $this->preventThrottle();
 
         $response = Http::retry(3, 800)
-            ->withBasicAuth(config('surveyhero.api_username'), config('surveyhero.api_password'))
-            ->get(config('surveyhero.api_url').$urlPath, $queryStringArgs);
+            ->withBasicAuth($this->config->getApiUsername(), $this->config->getApiPassword())
+            ->get($this->config->getApiUrl().$urlPath, $queryStringArgs);
 
         $this->updateThrottle();
 
@@ -148,8 +151,8 @@ class SurveyheroClient
         $this->preventThrottle();
 
         $response = Http::retry(3, 600)
-            ->withBasicAuth(config('surveyhero.api_username'), config('surveyhero.api_password'))
-            ->post(config('surveyhero.api_url').$urlPath, $queryStringArgs);
+            ->withBasicAuth($this->config->getApiUsername(), $this->config->getApiPassword())
+            ->post($this->config->getApiUrl().$urlPath, $queryStringArgs);
 
         $this->updateThrottle();
 
@@ -168,8 +171,8 @@ class SurveyheroClient
         $this->preventThrottle();
 
         $response = Http::retry(3, 600)
-            ->withBasicAuth(config('surveyhero.api_username'), config('surveyhero.api_password'))
-            ->delete(config('surveyhero.api_url').$urlPath, $queryStringArgs);
+            ->withBasicAuth($this->config->getApiUsername(), $this->config->getApiPassword())
+            ->delete($this->config->getApiUrl().$urlPath, $queryStringArgs);
 
         $this->updateThrottle();
 

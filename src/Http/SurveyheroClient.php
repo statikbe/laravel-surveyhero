@@ -123,11 +123,19 @@ class SurveyheroClient
         return Carbon::createFromFormat('Y-m-d\TH:i:s', substr($surveyheroTimestamp, 0, strpos($surveyheroTimestamp, '+')));
     }
 
+    private function assertCredentialsConfigured(): void
+    {
+        if ($this->config->getApiUsername() === null || $this->config->getApiPassword() === null) {
+            throw new \RuntimeException('Surveyhero API credentials are not configured. Set SURVEYHERO_API_USERNAME and SURVEYHERO_API_PASSWORD.');
+        }
+    }
+
     /**
      * @throws \Exception
      */
     private function fetchFromSurveyHero(string $urlPath, array $queryStringArgs = []): Response
     {
+        $this->assertCredentialsConfigured();
         $this->preventThrottle();
 
         $response = Http::retry(3, 800)
@@ -148,6 +156,7 @@ class SurveyheroClient
      */
     private function postToSurveyHero(string $urlPath, array $queryStringArgs = []): Response
     {
+        $this->assertCredentialsConfigured();
         $this->preventThrottle();
 
         $response = Http::retry(3, 600)
@@ -168,6 +177,7 @@ class SurveyheroClient
      */
     private function deleteFromSurveyHero(string $urlPath, array $queryStringArgs = []): Response
     {
+        $this->assertCredentialsConfigured();
         $this->preventThrottle();
 
         $response = Http::retry(3, 600)

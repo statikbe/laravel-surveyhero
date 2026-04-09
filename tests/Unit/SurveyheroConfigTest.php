@@ -2,6 +2,7 @@
 
 use Statikbe\Surveyhero\SurveyheroConfig;
 
+
 it('returns the configured API URL', function () {
     config()->set('surveyhero.api_url', 'https://custom.api.com/v2/');
 
@@ -11,7 +12,7 @@ it('returns the configured API URL', function () {
 it('returns the default API URL when config is null', function () {
     config()->set('surveyhero.api_url', null);
 
-    expect((new SurveyheroConfig)->getApiUrl())->toBe('https://api.surveyhero.com/v1/');
+    expect((new SurveyheroConfig)->getApiUrl())->toBe(SurveyheroConfig::DEFAULT_API_URL);
 });
 
 it('returns the configured API username', function () {
@@ -24,6 +25,14 @@ it('returns the configured API password', function () {
     config()->set('surveyhero.api_password', 'my-pass');
 
     expect((new SurveyheroConfig)->getApiPassword())->toBe('my-pass');
+});
+
+it('returns null for API username and password when not configured', function () {
+    config()->set('surveyhero.api_username', null);
+    config()->set('surveyhero.api_password', null);
+
+    expect((new SurveyheroConfig)->getApiUsername())->toBeNull()
+        ->and((new SurveyheroConfig)->getApiPassword())->toBeNull();
 });
 
 it('returns the configured rate limit fallback seconds', function () {

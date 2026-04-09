@@ -11,7 +11,7 @@ return [
     /**
      * The Surveyhero API URL:
      */
-    'api_url' => env('SURVEYHERO_API_URL', 'https://api.surveyhero.com/v1/'),
+    'api_url' => env('SURVEYHERO_API_URL', \Statikbe\Surveyhero\SurveyheroConfig::DEFAULT_API_URL),
 
     /**
      * The Surveyhero API username and password:

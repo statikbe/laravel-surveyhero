@@ -4,9 +4,11 @@ namespace Statikbe\Surveyhero;
 
 class SurveyheroConfig
 {
+    const DEFAULT_API_URL = 'https://api.surveyhero.com/v1/';
+
     public function getApiUrl(): string
     {
-        return config('surveyhero.api_url') ?: 'https://api.surveyhero.com/v1/';
+        return config('surveyhero.api_url') ?? self::DEFAULT_API_URL;
     }
 
     public function getApiUsername(): ?string

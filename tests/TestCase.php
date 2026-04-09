@@ -5,6 +5,10 @@ namespace Statikbe\Surveyhero\Tests;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Orchestra\Testbench\TestCase as Orchestra;
+use Saloon\Http\Faking\MockClient;
+use Saloon\MockConfig;
+use Statikbe\Surveyhero\Http\Connector\SurveyheroConnector;
+use Statikbe\Surveyhero\Http\SurveyheroClient;
 use Statikbe\Surveyhero\SurveyheroServiceProvider;
 
 class TestCase extends Orchestra
@@ -15,6 +19,8 @@ class TestCase extends Orchestra
     {
         parent::setUp();
 
+        MockConfig::setFixturePath(__DIR__.'/Fixtures/Saloon');
+
         cache()->flush();
 
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
@@ -23,6 +29,18 @@ class TestCase extends Orchestra
         Factory::guessFactoryNamesUsing(
             fn (string $modelName) => 'Statikbe\\Surveyhero\\Database\\Factories\\'.class_basename($modelName).'Factory'
         );
+    }
+
+    /**
+     * @return array{0: SurveyheroClient, 1: MockClient}
+     */
+    protected function makeSurveyheroClient(array $responses): array
+    {
+        $mockClient = new MockClient($responses);
+        $connector = new SurveyheroConnector;
+        $connector->withMockClient($mockClient);
+
+        return [new SurveyheroClient($connector), $mockClient];
     }
 
     protected function getPackageProviders($app)

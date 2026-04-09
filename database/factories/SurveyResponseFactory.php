@@ -14,7 +14,7 @@ class SurveyResponseFactory extends Factory
     {
         return [
             'survey_id' => Survey::factory(),
-            'surveyhero_id' => $this->faker->unique()->numerify('####'),
+            'surveyhero_id' => fake()->unique()->numerify('####'),
             'survey_start_date' => now()->subHour(),
             'survey_last_updated' => now(),
             'survey_language' => 'en',

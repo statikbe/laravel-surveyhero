@@ -2,9 +2,7 @@
 
 use Carbon\Carbon;
 use Saloon\Exceptions\Request\RequestException;
-use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
-use Statikbe\Surveyhero\Http\Connector\SurveyheroConnector;
 use Statikbe\Surveyhero\Http\Requests\CreateWebhookRequest;
 use Statikbe\Surveyhero\Http\Requests\DeleteResponseRequest;
 use Statikbe\Surveyhero\Http\Requests\DeleteWebhookRequest;
@@ -18,19 +16,10 @@ use Statikbe\Surveyhero\Http\Requests\GetSurveyResponsesRequest;
 use Statikbe\Surveyhero\Http\Requests\GetSurveysRequest;
 use Statikbe\Surveyhero\Http\Requests\ListWebhooksRequest;
 use Statikbe\Surveyhero\Http\SurveyheroClient;
-
-function makeClientWithMock(array $responses): array
-{
-    $mockClient = new MockClient($responses);
-    $connector = new SurveyheroConnector;
-    $connector->withMockClient($mockClient);
-    $client = new SurveyheroClient($connector);
-
-    return [$client, $mockClient];
-}
+use Statikbe\Surveyhero\Http\Connector\SurveyheroConnector;
 
 it('returns an array of surveys', function () {
-    [$client, $mockClient] = makeClientWithMock([
+    [$client, $mockClient] = $this->makeSurveyheroClient([
         GetSurveysRequest::class => MockResponse::fixture('get-surveys'),
     ]);
 
@@ -42,7 +31,7 @@ it('returns an array of surveys', function () {
 });
 
 it('returns an empty array when no surveys found', function () {
-    [$client] = makeClientWithMock([
+    [$client] = $this->makeSurveyheroClient([
         GetSurveysRequest::class => MockResponse::make(['surveys' => []], 200),
     ]);
 
@@ -50,7 +39,7 @@ it('returns an empty array when no surveys found', function () {
 });
 
 it('returns survey responses for a survey', function () {
-    [$client, $mockClient] = makeClientWithMock([
+    [$client, $mockClient] = $this->makeSurveyheroClient([
         GetSurveyResponsesRequest::class => MockResponse::fixture('get-survey-responses'),
     ]);
 
@@ -62,7 +51,7 @@ it('returns survey responses for a survey', function () {
 });
 
 it('returns survey response answers', function () {
-    [$client, $mockClient] = makeClientWithMock([
+    [$client, $mockClient] = $this->makeSurveyheroClient([
         GetSurveyResponseAnswersRequest::class => MockResponse::fixture('get-survey-response-answers'),
     ]);
 
@@ -75,7 +64,7 @@ it('returns survey response answers', function () {
 });
 
 it('returns null for survey response answers on 404', function () {
-    [$client] = makeClientWithMock([
+    [$client] = $this->makeSurveyheroClient([
         GetSurveyResponseAnswersRequest::class => MockResponse::make([], 404),
     ]);
 
@@ -83,7 +72,7 @@ it('returns null for survey response answers on 404', function () {
 });
 
 it('returns survey elements', function () {
-    [$client, $mockClient] = makeClientWithMock([
+    [$client, $mockClient] = $this->makeSurveyheroClient([
         GetSurveyElementsRequest::class => MockResponse::fixture('get-survey-elements'),
     ]);
 
@@ -94,7 +83,7 @@ it('returns survey elements', function () {
 });
 
 it('returns survey questions', function () {
-    [$client, $mockClient] = makeClientWithMock([
+    [$client, $mockClient] = $this->makeSurveyheroClient([
         GetSurveyQuestionsRequest::class => MockResponse::fixture('get-survey-questions'),
     ]);
 
@@ -105,7 +94,7 @@ it('returns survey questions', function () {
 });
 
 it('returns survey collectors', function () {
-    [$client, $mockClient] = makeClientWithMock([
+    [$client, $mockClient] = $this->makeSurveyheroClient([
         GetSurveyCollectorsRequest::class => MockResponse::fixture('get-survey-collectors'),
     ]);
 
@@ -117,7 +106,7 @@ it('returns survey collectors', function () {
 });
 
 it('throws on collectors failure', function () {
-    [$client] = makeClientWithMock([
+    [$client] = $this->makeSurveyheroClient([
         GetSurveyCollectorsRequest::class => MockResponse::make([], 500),
     ]);
 
@@ -125,7 +114,7 @@ it('throws on collectors failure', function () {
 });
 
 it('returns survey languages', function () {
-    [$client, $mockClient] = makeClientWithMock([
+    [$client, $mockClient] = $this->makeSurveyheroClient([
         GetSurveyLanguagesRequest::class => MockResponse::fixture('get-survey-languages'),
     ]);
 
@@ -137,7 +126,7 @@ it('returns survey languages', function () {
 });
 
 it('returns resume link url', function () {
-    [$client, $mockClient] = makeClientWithMock([
+    [$client, $mockClient] = $this->makeSurveyheroClient([
         GetResumeLinkRequest::class => MockResponse::fixture('get-resume-link'),
     ]);
 
@@ -148,7 +137,7 @@ it('returns resume link url', function () {
 });
 
 it('returns null for resume link on failure', function () {
-    [$client] = makeClientWithMock([
+    [$client] = $this->makeSurveyheroClient([
         GetResumeLinkRequest::class => MockResponse::make([], 404),
     ]);
 
@@ -156,7 +145,7 @@ it('returns null for resume link on failure', function () {
 });
 
 it('returns webhooks', function () {
-    [$client, $mockClient] = makeClientWithMock([
+    [$client, $mockClient] = $this->makeSurveyheroClient([
         ListWebhooksRequest::class => MockResponse::fixture('list-webhooks'),
     ]);
 
@@ -168,7 +157,7 @@ it('returns webhooks', function () {
 });
 
 it('creates a webhook', function () {
-    [$client, $mockClient] = makeClientWithMock([
+    [$client, $mockClient] = $this->makeSurveyheroClient([
         CreateWebhookRequest::class => MockResponse::fixture('create-webhook'),
     ]);
 
@@ -178,7 +167,7 @@ it('creates a webhook', function () {
 });
 
 it('deletes a webhook', function () {
-    [$client, $mockClient] = makeClientWithMock([
+    [$client, $mockClient] = $this->makeSurveyheroClient([
         DeleteWebhookRequest::class => MockResponse::fixture('delete-webhook'),
     ]);
 
@@ -188,7 +177,7 @@ it('deletes a webhook', function () {
 });
 
 it('deletes a response', function () {
-    [$client, $mockClient] = makeClientWithMock([
+    [$client, $mockClient] = $this->makeSurveyheroClient([
         DeleteResponseRequest::class => MockResponse::fixture('delete-response'),
     ]);
 

@@ -1,11 +1,13 @@
 <?php
 
+use Statikbe\Surveyhero\Http\DTO\SurveyElementDTO;
 use Statikbe\Surveyhero\Services\Factories\QuestionMapper\ChoiceListQuestionMapper;
 
-function makeChoiceListQuestion(int $elementId, array $choices): stdClass
+function makeChoiceListQuestion(int $elementId, array $choices): SurveyElementDTO
 {
-    return (object) [
+    return SurveyElementDTO::fromResponseObject((object) [
         'element_id' => $elementId,
+        'type' => 'question',
         'question' => (object) [
             'type' => 'choice_list',
             'question_text' => 'Pick one',
@@ -13,7 +15,7 @@ function makeChoiceListQuestion(int $elementId, array $choices): stdClass
                 'choices' => array_map(fn ($c) => (object) $c, $choices),
             ],
         ],
-    ];
+    ]);
 }
 
 it('maps a choice_list question', function () {

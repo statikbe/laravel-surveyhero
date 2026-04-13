@@ -23,8 +23,6 @@ class SurveyLanguageDTO implements WithResponse
             label: $data->label ?? $data->name ?? '',
             is_default: $data->is_default ?? false,
             is_active: $data->is_active ?? true
-            is_default: $data->is_default,
-            is_active: $data->is_active
         );
     }
 }

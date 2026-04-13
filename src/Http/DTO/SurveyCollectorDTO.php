@@ -34,10 +34,6 @@ class SurveyCollectorDTO implements WithResponse
             created_on: $data->created_on ?? '',
             status: $data->status ?? '',
             type: $type,
-            name: $data->name,
-            created_on: $data->created_on,
-            status: $data->status,
-            type: $data->type,
             type_data: $typeData,
             number_of_responses: $data->number_of_responses ?? null
         );

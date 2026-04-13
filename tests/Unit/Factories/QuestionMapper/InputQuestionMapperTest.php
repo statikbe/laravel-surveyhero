@@ -1,16 +1,18 @@
 <?php
 
+use Statikbe\Surveyhero\Http\DTO\SurveyElementDTO;
 use Statikbe\Surveyhero\Services\Factories\QuestionMapper\InputQuestionMapper;
 
-function makeInputQuestion(int $elementId): stdClass
+function makeInputQuestion(int $elementId): SurveyElementDTO
 {
-    return (object) [
+    return SurveyElementDTO::fromResponseObject((object) [
         'element_id' => $elementId,
+        'type' => 'question',
         'question' => (object) [
             'type' => 'input',
             'question_text' => 'Test question',
         ],
-    ];
+    ]);
 }
 
 it('maps an input question to an array', function () {

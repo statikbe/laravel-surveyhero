@@ -1,0 +1,169 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Called ''env'' outside of the config directory which returns null when the config is cached, use ''config''\.$#'
+			identifier: larastan.noEnvCallsOutsideOfConfig
+			count: 4
+			path: config/surveyhero.php
+
+		-
+			message: '#^Access to an undefined property Statikbe\\Surveyhero\\Contracts\\SurveyAnswerContract\:\:\$converted_int_value\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Exports/Sheets/AnswersSheet.php
+
+		-
+			message: '#^Access to an undefined property Statikbe\\Surveyhero\\Contracts\\SurveyAnswerContract\:\:\$converted_string_value\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Exports/Sheets/AnswersSheet.php
+
+		-
+			message: '#^Access to an undefined property Statikbe\\Surveyhero\\Contracts\\SurveyAnswerContract\:\:\$surveyQuestion\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Exports/Sheets/AnswersSheet.php
+
+		-
+			message: '#^Access to an undefined property Statikbe\\Surveyhero\\Contracts\\SurveyAnswerContract\:\:\$surveyhero_answer_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Exports/Sheets/AnswersSheet.php
+
+		-
+			message: '#^Access to an undefined property Statikbe\\Surveyhero\\Contracts\\SurveyContract\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Exports/Sheets/AnswersSheet.php
+
+		-
+			message: '#^Method Statikbe\\Surveyhero\\Exports\\Sheets\\AnswersSheet\:\:query\(\) has invalid return type Laravel\\Scout\\Builder\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Exports/Sheets/AnswersSheet.php
+
+		-
+			message: '#^Access to an undefined property Statikbe\\Surveyhero\\Contracts\\SurveyQuestionContract\:\:\$field\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Exports/Sheets/QuestionsSheet.php
+
+		-
+			message: '#^Access to an undefined property Statikbe\\Surveyhero\\Contracts\\SurveyQuestionContract\:\:\$surveyhero_question_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Exports/Sheets/QuestionsSheet.php
+
+		-
+			message: '#^Method Statikbe\\Surveyhero\\Exports\\Sheets\\QuestionsSheet\:\:query\(\) has invalid return type Laravel\\Scout\\Builder\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Exports/Sheets/QuestionsSheet.php
+
+		-
+			message: '#^Access to an undefined property Statikbe\\Surveyhero\\Contracts\\SurveyContract\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Exports/Sheets/ResponsesSheet.php
+
+		-
+			message: '#^Access to an undefined property Statikbe\\Surveyhero\\Contracts\\SurveyContract\:\:\$surveyQuestions\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Exports/Sheets/ResponsesSheet.php
+
+		-
+			message: '#^Static method Saloon\\RateLimitPlugin\\Helpers\\RetryAfterHelper\:\:parse\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: src/Http/Connector/SurveyheroConnector.php
+
+		-
+			message: '#^Call to an undefined method Statikbe\\Surveyhero\\Contracts\\SurveyContract\:\:where\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Http/Controllers/Api/SurveyheroWebhookController.php
+
+		-
+			message: '#^Access to an undefined property Statikbe\\Surveyhero\\Models\\Survey\:\:\$collector_ids\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Models/Survey.php
+
+		-
+			message: '#^Access to an undefined property Statikbe\\Surveyhero\\Models\\Survey\:\:\$question_mapping\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Models/Survey.php
+
+		-
+			message: '#^Access to an undefined property Statikbe\\Surveyhero\\Contracts\\SurveyContract\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Services/Factories/QuestionAndAnswerCreator/AbstractQuestionAndAnswerCreator.php
+
+		-
+			message: '#^Access to an undefined property Statikbe\\Surveyhero\\Contracts\\SurveyQuestionContract\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Services/Factories/QuestionAndAnswerCreator/ChoiceListQuestionAndAnswerCreator.php
+
+		-
+			message: '#^Access to an undefined property Statikbe\\Surveyhero\\Contracts\\SurveyQuestionContract\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Services/Factories/QuestionAndAnswerCreator/ChoiceTableQuestionAndAnswerCreator.php
+
+		-
+			message: '#^Access to an undefined property Statikbe\\Surveyhero\\Contracts\\SurveyQuestionContract\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Services/Factories/QuestionAndAnswerCreator/RatingScaleQuestionAndAnswerCreator.php
+
+		-
+			message: '#^Access to an undefined property Statikbe\\Surveyhero\\Contracts\\SurveyAnswerContract\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Services/Factories/ResponseCreator/AbstractQuestionResponseCreator.php
+
+		-
+			message: '#^Access to an undefined property Statikbe\\Surveyhero\\Contracts\\SurveyQuestionContract\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 4
+			path: src/Services/Factories/ResponseCreator/AbstractQuestionResponseCreator.php
+
+		-
+			message: '#^Access to an undefined property Statikbe\\Surveyhero\\Contracts\\SurveyResponseContract\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Services/Factories/ResponseCreator/AbstractQuestionResponseCreator.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Services/Factories/ResponseCreator/ChoiceTableResponseCreator.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Services/Factories/ResponseCreator/ChoicesResponseCreator.php
+
+		-
+			message: '#^Access to an undefined property Statikbe\\Surveyhero\\Contracts\\SurveyContract\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Services/SurveyResponseImportService.php
+
+		-
+			message: '#^Access to an undefined property Statikbe\\Surveyhero\\Contracts\\SurveyContract\:\:\$use_resume_link\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Services/SurveyResponseImportService.php
+
+		-
+			message: '#^Access to an undefined property Statikbe\\Surveyhero\\Contracts\\SurveyResponseContract\:\:\$survey_completed\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Services/SurveyResponseImportService.php

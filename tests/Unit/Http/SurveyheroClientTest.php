@@ -3,6 +3,7 @@
 use Carbon\Carbon;
 use Saloon\Exceptions\Request\RequestException;
 use Saloon\Http\Faking\MockResponse;
+use Statikbe\Surveyhero\Http\Connector\SurveyheroConnector;
 use Statikbe\Surveyhero\Http\Requests\CreateWebhookRequest;
 use Statikbe\Surveyhero\Http\Requests\DeleteResponseRequest;
 use Statikbe\Surveyhero\Http\Requests\DeleteWebhookRequest;
@@ -16,7 +17,6 @@ use Statikbe\Surveyhero\Http\Requests\GetSurveyResponsesRequest;
 use Statikbe\Surveyhero\Http\Requests\GetSurveysRequest;
 use Statikbe\Surveyhero\Http\Requests\ListWebhooksRequest;
 use Statikbe\Surveyhero\Http\SurveyheroClient;
-use Statikbe\Surveyhero\Http\Connector\SurveyheroConnector;
 
 it('returns an array of surveys', function () {
     [$client, $mockClient] = $this->makeSurveyheroClient([

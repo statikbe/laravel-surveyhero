@@ -2,7 +2,6 @@
 
 use Statikbe\Surveyhero\SurveyheroConfig;
 
-
 it('returns the configured API URL', function () {
     config()->set('surveyhero.api_url', 'https://custom.api.com/v2/');
 

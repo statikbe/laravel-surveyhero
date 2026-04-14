@@ -1,6 +1,10 @@
 <?php
 
+use Saloon\Http\Faking\MockResponse;
 use Statikbe\Surveyhero\Exceptions\SurveyNotMappedException;
+use Statikbe\Surveyhero\Http\Requests\GetSurveyCollectorsRequest;
+use Statikbe\Surveyhero\Http\Requests\GetSurveyQuestionsRequest;
+use Statikbe\Surveyhero\Http\SurveyheroClient;
 use Statikbe\Surveyhero\Models\Survey;
 use Statikbe\Surveyhero\Services\SurveyMappingService;
 
@@ -77,4 +81,21 @@ it('returns a field name via findQuestionField', function () {
     $field = $service->findQuestionField($survey, '1000005');
 
     expect($field)->toBe('question_5');
+});
+
+it('skips unsupported question types and records them in skipped_question_types', function () {
+    $survey = Survey::factory()->create(['surveyhero_id' => 1234567]);
+
+    [$apiClient] = $this->makeSurveyheroClient([
+        GetSurveyQuestionsRequest::class => MockResponse::fixture('get-survey-questions-with-unsupported-type'),
+        GetSurveyCollectorsRequest::class => MockResponse::fixture('get-survey-collectors'),
+    ]);
+    app()->instance(SurveyheroClient::class, $apiClient);
+    $service = new SurveyMappingService($apiClient);
+
+    $mapping = $service->map($survey);
+
+    expect($mapping['skipped_question_types'])->toContain('image_choice_list')
+        ->and($mapping['questions'])->toHaveKey(1000002)
+        ->and($mapping['questions'])->not->toHaveKey(1000007);
 });

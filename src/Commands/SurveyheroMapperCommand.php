@@ -50,6 +50,11 @@ class SurveyheroMapperCommand extends Command
             /* @var SurveyContract $survey */
             try {
                 $surveyQuestionMapping = $this->mappingService->map($survey);
+
+                foreach (array_unique($surveyQuestionMapping['skipped_question_types']) as $skippedType) {
+                    $this->warn("Skipped unsupported question type: $skippedType");
+                }
+
                 $mapping['question_mapping'][$surveyIndex] = $surveyQuestionMapping;
 
                 if ($updateDatabase) {

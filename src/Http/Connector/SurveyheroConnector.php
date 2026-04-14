@@ -42,6 +42,11 @@ class SurveyheroConnector extends Connector
         return new LaravelCacheStore(cache()->store());
     }
 
+    protected function getTooManyAttemptsLimiter(): ?Limit
+    {
+        return Limit::custom($this->handleTooManyAttempts(...))->sleep();
+    }
+
     protected function handleTooManyAttempts(Response $response, Limit $limit): void
     {
         if ($response->status() !== 429) {

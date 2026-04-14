@@ -33,7 +33,7 @@ class SurveyheroConnector extends Connector
     protected function resolveLimits(): array
     {
         return [
-            Limit::allow(2)->everySeconds(1),
+            Limit::allow(2)->everySeconds(1)->sleep(),
         ];
     }
 

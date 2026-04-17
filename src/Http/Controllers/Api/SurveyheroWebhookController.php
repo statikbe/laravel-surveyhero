@@ -15,6 +15,13 @@ use Statikbe\Surveyhero\SurveyheroRegistrar;
 
 class SurveyheroWebhookController extends Controller
 {
+    /**
+     * This API is used by the Surveyhero webhook, to import response when they are submitted.
+     *
+     * Upon import events are dispatched:
+     * @event SurveyResponseImported                when the response is successfully imported.
+     * @event SurveyResponseIncompletelyImported    when the response could not be fully imported.
+     */
     public function handleResponseCompletedWebhook(SurveyResponseImportService $surveyHeroService, Request $request): JsonResponse
     {
         Log::info('Surveyhero webhook called');
@@ -93,7 +100,13 @@ class SurveyheroWebhookController extends Controller
      */
     protected function handlePreImport(Survey $survey, array $collectors, array $responseData): void {}
 
-    protected function handlePostImport(Survey $survey, array $collectors, array $responseData, ResponseImportInfo $responseInfo): void
+    /**
+     * Extend this controller and override this function if you want to add extra functionality after the import.
+     * **NOTE**: the $responseInfo var will be null when the response was already imported before.
+     *
+     * You could also use events to deal with extra processing after a response is imported.
+     */
+    protected function handlePostImport(Survey $survey, array $collectors, array $responseData, ?ResponseImportInfo $responseInfo): void
     {
         // extend this controller and override this function if you want to add extra functionality after the import.
     }

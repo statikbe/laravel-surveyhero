@@ -19,6 +19,7 @@ class SurveyheroWebhookController extends Controller
      * This API is used by the Surveyhero webhook, to import response when they are submitted.
      *
      * Upon import events are dispatched:
+     *
      * @event SurveyResponseImported                when the response is successfully imported.
      * @event SurveyResponseIncompletelyImported    when the response could not be fully imported.
      */

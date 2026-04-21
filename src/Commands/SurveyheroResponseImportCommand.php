@@ -63,13 +63,11 @@ class SurveyheroResponseImportCommand extends Command
             }
 
             if ($importInfo->hasUnimportedQuestions()) {
-                $this->info(sprintf('%d questions could not imported!', count($importInfo->getUnimportedQuestions())));
-                $this->table(['Surveyhero ID', 'Info'], $importInfo->getUnimportedQuestions());
+                $this->displayUnimportedTable($importInfo->getUnimportedQuestions(), '%d questions could not imported!');
             }
 
             if ($importInfo->hasUnimportedAnswers()) {
-                $this->info('Not all answers are mapped:');
-                $this->table(['Surveyhero ID', 'Info'], $importInfo->getUnimportedAnswers());
+                $this->displayUnimportedTable($importInfo->getUnimportedAnswers(), '%d answers could not imported, probably because they are not mapped!');
             }
 
             $this->comment("Survey '$survey->name' imported!");
@@ -86,5 +84,16 @@ class SurveyheroResponseImportCommand extends Command
         app(SurveyheroRegistrar::class)->getSurveyQuestionResponseClass()::truncate();
         app(SurveyheroRegistrar::class)->getSurveyResponseClass()::truncate();
         Schema::enableForeignKeyConstraints();
+    }
+
+    private function displayUnimportedTable(array $unimportedMsgs, string $message): void
+    {
+        $this->info(sprintf($message, count($unimportedMsgs)));
+
+        $rows = collect($unimportedMsgs)
+            ->map(fn ($info, $id) => [$id, $info])
+            ->values()
+            ->all();
+        $this->table(['Surveyhero ID', 'Info'], $rows);
     }
 }

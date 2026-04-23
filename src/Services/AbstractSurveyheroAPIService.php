@@ -3,15 +3,14 @@
 namespace Statikbe\Surveyhero\Services;
 
 use Statikbe\Surveyhero\Http\SurveyheroClient;
+use Statikbe\Surveyhero\SurveyheroConfig;
 
 class AbstractSurveyheroAPIService
 {
-    protected SurveyheroClient $client;
-
-    public function __construct()
-    {
-        $this->client = new SurveyheroClient;
-    }
+    public function __construct(
+        protected readonly SurveyheroClient $client,
+        protected readonly SurveyheroConfig $config = new SurveyheroConfig
+    ) {}
 
     public function getApiClient(): SurveyheroClient
     {

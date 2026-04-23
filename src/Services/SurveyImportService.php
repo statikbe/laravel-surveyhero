@@ -35,10 +35,10 @@ class SurveyImportService extends AbstractSurveyheroAPIService
         return $response;
     }
 
-    public function updateOrCreateSurvey(\stdClass $surveyheroSurvey): SurveyContract
+    public function updateOrCreateSurvey(object $surveyheroSurvey): SurveyContract
     {
         // check if the config has settings for this survey:
-        $questionMapping = collect(config('surveyhero.question_mapping'));
+        $questionMapping = collect($this->config->getQuestionMapping());
         $surveyConfig = $questionMapping->filter(function ($elem) use ($surveyheroSurvey) {
             return $elem['survey_id'] == $surveyheroSurvey->survey_id;
         })->first();

@@ -1,0 +1,8 @@
+{
+    "statusCode": 200,
+    "headers": {
+        "Content-Type": "application/json"
+    },
+    "data": "{\"webhooks\":[{\"webhook_id\":555,\"event_type\":\"response_completed\",\"url\":\"https://example.com/hook\",\"status\":\"active\"}]}",
+    "context": []
+}

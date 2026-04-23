@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
 use Statikbe\Surveyhero\Services\SurveyImportService;
+use Statikbe\Surveyhero\SurveyheroConfig;
 use Statikbe\Surveyhero\SurveyheroRegistrar;
 
 class SurveyheroSurveyImportCommand extends Command
@@ -16,11 +17,14 @@ class SurveyheroSurveyImportCommand extends Command
 
     private SurveyImportService $importService;
 
-    public function __construct(SurveyImportService $surveyImportService)
+    private SurveyheroConfig $config;
+
+    public function __construct(SurveyImportService $surveyImportService, SurveyheroConfig $config)
     {
         parent::__construct();
 
         $this->importService = $surveyImportService;
+        $this->config = $config;
     }
 
     public function handle(): int
@@ -43,7 +47,7 @@ class SurveyheroSurveyImportCommand extends Command
         }
         // if no survey id is passed as arg, we check if there is a mapping and import there surveys, otherwise we import all.
         else {
-            $questionMapping = config('surveyhero.question_mapping');
+            $questionMapping = $this->config->getQuestionMapping();
             $surveyIdsToImport = collect(array_map(function ($elem) {
                 return $elem['survey_id'];
             }, $questionMapping));

@@ -10,7 +10,6 @@ parameters:
     tmpDir: build/phpstan
     checkOctaneCompatibility: true
     checkModelProperties: true
-    checkMissingIterableValueType: false
     ignoreErrors:
         - '#Access to an undefined property [a-zA-Z0-9\\_]+::\$name.#'
         - '#Access to an undefined property [a-zA-Z0-9\\_]+::\$surveyhero\_id.#'

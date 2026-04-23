@@ -1,0 +1,8 @@
+{
+    "statusCode": 200,
+    "headers": {
+        "Content-Type": "application/json"
+    },
+    "data": "{\"collectors\":[{\"collector_id\":9876543,\"name\":\"Default Collector\",\"status\":\"open\"}]}",
+    "context": []
+}

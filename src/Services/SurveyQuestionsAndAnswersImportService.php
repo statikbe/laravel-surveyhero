@@ -25,7 +25,10 @@ class SurveyQuestionsAndAnswersImportService extends AbstractSurveyheroAPIServic
         foreach ($languages as $lang) {
             $questions = $this->client->getSurveyQuestions($survey->surveyhero_id, $lang->code);
 
-            foreach ($questions as $question) {
+            foreach ($questions as $questionDto) {
+                /** @var \stdClass $question */
+                $question = json_decode(json_encode($questionDto));
+
                 try {
                     DB::beginTransaction();
 

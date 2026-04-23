@@ -5,13 +5,19 @@ use Statikbe\Surveyhero\Models\SurveyAnswer;
 use Statikbe\Surveyhero\Models\SurveyQuestion;
 use Statikbe\Surveyhero\Models\SurveyQuestionResponse;
 use Statikbe\Surveyhero\Models\SurveyResponse;
+use Statikbe\Surveyhero\SurveyheroConfig;
 
 // config for Statikbe/Surveyhero
 return [
     /**
      * The Surveyhero API URL:
      */
-    'api_url' => env('SURVEYHERO_API_URL', 'https://api.surveyhero.com/v1/'),
+    'api_url' => env('SURVEYHERO_API_URL', SurveyheroConfig::DEFAULT_API_URL),
+
+    /**
+     * Fallback seconds to wait when rate limited and no Retry-After header is provided.
+     */
+    'rate_limit_fallback_seconds' => env('SURVEYHERO_RATE_LIMIT_FALLBACK', 60),
 
     /**
      * The Surveyhero API username and password:

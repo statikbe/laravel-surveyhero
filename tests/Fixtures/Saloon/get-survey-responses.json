@@ -1,0 +1,8 @@
+{
+    "statusCode": 200,
+    "headers": {
+        "Content-Type": "application/json"
+    },
+    "data": "{\"responses\":[{\"response_id\":9001,\"status\":\"completed\",\"started_on\":\"2024-06-01T10:00:00+00:00\",\"last_updated_on\":\"2024-06-01T11:00:00+00:00\",\"collector_id\":9876543}]}",
+    "context": []
+}

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Statikbe\Surveyhero\Contracts\SurveyContract;
+use Statikbe\Surveyhero\Database\Factories\SurveyFactory;
 use Statikbe\Surveyhero\SurveyheroRegistrar;
 use Statikbe\Surveyhero\Traits\HasCollectors;
 use Statikbe\Surveyhero\Traits\HasQuestionMapping;
@@ -17,6 +18,14 @@ class Survey extends Model implements SurveyContract
     use HasCollectors;
     use HasFactory;
     use HasQuestionMapping;
+
+    /**
+     * Create a new factory instance for the model.
+     */
+    protected static function newFactory(): SurveyFactory
+    {
+        return new SurveyFactory;
+    }
 
     protected $guarded = [];
 

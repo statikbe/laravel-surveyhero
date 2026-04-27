@@ -35,7 +35,7 @@ class SurveyImportService extends AbstractSurveyheroAPIService
         return $response;
     }
 
-    public function updateOrCreateSurvey(\stdClass $surveyheroSurvey): SurveyContract
+    public function updateOrCreateSurvey(object $surveyheroSurvey): SurveyContract
     {
         // check if the config has settings for this survey:
         $questionMapping = collect(config('surveyhero.question_mapping'));

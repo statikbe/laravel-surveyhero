@@ -154,7 +154,7 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
 
         // map link parameters:
         if (isset($surveyheroResponse->link_parameters)) {
-            $linkParametersConfig = config('surveyhero.surveyhero_link_parameters_mapping', []);
+            $linkParametersConfig = $this->config->getLinkParametersMapping();
             foreach ($linkParametersConfig as $surveyheroLinkParameter => $settings) {
                 if (isset($surveyheroResponse->link_parameters->{$surveyheroLinkParameter})) {
                     if (isset($settings['entity']) && isset($settings['value']) && isset($settings['field'])) {

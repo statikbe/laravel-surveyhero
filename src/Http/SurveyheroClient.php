@@ -6,11 +6,14 @@ use Carbon\Carbon;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Statikbe\Surveyhero\SurveyheroConfig;
 use stdClass;
 
 class SurveyheroClient
 {
     const CACHE_LATEST_REQUEST_TIME_KEY = 'latest-surveyhero-api-request-time';
+
+    public function __construct(private readonly SurveyheroConfig $config) {}
 
     public function getSurveys(): array
     {
@@ -120,16 +123,24 @@ class SurveyheroClient
         return Carbon::createFromFormat('Y-m-d\TH:i:s', substr($surveyheroTimestamp, 0, strpos($surveyheroTimestamp, '+')));
     }
 
+    private function assertCredentialsConfigured(): void
+    {
+        if ($this->config->getApiUsername() === null || $this->config->getApiPassword() === null) {
+            throw new \RuntimeException('Surveyhero API credentials are not configured. Set SURVEYHERO_API_USERNAME and SURVEYHERO_API_PASSWORD.');
+        }
+    }
+
     /**
      * @throws \Exception
      */
     private function fetchFromSurveyHero(string $urlPath, array $queryStringArgs = []): Response
     {
+        $this->assertCredentialsConfigured();
         $this->preventThrottle();
 
         $response = Http::retry(3, 800)
-            ->withBasicAuth(config('surveyhero.api_username'), config('surveyhero.api_password'))
-            ->get(config('surveyhero.api_url').$urlPath, $queryStringArgs);
+            ->withBasicAuth($this->config->getApiUsername(), $this->config->getApiPassword())
+            ->get($this->config->getApiUrl().$urlPath, $queryStringArgs);
 
         $this->updateThrottle();
 
@@ -145,11 +156,12 @@ class SurveyheroClient
      */
     private function postToSurveyHero(string $urlPath, array $queryStringArgs = []): Response
     {
+        $this->assertCredentialsConfigured();
         $this->preventThrottle();
 
         $response = Http::retry(3, 600)
-            ->withBasicAuth(config('surveyhero.api_username'), config('surveyhero.api_password'))
-            ->post(config('surveyhero.api_url').$urlPath, $queryStringArgs);
+            ->withBasicAuth($this->config->getApiUsername(), $this->config->getApiPassword())
+            ->post($this->config->getApiUrl().$urlPath, $queryStringArgs);
 
         $this->updateThrottle();
 
@@ -165,11 +177,12 @@ class SurveyheroClient
      */
     private function deleteFromSurveyHero(string $urlPath, array $queryStringArgs = []): Response
     {
+        $this->assertCredentialsConfigured();
         $this->preventThrottle();
 
         $response = Http::retry(3, 600)
-            ->withBasicAuth(config('surveyhero.api_username'), config('surveyhero.api_password'))
-            ->delete(config('surveyhero.api_url').$urlPath, $queryStringArgs);
+            ->withBasicAuth($this->config->getApiUsername(), $this->config->getApiPassword())
+            ->delete($this->config->getApiUrl().$urlPath, $queryStringArgs);
 
         $this->updateThrottle();
 

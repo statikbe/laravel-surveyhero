@@ -61,8 +61,6 @@ it('updates existing questions on re-import', function () {
     $this->service->importSurveyQuestionsAndAnswers($survey);
     $questionCountAfterFirst = SurveyQuestion::count();
 
-    usleep(1_100_000);
-
     $this->service->importSurveyQuestionsAndAnswers($survey);
     expect(SurveyQuestion::count())->toBe($questionCountAfterFirst);
 });

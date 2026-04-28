@@ -11,22 +11,27 @@ use Saloon\RateLimitPlugin\Limit;
 use Saloon\RateLimitPlugin\Stores\LaravelCacheStore;
 use Saloon\RateLimitPlugin\Traits\HasRateLimits;
 use Saloon\Traits\Plugins\AcceptsJson;
+use Statikbe\Surveyhero\SurveyheroConfig;
 
 class SurveyheroConnector extends Connector
 {
     use AcceptsJson;
     use HasRateLimits;
 
+    public function __construct(private readonly SurveyheroConfig $config = new SurveyheroConfig)
+    {
+    }
+
     public function resolveBaseUrl(): string
     {
-        return config('surveyhero.api_url') ?: 'https://api.surveyhero.com/v1/';
+        return $this->config->getApiUrl();
     }
 
     protected function defaultAuth(): BasicAuthenticator
     {
         return new BasicAuthenticator(
-            config('surveyhero.api_username'),
-            config('surveyhero.api_password')
+            $this->config->getApiUsername(),
+            $this->config->getApiPassword()
         );
     }
 
@@ -58,7 +63,7 @@ class SurveyheroConnector extends Connector
         $limit->exceeded(
             releaseInSeconds: RetryAfterHelper::parse(
                 $response->header('Retry-After'),
-                config('surveyhero.rate_limit_fallback_seconds', 60)
+                $this->config->getRateLimitFallbackSeconds()
             ),
         );
     }

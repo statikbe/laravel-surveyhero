@@ -16,6 +16,11 @@ return [
 
     /**
      * Fallback seconds to wait when rate limited and no Retry-After header is provided.
+     *
+     * Warning: the connector sleeps for this duration when a 429 is received. This is fine
+     * for CLI imports but in HTTP contexts (e.g. the webhook controller) it pins a PHP-FPM
+     * worker for the full duration. If you handle webhooks under load, queue the import job
+     * instead of processing it inline, or keep this value well below your server's request timeout.
      */
     'rate_limit_fallback_seconds' => env('SURVEYHERO_RATE_LIMIT_FALLBACK', 60),
 

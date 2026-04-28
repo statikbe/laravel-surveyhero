@@ -1,5 +1,6 @@
 <?php
 
+use Statikbe\Surveyhero\Http\DTO\SurveyElementDTO;
 use Statikbe\Surveyhero\Models\Survey;
 use Statikbe\Surveyhero\Models\SurveyAnswer;
 use Statikbe\Surveyhero\Models\SurveyQuestion;
@@ -9,15 +10,15 @@ it('creates a survey question without answers for input type', function () {
     $survey = Survey::factory()->create(['surveyhero_id' => 1234567]);
     $creator = new InputQuestionAndAnswerCreator;
 
-    $apiQuestion = (object) [
-        'element_id' => 1000005,
-        'type' => 'question',
-        'question' => (object) [
+    $apiQuestion = new SurveyElementDTO(
+        element_id: 1000005,
+        type: 'question',
+        question: (object) [
             'question_id' => 1000005,
             'type' => 'input',
             'question_text' => 'Describe your role',
         ],
-    ];
+    );
 
     $creator->updateOrCreateQuestionAndAnswer($apiQuestion, $survey, 'en');
 
@@ -29,15 +30,15 @@ it('stores the question label translation', function () {
     $survey = Survey::factory()->create(['surveyhero_id' => 1234567]);
     $creator = new InputQuestionAndAnswerCreator;
 
-    $apiQuestion = (object) [
-        'element_id' => 1000005,
-        'type' => 'question',
-        'question' => (object) [
+    $apiQuestion = new SurveyElementDTO(
+        element_id: 1000005,
+        type: 'question',
+        question: (object) [
             'question_id' => 1000005,
             'type' => 'input',
             'question_text' => 'Describe your role',
         ],
-    ];
+    );
 
     $creator->updateOrCreateQuestionAndAnswer($apiQuestion, $survey, 'en');
 

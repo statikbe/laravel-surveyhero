@@ -1,16 +1,17 @@
 <?php
 
+use Statikbe\Surveyhero\Http\DTO\SurveyElementDTO;
 use Statikbe\Surveyhero\Models\Survey;
 use Statikbe\Surveyhero\Models\SurveyAnswer;
 use Statikbe\Surveyhero\Models\SurveyQuestion;
 use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\ChoiceListQuestionAndAnswerCreator;
 
-function makeChoiceListApiQuestion(int $elementId, string $text, array $choices): stdClass
+function makeChoiceListApiQuestion(int $elementId, string $text, array $choices): SurveyElementDTO
 {
-    return (object) [
-        'element_id' => $elementId,
-        'type' => 'question',
-        'question' => (object) [
+    return new SurveyElementDTO(
+        element_id: $elementId,
+        type: 'question',
+        question: (object) [
             'question_id' => $elementId,
             'type' => 'choice_list',
             'question_text' => $text,
@@ -18,7 +19,7 @@ function makeChoiceListApiQuestion(int $elementId, string $text, array $choices)
                 'choices' => array_map(fn ($c) => (object) $c, $choices),
             ],
         ],
-    ];
+    );
 }
 
 it('creates a survey question and its answers', function () {

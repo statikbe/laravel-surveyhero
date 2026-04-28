@@ -7,6 +7,7 @@ use Statikbe\Surveyhero\Contracts\SurveyQuestionContract;
 use Statikbe\Surveyhero\Exceptions\AnswerNotMappedException;
 use Statikbe\Surveyhero\Exceptions\QuestionNotMappedException;
 use Statikbe\Surveyhero\Exceptions\SurveyNotMappedException;
+use Statikbe\Surveyhero\Http\DTO\SurveyElementDTO;
 use Statikbe\Surveyhero\Services\SurveyMappingService;
 use Statikbe\Surveyhero\SurveyheroRegistrar;
 
@@ -19,7 +20,7 @@ class ChoiceListQuestionAndAnswerCreator extends AbstractQuestionAndAnswerCreato
      * @throws QuestionNotMappedException
      * @throws SurveyNotMappedException
      */
-    public function updateOrCreateQuestionAndAnswer(\stdClass $question, SurveyContract $survey, string $lang): SurveyQuestionContract|array
+    public function updateOrCreateQuestionAndAnswer(SurveyElementDTO $question, SurveyContract $survey, string $lang): SurveyQuestionContract|array
     {
         $surveyQuestion = $this->updateOrCreateQuestion($survey, $lang, $question->element_id, $question->question->question_text);
 

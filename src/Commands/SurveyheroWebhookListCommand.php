@@ -45,7 +45,7 @@ class SurveyheroWebhookListCommand extends Command
                         $webhook->event_type,
                         $webhook->url,
                         $webhook->status,
-                        $webhook->created_on,
+                        $webhook->created_on->toDateTimeString(),
                     ];
                 }
                 $this->table(

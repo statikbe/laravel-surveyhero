@@ -2,6 +2,7 @@
 
 namespace Statikbe\Surveyhero\Http\DTO;
 
+use Carbon\Carbon;
 use Saloon\Contracts\DataObjects\WithResponse;
 use Saloon\Traits\Responses\HasResponse;
 
@@ -13,8 +14,8 @@ class SurveyResponseDTO implements WithResponse
         public readonly int $response_id,
         public readonly int $collector_id,
         public readonly int $survey_id,
-        public readonly string $started_on,
-        public readonly string $last_updated_on,
+        public readonly Carbon $started_on,
+        public readonly Carbon $last_updated_on,
         public readonly ?string $email_address,
         public readonly ?object $recipient_data,
         public readonly ?object $link_parameters,
@@ -30,8 +31,8 @@ class SurveyResponseDTO implements WithResponse
             response_id: $data->response_id,
             collector_id: $data->collector_id ?? 0,
             survey_id: $data->survey_id ?? 0,
-            started_on: $data->started_on,
-            last_updated_on: $data->last_updated_on,
+            started_on: Carbon::parse($data->started_on),
+            last_updated_on: Carbon::parse($data->last_updated_on),
             email_address: $data->email_address ?? null,
             recipient_data: $data->recipient_data ?? null,
             link_parameters: $data->link_parameters ?? null,

@@ -2,6 +2,7 @@
 
 namespace Statikbe\Surveyhero\Http\DTO;
 
+use Carbon\Carbon;
 use Saloon\Contracts\DataObjects\WithResponse;
 use Saloon\Traits\Responses\HasResponse;
 
@@ -14,7 +15,7 @@ class WebhookDTO implements WithResponse
         public readonly string $event_type,
         public readonly string $url,
         public readonly string $status,
-        public readonly string $created_on
+        public readonly Carbon $created_on
     ) {}
 
     public static function fromResponseObject(object $data): self
@@ -24,7 +25,7 @@ class WebhookDTO implements WithResponse
             event_type: $data->event_type,
             url: $data->url,
             status: $data->status,
-            created_on: $data->created_on ?? ''
+            created_on: Carbon::parse($data->created_on ?? 'now')
         );
     }
 }

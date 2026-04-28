@@ -23,9 +23,6 @@ class TestCase extends Orchestra
 
         cache()->flush();
 
-        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
-        $this->artisan('migrate')->run();
-
         Factory::guessFactoryNamesUsing(
             fn (string $modelName) => 'Statikbe\\Surveyhero\\Database\\Factories\\'.class_basename($modelName).'Factory'
         );
@@ -37,8 +34,12 @@ class TestCase extends Orchestra
     protected function makeSurveyheroClient(array $responses): array
     {
         $mockClient = new MockClient($responses);
+
         $connector = new SurveyheroConnector;
         $connector->withMockClient($mockClient);
+
+        $this->app->instance(SurveyheroConnector::class, $connector);
+        $this->app->instance(SurveyheroClient::class, new SurveyheroClient($connector));
 
         return [new SurveyheroClient($connector), $mockClient];
     }

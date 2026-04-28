@@ -8,7 +8,7 @@ class SurveyheroConfig
 
     public function getApiUrl(): string
     {
-        return config('surveyhero.api_url') ?? self::DEFAULT_API_URL;
+        return config('surveyhero.api_url') ?: self::DEFAULT_API_URL;
     }
 
     public function getApiUsername(): ?string

@@ -160,6 +160,10 @@ class SurveyheroClient
 
     public function transformAPITimestamp(string $surveyheroTimestamp): Carbon
     {
+        // Surveyhero returns UTC timestamps with +00:00 offset (e.g. "2024-06-01T10:00:00+00:00").
+        // Carbon::parse preserves the timezone, giving a UTC Carbon instance.
+        // The old implementation stripped the offset and created a naive datetime —
+        // that was a bug that caused times to be interpreted in the app's local timezone.
         return Carbon::parse($surveyheroTimestamp);
     }
 }

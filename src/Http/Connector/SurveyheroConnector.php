@@ -18,18 +18,20 @@ class SurveyheroConnector extends Connector
     use AcceptsJson;
     use HasRateLimits;
 
-    public function __construct(private readonly SurveyheroConfig $config = new SurveyheroConfig) {}
+    public function __construct(private readonly SurveyheroConfig $surveyheroConfig = new SurveyheroConfig)
+    {
+    }
 
     public function resolveBaseUrl(): string
     {
-        return $this->config->getApiUrl();
+        return $this->surveyheroConfig->getApiUrl();
     }
 
     protected function defaultAuth(): BasicAuthenticator
     {
         return new BasicAuthenticator(
-            $this->config->getApiUsername(),
-            $this->config->getApiPassword()
+            $this->surveyheroConfig->getApiUsername(),
+            $this->surveyheroConfig->getApiPassword()
         );
     }
 
@@ -61,7 +63,7 @@ class SurveyheroConnector extends Connector
         $limit->exceeded(
             releaseInSeconds: RetryAfterHelper::parse(
                 $response->header('Retry-After'),
-                $this->config->getRateLimitFallbackSeconds()
+                $this->surveyheroConfig->getRateLimitFallbackSeconds()
             ),
         );
     }

@@ -35,6 +35,8 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
     }
 
     /**
+     * Hook for subclasses to filter or transform the raw answers array before processing.
+     *
      * @param  array<int, mixed>  $responseAnswers
      */
     protected function parseResponseAnswers(array $responseAnswers): array
@@ -160,7 +162,7 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
             'survey_completed' => $surveyheroResponse->status == self::SURVEYHERO_STATUS_COMPLETED,
             'survey_start_date' => $surveyheroResponse->started_on,
             'survey_last_updated' => $surveyheroResponse->last_updated_on,
-            'surveyhero_link_parameters' => json_encode($surveyheroResponse->link_parameters),
+            'surveyhero_link_parameters' => $surveyheroResponse->link_parameters !== null ? json_encode($surveyheroResponse->link_parameters) : null,
         ];
 
         // map link parameters:
@@ -208,6 +210,9 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
 
     private function setResponseAsIncomplete(SurveyResponseContract $surveyResponse): void
     {
+        if ($surveyResponse->survey_completed === false) {
+            return;
+        }
         $surveyResponse->survey_completed = false;
         $surveyResponse->save();
     }

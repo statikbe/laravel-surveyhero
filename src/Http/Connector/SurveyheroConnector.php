@@ -18,9 +18,7 @@ class SurveyheroConnector extends Connector
     use AcceptsJson;
     use HasRateLimits;
 
-    public function __construct(private readonly SurveyheroConfig $surveyheroConfig = new SurveyheroConfig)
-    {
-    }
+    public function __construct(private readonly SurveyheroConfig $surveyheroConfig = new SurveyheroConfig) {}
 
     public function resolveBaseUrl(): string
     {

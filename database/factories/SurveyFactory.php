@@ -12,7 +12,7 @@ class SurveyFactory extends Factory
     public function definition(): array
     {
         return [
-            'surveyhero_id' => fake()->unique()->numerify('#######'),
+            'surveyhero_id' => fake()->unique()->numberBetween(1000000, 9999999),
             'name' => fake()->sentence(3),
             'use_resume_link' => false,
         ];

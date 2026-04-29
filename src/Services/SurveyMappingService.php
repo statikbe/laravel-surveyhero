@@ -8,6 +8,7 @@ use Statikbe\Surveyhero\Exceptions\SurveyNotMappedException;
 use Statikbe\Surveyhero\Http\SurveyheroClient;
 use Statikbe\Surveyhero\Services\Factories\QuestionMapper\ChoiceListQuestionMapper;
 use Statikbe\Surveyhero\Services\Factories\QuestionMapper\ChoiceTableQuestionMapper;
+use Statikbe\Surveyhero\Services\Factories\QuestionMapper\ImageChoiceListQuestionMapper;
 use Statikbe\Surveyhero\Services\Factories\QuestionMapper\InputQuestionMapper;
 use Statikbe\Surveyhero\Services\Factories\QuestionMapper\QuestionMapper;
 use Statikbe\Surveyhero\Services\Factories\QuestionMapper\RatingScaleQuestionMapper;
@@ -208,6 +209,7 @@ class SurveyMappingService extends AbstractSurveyheroAPIService
             RatingScaleQuestionMapper::TYPE => new RatingScaleQuestionMapper,
             ChoiceListQuestionMapper::TYPE => new ChoiceListQuestionMapper,
             ChoiceTableQuestionMapper::TYPE => new ChoiceTableQuestionMapper,
+            ImageChoiceListQuestionMapper::TYPE => new ImageChoiceListQuestionMapper,
             default => null,
         };
     }

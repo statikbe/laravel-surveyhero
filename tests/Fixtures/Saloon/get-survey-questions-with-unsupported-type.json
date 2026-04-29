@@ -3,6 +3,6 @@
     "headers": {
         "Content-Type": "application/json"
     },
-    "data": "{\"elements\":[{\"element_id\":1000002,\"type\":\"question\",\"question\":{\"question_id\":1000002,\"type\":\"choice_list\",\"question_text\":\"In which department do you work?\",\"choice_list\":{\"choices\":[{\"choice_id\":13509166,\"label\":\"Department A\"},{\"choice_id\":13509167,\"label\":\"Department B\"},{\"choice_id\":13509168,\"label\":\"Department C\"}]}}},{\"element_id\":1000007,\"type\":\"question\",\"question\":{\"question_id\":1000007,\"type\":\"image_choice_list\",\"question_text\":\"Pick an image\"}}]}",
+    "data": "{\"elements\":[{\"element_id\":1000002,\"type\":\"question\",\"question\":{\"question_id\":1000002,\"type\":\"choice_list\",\"question_text\":\"In which department do you work?\",\"choice_list\":{\"choices\":[{\"choice_id\":13509166,\"label\":\"Department A\"},{\"choice_id\":13509167,\"label\":\"Department B\"},{\"choice_id\":13509168,\"label\":\"Department C\"}]}}},{\"element_id\":1000007,\"type\":\"question\",\"question\":{\"question_id\":1000007,\"type\":\"ranking\",\"question_text\":\"Rank these options\"}}]}",
     "context": []
 }

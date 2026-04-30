@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Statikbe\Surveyhero\Contracts\SurveyContract;
 use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\ChoiceListQuestionAndAnswerCreator;
 use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\ChoiceTableQuestionAndAnswerCreator;
+use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\FileUploadQuestionAndAnswerCreator;
 use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\ImageChoiceListQuestionAndAnswerCreator;
 use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\InputQuestionAndAnswerCreator;
 use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\QuestionAndAnswerCreator;
@@ -56,6 +57,7 @@ class SurveyQuestionsAndAnswersImportService extends AbstractSurveyheroAPIServic
             ImageChoiceListQuestionAndAnswerCreator::TYPE => new ImageChoiceListQuestionAndAnswerCreator,
             RatingScaleQuestionAndAnswerCreator::TYPE => new RatingScaleQuestionAndAnswerCreator,
             InputQuestionAndAnswerCreator::TYPE => new InputQuestionAndAnswerCreator,
+            FileUploadQuestionAndAnswerCreator::TYPE => new FileUploadQuestionAndAnswerCreator,
             default => null,
         };
     }

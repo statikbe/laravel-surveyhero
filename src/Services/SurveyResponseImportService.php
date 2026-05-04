@@ -16,6 +16,8 @@ use Statikbe\Surveyhero\Http\DTO\SurveyResponseAnswersDTO;
 use Statikbe\Surveyhero\Http\SurveyheroClient;
 use Statikbe\Surveyhero\Services\Factories\ResponseCreator\ChoicesResponseCreator;
 use Statikbe\Surveyhero\Services\Factories\ResponseCreator\ChoiceTableResponseCreator;
+use Statikbe\Surveyhero\Services\Factories\ResponseCreator\FileResponseCreator;
+use Statikbe\Surveyhero\Services\Factories\ResponseCreator\InputsResponseCreator;
 use Statikbe\Surveyhero\Services\Factories\ResponseCreator\NumberResponseCreator;
 use Statikbe\Surveyhero\Services\Factories\ResponseCreator\QuestionResponseCreator;
 use Statikbe\Surveyhero\Services\Factories\ResponseCreator\TextResponseCreator;
@@ -202,6 +204,8 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
         return match ($surveyheroFieldType) {
             TextResponseCreator::TYPE => new TextResponseCreator,
             NumberResponseCreator::TYPE => new NumberResponseCreator,
+            FileResponseCreator::TYPE => new FileResponseCreator,
+            InputsResponseCreator::TYPE => new InputsResponseCreator,
             ChoicesResponseCreator::TYPE => new ChoicesResponseCreator,
             ChoiceTableResponseCreator::TYPE => new ChoiceTableResponseCreator,
             default => null,

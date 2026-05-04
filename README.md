@@ -122,6 +122,18 @@ SURVEYHERO_API_PASSWORD=qwertyuiopasdfghjklzxcvbnm
 You can overwrite the default table names and Eloquent model classes, if needed check the 
 [Data Model Customisation section](#data-model-customisation).
 
+### Rate limiting
+
+The HTTP client automatically respects Surveyhero's rate limits. When the API returns a `429 Too Many Requests` response, the connector sleeps until the `Retry-After` header elapses (or for the configured fallback duration if no header is provided).
+
+You can tune the fallback via an environment variable:
+
+```
+SURVEYHERO_RATE_LIMIT_FALLBACK=60
+```
+
+> **Note for webhook handlers:** if your webhook controller imports responses inline (synchronously), a rate-limited request will block the PHP-FPM worker for the full fallback duration. For high-traffic webhooks, process imports via a queued job instead.
+
 ## Import surveys
 
 This command imports the survey for a given survey ID, the survey IDs in the configuration file or all surveys.
@@ -529,13 +541,13 @@ The following events are implemented:
   - there are no double field names
   - there are no double question IDs.
   - there are no double answer IDs.
-  - the data format for a question time is ok, i.e. are all fields there and are they the right type.
+  - the data format for a question type is ok, i.e. are all fields there and are they the right type.
   - ~~all questions and answers are mapped by doing an API request.~~
 - Statistics calculator service to quickly query aggregates of responses of questions.
 
 ## Testing
 
-Currently, no tests are implemented :-(.
+The package is tested using [Pest](https://pestphp.com/). Unit and feature tests cover the import services, HTTP client, DTOs, question/answer creators, and response creators.
 
 ```bash
 composer test

@@ -12,6 +12,8 @@ use Statikbe\Surveyhero\Exceptions\AnswerNotMappedException;
 use Statikbe\Surveyhero\Exceptions\QuestionNotImportedException;
 use Statikbe\Surveyhero\Exceptions\ResponseCreatorNotImplemented;
 use Statikbe\Surveyhero\Exceptions\SurveyNotMappedException;
+use Statikbe\Surveyhero\Http\DTO\SurveyResponseAnswersDTO;
+use Statikbe\Surveyhero\Http\SurveyheroClient;
 use Statikbe\Surveyhero\Services\Factories\ResponseCreator\ChoicesResponseCreator;
 use Statikbe\Surveyhero\Services\Factories\ResponseCreator\ChoiceTableResponseCreator;
 use Statikbe\Surveyhero\Services\Factories\ResponseCreator\NumberResponseCreator;
@@ -26,10 +28,20 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
 
     private SurveyMappingService $surveyMappingService;
 
-    public function __construct(SurveyMappingService $surveyMappingService)
+    public function __construct(SurveyheroClient $client, SurveyMappingService $surveyMappingService)
     {
-        parent::__construct();
+        parent::__construct($client);
         $this->surveyMappingService = $surveyMappingService;
+    }
+
+    /**
+     * Hook for subclasses to filter or transform the raw answers array before processing.
+     *
+     * @param  array<int, mixed>  $responseAnswers
+     */
+    protected function parseResponseAnswers(array $responseAnswers): array
+    {
+        return $responseAnswers;
     }
 
     /**
@@ -85,7 +97,7 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
         }
 
         $responseAnswers = $this->client->getSurveyResponseAnswers($survey->surveyhero_id, $responseId);
-        if ($responseAnswers && $survey->doesResponseNeedsToBeUpdated($responseAnswers->last_updated_on)) {
+        if ($responseAnswers && $survey->doesResponseNeedsToBeUpdated($responseAnswers->last_updated_on->toIso8601String())) {
             // do not import already imported data that is not updated.
             /* @var SurveyResponseContract $existingResponseRecord */
             $existingResponseRecord = app(SurveyheroRegistrar::class)->getSurveyResponseClass()::where('surveyhero_id', $responseId)->first();
@@ -95,7 +107,7 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
 
             $surveyResponse = $this->createOrUpdateSurveyResponse($responseAnswers, $survey, $existingResponseRecord);
 
-            foreach ($responseAnswers->answers as $answer) {
+            foreach ($this->parseResponseAnswers($responseAnswers->answers) as $answer) {
                 $questionMapping = $this->surveyMappingService->getQuestionMapping($surveyQuestionMapping, $answer->element_id);
                 if (! empty($questionMapping)) {
                     $questionResponseCreator = $this->getQuestionResponseCreator($answer->type);
@@ -120,14 +132,15 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
                     }
                 } else {
                     $importInfo->addUnimportedQuestion($answer->element_id, 'No question mapping available in configuration file.');
+                    // set survey response as incomplete, because we could not completely import it.
+                    $this->setResponseAsIncomplete($surveyResponse);
                 }
             }
 
             $importInfo->increaseTotalResponses();
 
             // increase survey last updated timestamp:
-            $responseLastUpdatedOn = $this->client->transformAPITimestamp($responseAnswers->last_updated_on);
-            $importInfo->setSurveyLastUpdatedAt($responseLastUpdatedOn);
+            $importInfo->setSurveyLastUpdatedAt($responseAnswers->last_updated_on);
 
             // dispatch event:
             if ($surveyResponse->survey_completed) {
@@ -140,21 +153,21 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
         return $importInfo;
     }
 
-    private function createOrUpdateSurveyResponse(\stdClass $surveyheroResponse, SurveyContract $survey, ?SurveyResponseContract $existingResponse): SurveyResponseContract
+    private function createOrUpdateSurveyResponse(SurveyResponseAnswersDTO $surveyheroResponse, SurveyContract $survey, ?SurveyResponseContract $existingResponse): SurveyResponseContract
     {
         $responseData = [
             'surveyhero_id' => $surveyheroResponse->response_id,
             'survey_id' => $survey->id,
             'survey_language' => optional($surveyheroResponse->language)->code,
             'survey_completed' => $surveyheroResponse->status == self::SURVEYHERO_STATUS_COMPLETED,
-            'survey_start_date' => $this->client->transformAPITimestamp($surveyheroResponse->started_on),
-            'survey_last_updated' => $this->client->transformAPITimestamp($surveyheroResponse->last_updated_on),
-            'surveyhero_link_parameters' => json_encode($surveyheroResponse->link_parameters),
+            'survey_start_date' => $surveyheroResponse->started_on,
+            'survey_last_updated' => $surveyheroResponse->last_updated_on,
+            'surveyhero_link_parameters' => $surveyheroResponse->link_parameters !== null ? json_encode($surveyheroResponse->link_parameters) : null,
         ];
 
         // map link parameters:
         if (isset($surveyheroResponse->link_parameters)) {
-            $linkParametersConfig = config('surveyhero.surveyhero_link_parameters_mapping', []);
+            $linkParametersConfig = $this->config->getLinkParametersMapping();
             foreach ($linkParametersConfig as $surveyheroLinkParameter => $settings) {
                 if (isset($surveyheroResponse->link_parameters->{$surveyheroLinkParameter})) {
                     if (isset($settings['entity']) && isset($settings['value']) && isset($settings['field'])) {
@@ -197,6 +210,9 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
 
     private function setResponseAsIncomplete(SurveyResponseContract $surveyResponse): void
     {
+        if ($surveyResponse->survey_completed === false) {
+            return;
+        }
         $surveyResponse->survey_completed = false;
         $surveyResponse->save();
     }

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Translatable\HasTranslations;
 use Statikbe\Surveyhero\Contracts\SurveyQuestionContract;
+use Statikbe\Surveyhero\Database\Factories\SurveyQuestionFactory;
 use Statikbe\Surveyhero\SurveyheroRegistrar;
 
 class SurveyQuestion extends Model implements SurveyQuestionContract
@@ -18,6 +19,14 @@ class SurveyQuestion extends Model implements SurveyQuestionContract
     protected $translatable = ['label'];
 
     protected $guarded = [];
+
+    /**
+     * Create a new factory instance for the model.
+     */
+    protected static function newFactory(): SurveyQuestionFactory
+    {
+        return new SurveyQuestionFactory;
+    }
 
     public function getTable(): string
     {

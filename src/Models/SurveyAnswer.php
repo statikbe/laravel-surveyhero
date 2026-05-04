@@ -7,12 +7,21 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\Translatable\HasTranslations;
 use Statikbe\Surveyhero\Contracts\SurveyAnswerContract;
+use Statikbe\Surveyhero\Database\Factories\SurveyAnswerFactory;
 use Statikbe\Surveyhero\SurveyheroRegistrar;
 
 class SurveyAnswer extends Model implements SurveyAnswerContract
 {
     use HasFactory;
     use HasTranslations;
+
+    /**
+     * Create a new factory instance for the model.
+     */
+    protected static function newFactory(): SurveyAnswerFactory
+    {
+        return new SurveyAnswerFactory;
+    }
 
     protected $translatable = ['label'];
 

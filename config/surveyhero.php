@@ -5,13 +5,24 @@ use Statikbe\Surveyhero\Models\SurveyAnswer;
 use Statikbe\Surveyhero\Models\SurveyQuestion;
 use Statikbe\Surveyhero\Models\SurveyQuestionResponse;
 use Statikbe\Surveyhero\Models\SurveyResponse;
+use Statikbe\Surveyhero\SurveyheroConfig;
 
 // config for Statikbe/Surveyhero
 return [
     /**
      * The Surveyhero API URL:
      */
-    'api_url' => env('SURVEYHERO_API_URL', 'https://api.surveyhero.com/v1/'),
+    'api_url' => env('SURVEYHERO_API_URL', SurveyheroConfig::DEFAULT_API_URL),
+
+    /**
+     * Fallback seconds to wait when rate limited and no Retry-After header is provided.
+     *
+     * Warning: the connector sleeps for this duration when a 429 is received. This is fine
+     * for CLI imports but in HTTP contexts (e.g. the webhook controller) it pins a PHP-FPM
+     * worker for the full duration. If you handle webhooks under load, queue the import job
+     * instead of processing it inline, or keep this value well below your server's request timeout.
+     */
+    'rate_limit_fallback_seconds' => env('SURVEYHERO_RATE_LIMIT_FALLBACK', 60),
 
     /**
      * The Surveyhero API username and password:

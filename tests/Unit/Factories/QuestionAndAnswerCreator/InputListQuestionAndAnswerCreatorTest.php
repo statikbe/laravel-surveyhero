@@ -9,19 +9,19 @@ use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\InputListQue
 beforeEach(function () {
     config()->set('surveyhero.question_mapping', [
         [
-            'survey_id'       => 1234567,
-            'collectors'      => [9876543],
+            'survey_id' => 1234567,
+            'collectors' => [9876543],
             'use_resume_link' => false,
-            'questions'       => [
+            'questions' => [
                 667012 => [
-                    'question_id'         => 667012,
-                    'type'                => 'input_list',
+                    'question_id' => 667012,
+                    'type' => 'input_list',
                     'subquestion_mapping' => [
                         1745983 => ['question_id' => 1745983, 'field' => 'question_1_1'],
                         1745984 => ['question_id' => 1745984, 'field' => 'question_1_2'],
                         1745985 => ['question_id' => 1745985, 'field' => 'question_1_3'],
                     ],
-                    'mapped_data_type'    => 'string',
+                    'mapped_data_type' => 'string',
                 ],
             ],
         ],
@@ -34,12 +34,12 @@ function makeInputListApiQuestion(int $elementId, string $text, array $inputs, s
         element_id: $elementId,
         type: 'question',
         question: (object) [
-            'question_id'  => $elementId,
-            'type'         => 'input_list',
+            'question_id' => $elementId,
+            'type' => 'input_list',
             'question_text' => $text,
-            'input_list'   => (object) [
+            'input_list' => (object) [
                 'accepts' => (object) ['type' => $acceptsType],
-                'inputs'  => array_map(fn ($i) => (object) $i, $inputs),
+                'inputs' => array_map(fn ($i) => (object) $i, $inputs),
             ],
         ],
     );

@@ -10,11 +10,11 @@ function makeInputsApiAnswer(int $elementId, array $inputs): stdClass
 {
     return (object) [
         'element_id' => $elementId,
-        'type'       => 'inputs',
-        'inputs'     => array_map(fn ($i) => (object) [
+        'type' => 'inputs',
+        'inputs' => array_map(fn ($i) => (object) [
             'input_id' => $i['input_id'],
-            'label'    => $i['label'],
-            'answer'   => (object) $i['answer'],
+            'label' => $i['label'],
+            'answer' => (object) $i['answer'],
         ], $inputs),
     ];
 }
@@ -22,26 +22,26 @@ function makeInputsApiAnswer(int $elementId, array $inputs): stdClass
 function makeInputsMapping(int $elementId, array $subquestionMapping, string $dataType = 'string'): array
 {
     return [
-        'question_id'         => $elementId,
-        'type'                => 'input_list',
+        'question_id' => $elementId,
+        'type' => 'input_list',
         'subquestion_mapping' => $subquestionMapping,
-        'mapped_data_type'    => $dataType,
+        'mapped_data_type' => $dataType,
     ];
 }
 
 it('stores converted_string_value for each answered text input', function () {
     $survey = Survey::factory()->create(['surveyhero_id' => 1234567]);
     SurveyQuestion::factory()->create([
-        'survey_id'               => $survey->id,
-        'surveyhero_element_id'   => 667012,
-        'surveyhero_question_id'  => 1745983,
-        'field'                   => 'question_1_1',
+        'survey_id' => $survey->id,
+        'surveyhero_element_id' => 667012,
+        'surveyhero_question_id' => 1745983,
+        'field' => 'question_1_1',
     ]);
     SurveyQuestion::factory()->create([
-        'survey_id'               => $survey->id,
-        'surveyhero_element_id'   => 667012,
-        'surveyhero_question_id'  => 1745984,
-        'field'                   => 'question_1_2',
+        'survey_id' => $survey->id,
+        'surveyhero_element_id' => 667012,
+        'surveyhero_question_id' => 1745984,
+        'field' => 'question_1_2',
     ]);
     $response = SurveyResponse::factory()->create(['survey_id' => $survey->id]);
     $mapping = makeInputsMapping(667012, [
@@ -67,10 +67,10 @@ it('stores converted_string_value for each answered text input', function () {
 it('stores converted_int_value for number inputs', function () {
     $survey = Survey::factory()->create(['surveyhero_id' => 1234567]);
     SurveyQuestion::factory()->create([
-        'survey_id'              => $survey->id,
-        'surveyhero_element_id'  => 667012,
+        'survey_id' => $survey->id,
+        'surveyhero_element_id' => 667012,
         'surveyhero_question_id' => 1745983,
-        'field'                  => 'question_1_1',
+        'field' => 'question_1_1',
     ]);
     $response = SurveyResponse::factory()->create(['survey_id' => $survey->id]);
     $mapping = makeInputsMapping(667012, [
@@ -93,10 +93,10 @@ it('stores converted_int_value for number inputs', function () {
 it('produces no response row for unanswered inputs absent from the response', function () {
     $survey = Survey::factory()->create(['surveyhero_id' => 1234567]);
     SurveyQuestion::factory()->create([
-        'survey_id'              => $survey->id,
-        'surveyhero_element_id'  => 667012,
+        'survey_id' => $survey->id,
+        'surveyhero_element_id' => 667012,
         'surveyhero_question_id' => 1745983,
-        'field'                  => 'question_1_1',
+        'field' => 'question_1_1',
     ]);
     $response = SurveyResponse::factory()->create(['survey_id' => $survey->id]);
     $mapping = makeInputsMapping(667012, [
@@ -120,10 +120,10 @@ it('produces no response row for unanswered inputs absent from the response', fu
 it('updates the existing response on re-import', function () {
     $survey = Survey::factory()->create(['surveyhero_id' => 1234567]);
     SurveyQuestion::factory()->create([
-        'survey_id'              => $survey->id,
-        'surveyhero_element_id'  => 667012,
+        'survey_id' => $survey->id,
+        'surveyhero_element_id' => 667012,
         'surveyhero_question_id' => 1745983,
-        'field'                  => 'question_1_1',
+        'field' => 'question_1_1',
     ]);
     $response = SurveyResponse::factory()->create(['survey_id' => $survey->id]);
     $mapping = makeInputsMapping(667012, [

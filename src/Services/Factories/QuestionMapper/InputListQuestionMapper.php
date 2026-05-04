@@ -17,17 +17,17 @@ class InputListQuestionMapper extends AbstractQuestionMapper
             : SurveyAnswerContract::CONVERTED_TYPE_STRING;
 
         $mapping = [
-            'question_id'         => $question->element_id,
-            'type'                => $question->question->type,
+            'question_id' => $question->element_id,
+            'type' => $question->question->type,
             'subquestion_mapping' => [],
-            'mapped_data_type'    => $mappedDataType,
+            'mapped_data_type' => $mappedDataType,
         ];
 
         $subquestionIndex = 1;
         foreach ($question->question->input_list->inputs as $input) {
             $mapping['subquestion_mapping'][$input->input_id] = [
                 'question_id' => $input->input_id,
-                'field'       => "question_{$questionCounter}_{$subquestionIndex}",
+                'field' => "question_{$questionCounter}_{$subquestionIndex}",
             ];
             $subquestionIndex++;
         }

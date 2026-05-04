@@ -9,16 +9,16 @@ use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\ImageChoiceL
 beforeEach(function () {
     config()->set('surveyhero.question_mapping', [
         [
-            'survey_id'       => 1234567,
-            'collectors'      => [9876543],
+            'survey_id' => 1234567,
+            'collectors' => [9876543],
             'use_resume_link' => false,
-            'questions'       => [
+            'questions' => [
                 666941 => [
-                    'question_id'      => 666941,
-                    'type'             => 'image_choice_list',
-                    'field'            => 'question_1',
+                    'question_id' => 666941,
+                    'type' => 'image_choice_list',
+                    'field' => 'question_1',
                     'mapped_data_type' => 'int',
-                    'answer_mapping'   => [
+                    'answer_mapping' => [
                         6244 => 1,
                         6245 => 2,
                         6246 => 3,

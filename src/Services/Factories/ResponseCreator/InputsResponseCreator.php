@@ -30,7 +30,7 @@ class InputsResponseCreator extends AbstractQuestionResponseCreator
 
             $rawValue = match ($inputAnswer->answer->type) {
                 'number' => $inputAnswer->answer->number,
-                default  => $inputAnswer->answer->text,
+                default => $inputAnswer->answer->text,
             };
 
             $surveyAnswer = $this->fetchOrCreateInputAnswer($surveyQuestion, $dataType, $rawValue);

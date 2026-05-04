@@ -8,6 +8,7 @@ use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\ChoiceListQu
 use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\ChoiceTableQuestionAndAnswerCreator;
 use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\FileUploadQuestionAndAnswerCreator;
 use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\ImageChoiceListQuestionAndAnswerCreator;
+use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\InputListQuestionAndAnswerCreator;
 use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\InputQuestionAndAnswerCreator;
 use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\QuestionAndAnswerCreator;
 use Statikbe\Surveyhero\Services\Factories\QuestionAndAnswerCreator\RatingScaleQuestionAndAnswerCreator;
@@ -58,6 +59,7 @@ class SurveyQuestionsAndAnswersImportService extends AbstractSurveyheroAPIServic
             RatingScaleQuestionAndAnswerCreator::TYPE => new RatingScaleQuestionAndAnswerCreator,
             InputQuestionAndAnswerCreator::TYPE => new InputQuestionAndAnswerCreator,
             FileUploadQuestionAndAnswerCreator::TYPE => new FileUploadQuestionAndAnswerCreator,
+            InputListQuestionAndAnswerCreator::TYPE => new InputListQuestionAndAnswerCreator,
             default => null,
         };
     }

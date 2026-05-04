@@ -10,6 +10,7 @@ use Statikbe\Surveyhero\Services\Factories\QuestionMapper\ChoiceListQuestionMapp
 use Statikbe\Surveyhero\Services\Factories\QuestionMapper\ChoiceTableQuestionMapper;
 use Statikbe\Surveyhero\Services\Factories\QuestionMapper\FileUploadQuestionMapper;
 use Statikbe\Surveyhero\Services\Factories\QuestionMapper\ImageChoiceListQuestionMapper;
+use Statikbe\Surveyhero\Services\Factories\QuestionMapper\InputListQuestionMapper;
 use Statikbe\Surveyhero\Services\Factories\QuestionMapper\InputQuestionMapper;
 use Statikbe\Surveyhero\Services\Factories\QuestionMapper\QuestionMapper;
 use Statikbe\Surveyhero\Services\Factories\QuestionMapper\RatingScaleQuestionMapper;
@@ -208,6 +209,7 @@ class SurveyMappingService extends AbstractSurveyheroAPIService
         return match ($surveyheroFieldType) {
             InputQuestionMapper::TYPE => new InputQuestionMapper,
             FileUploadQuestionMapper::TYPE => new FileUploadQuestionMapper,
+            InputListQuestionMapper::TYPE => new InputListQuestionMapper,
             RatingScaleQuestionMapper::TYPE => new RatingScaleQuestionMapper,
             ChoiceListQuestionMapper::TYPE => new ChoiceListQuestionMapper,
             ChoiceTableQuestionMapper::TYPE => new ChoiceTableQuestionMapper,

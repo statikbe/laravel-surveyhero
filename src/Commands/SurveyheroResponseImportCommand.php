@@ -46,6 +46,7 @@ class SurveyheroResponseImportCommand extends Command
 
         foreach ($surveys as $survey) {
             /* @var SurveyContract $survey */
+            $this->line(sprintf("→ Importing responses for '%s' (surveyhero_id: %d)...", $survey->name, $survey->surveyhero_id));
             try {
                 if ($refreshResponses) {
                     $survey->survey_last_imported = null;

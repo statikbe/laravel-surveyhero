@@ -2,6 +2,8 @@
 
 namespace Statikbe\Surveyhero\Http\Connector;
 
+use Illuminate\Http\Response as LaravelResponse;
+use Illuminate\Support\Facades\Log;
 use Saloon\Http\Auth\BasicAuthenticator;
 use Saloon\Http\Connector;
 use Saloon\Http\Response;
@@ -49,17 +51,19 @@ class SurveyheroConnector extends Connector
 
     protected function handleTooManyAttempts(Response $response, Limit $limit): void
     {
-        if ($response->status() !== 429) {
+        if ($response->status() !== LaravelResponse::HTTP_TOO_MANY_REQUESTS) { // HTTP 429
             return;
         }
 
         // Parse Retry-After header (handles both delta seconds and HTTP-date formats)
         // Falls back to configured seconds if no header is provided
-        $limit->exceeded(
-            releaseInSeconds: RetryAfterHelper::parse(
-                $response->header('Retry-After'),
-                config('surveyhero.rate_limit_fallback_seconds', 60)
-            ),
+        $seconds = RetryAfterHelper::parse(
+            $response->header('Retry-After'),
+            config('surveyhero.rate_limit_fallback_seconds', 60)
         );
+
+        Log::warning('[surveyhero] Rate limited (429). Sleeping '.$seconds.'s before retry.');
+
+        $limit->exceeded(releaseInSeconds: $seconds);
     }
 }

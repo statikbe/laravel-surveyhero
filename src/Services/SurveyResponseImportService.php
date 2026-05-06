@@ -59,7 +59,7 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
             DB::beginTransaction();
 
             $responses = $this->client->getSurveyResponses($survey->surveyhero_id, $survey->survey_last_imported, $surveyCollectorIds);
-            Log::info('[surveyhero] Survey '.$survey->surveyhero_id.': fetched '.count($responses).' response(s).');
+            Log::debug('[surveyhero] Survey '.$survey->surveyhero_id.': fetched '.count($responses).' response(s).');
 
             foreach ($responses as $response) {
                 $responseImportInfo->addInfo($this->importSurveyResponse($response->response_id, $survey, $surveyQuestionMapping));
@@ -104,7 +104,7 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
             /* @var SurveyResponseContract $existingResponseRecord */
             $existingResponseRecord = app(SurveyheroRegistrar::class)->getSurveyResponseClass()::where('surveyhero_id', $responseId)->first();
             if ($existingResponseRecord && $existingResponseRecord->survey_completed) {
-                Log::debug('[surveyhero] Skipping response '.$responseId.': already imported and not updated.');
+                Log::debug('[surveyhero] Skipping response '.$responseId.': already imported and completed.');
 
                 return null;
             }

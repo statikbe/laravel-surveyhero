@@ -2,7 +2,7 @@
 
 ## From v2 to v3
 
-### 1. Remove `use HasFactory` from custom models (PHP 8.2 fatal)
+### 1. Remove `use HasFactory` from custom models (PHP 8.2 fatal) — **High Impact**
 
 All package models now declare `newFactory()` with a typed return. If your extending model also applies `use HasFactory`, PHP 8.2 throws:
 
@@ -29,7 +29,7 @@ class SurveyResponse extends \Statikbe\Surveyhero\Models\SurveyResponse
 
 ---
 
-### 2. Refactor your webhook controller to extend the package controller
+### 2. Refactor your webhook controller to extend the package controller — **High Impact**
 
 The package now ships a full `SurveyheroWebhookController` that handles validation, survey lookup, collector filtering, import, and error wrapping. Custom controllers that reimplemented this logic should now extend the base controller instead.
 
@@ -58,7 +58,7 @@ You can keep your own route URL — the package-provided `Surveyhero::webhookRou
 
 ---
 
-### 3. Run the upgrade migration
+### 3. Run the upgrade migration — **High Impact**
 
 Two new columns are added. The package ships an upgrade migration (`upgrade_surveyhero_tables_v3`) that is registered automatically. Run:
 
@@ -74,7 +74,7 @@ The migration is guarded with `Schema::hasColumn()` checks so it is safe to run 
 
 ---
 
-### 4. Add `rate_limit_fallback_seconds` to your published config
+### 4. Add `rate_limit_fallback_seconds` to your published config — **Medium Impact**
 
 A new key controls how long the connector sleeps when a 429 rate-limit response is received without a `Retry-After` header.
 
@@ -87,7 +87,7 @@ A new key controls how long the connector sleeps when a 429 rate-limit response 
 
 ---
 
-### 5. Update `config/surveyhero.php` models to point to your app models
+### 5. Update `config/surveyhero.php` models to point to your app models — **Medium Impact**
 
 If you have custom model classes, make sure the `models` array in your published config references them. Without this the `SurveyheroRegistrar` resolves the vendor base models, bypassing your customisations (soft deletes, extra relationships, etc.).
 
@@ -103,13 +103,13 @@ If you have custom model classes, make sure the `models` array in your published
 
 ---
 
-### 6. New events (informational, not breaking)
+### 6. New events — **Low Impact**
 
 `SurveyResponseImported` and `SurveyResponseIncompletelyImported` are now dispatched after each import (implements `ShouldDispatchAfterCommit`). If you previously added post-import logic inline in a custom webhook controller, consider moving it to an event listener instead — this is especially useful when processing imports via CLI commands.
 
 ---
 
-### 7. `question_mapping` config structure (informational)
+### 7. `question_mapping` config structure — **Low Impact**
 
 Each entry in the `question_mapping` array now supports a nested `questions` key and a `use_resume_link` flag. Existing entries with only `survey_id` + `collectors` continue to work — they just opt out of config-level question mapping (only DB mapping is used).
 

@@ -1,5 +1,7 @@
 .idea
 .phpunit.result.cache
+.phpunit.cache
+.claude/settings.local.json
 build
 composer.lock
 coverage
@@ -9,3 +11,4 @@ phpstan.neon
 testbench.yaml
 vendor
 node_modules
+

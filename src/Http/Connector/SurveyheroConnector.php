@@ -3,6 +3,7 @@
 namespace Statikbe\Surveyhero\Http\Connector;
 
 use Illuminate\Http\Response as LaravelResponse;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Saloon\Http\Auth\BasicAuthenticator;
 use Saloon\Http\Connector;
@@ -56,11 +57,9 @@ class SurveyheroConnector extends Connector
         }
 
         // Parse Retry-After header (handles both delta seconds and HTTP-date formats)
-        // Falls back to configured seconds if no header is provided
-        $seconds = RetryAfterHelper::parse(
-            $response->header('Retry-After'),
-            config('surveyhero.rate_limit_fallback_seconds', 60)
-        );
+        // Falls back to configured seconds if no (parseable) header is provided
+        $seconds = RetryAfterHelper::parse($response->header('Retry-After'))
+            ?? Config::integer('surveyhero.rate_limit_fallback_seconds', 60);
 
         Log::warning('[surveyhero] Rate limited (429). Sleeping '.$seconds.'s before retry.');
 

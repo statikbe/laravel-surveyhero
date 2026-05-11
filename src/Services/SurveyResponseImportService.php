@@ -3,6 +3,7 @@
 namespace Statikbe\Surveyhero\Services;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Statikbe\Surveyhero\Contracts\SurveyContract;
 use Statikbe\Surveyhero\Contracts\SurveyResponseContract;
 use Statikbe\Surveyhero\Events\SurveyResponseImported;
@@ -58,6 +59,7 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
             DB::beginTransaction();
 
             $responses = $this->client->getSurveyResponses($survey->surveyhero_id, $survey->survey_last_imported, $surveyCollectorIds);
+            Log::debug('[surveyhero] Survey '.$survey->surveyhero_id.': fetched '.count($responses).' response(s).');
 
             foreach ($responses as $response) {
                 $responseImportInfo->addInfo($this->importSurveyResponse($response->response_id, $survey, $surveyQuestionMapping));
@@ -102,6 +104,8 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
             /* @var SurveyResponseContract $existingResponseRecord */
             $existingResponseRecord = app(SurveyheroRegistrar::class)->getSurveyResponseClass()::where('surveyhero_id', $responseId)->first();
             if ($existingResponseRecord && $existingResponseRecord->survey_completed) {
+                Log::debug('[surveyhero] Skipping response '.$responseId.': already imported and completed.');
+
                 return null;
             }
 
@@ -138,6 +142,7 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
             }
 
             $importInfo->increaseTotalResponses();
+            Log::info('[surveyhero] Imported response '.$responseId.' for survey '.$survey->surveyhero_id.'.');
 
             // increase survey last updated timestamp:
             $importInfo->setSurveyLastUpdatedAt($responseAnswers->last_updated_on);

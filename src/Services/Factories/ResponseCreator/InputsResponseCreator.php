@@ -15,6 +15,33 @@ class InputsResponseCreator extends AbstractQuestionResponseCreator
 
     /**
      * {@inheritDoc}
+     *
+     * Config question_mapping data structure:
+     * [
+     *   'question_id' => 667012,
+     *   'type' => 'input_list',
+     *   'mapped_data_type' => 'string',
+     *   'subquestion_mapping' => [
+     *     1745983 => ['question_id' => 1745983, 'field' => 'question_1_1'],
+     *     1745984 => ['question_id' => 1745984, 'field' => 'question_1_2'],
+     *   ],
+     * ],
+     *
+     * Surveyhero API response data:
+     * {
+     *   "element_id": 667012,
+     *   "question_text": "Please enter your contact details:",
+     *   "type": "inputs",
+     *   "inputs": [
+     *     { "input_id": 1745983, "label": "First and last name", "answer": { "type": "text", "text": "John Smith" } },
+     *     { "input_id": 1745984, "label": "Street address",      "answer": { "type": "text", "text": "Main St 1" } }
+     *   ]
+     * }
+     *
+     * Each input maps to its own SurveyQuestion row, so responses are updated in-place
+     * without pruning (unlike ChoicesResponseCreator). This is intentional — there is no
+     * multi-select scenario here, so findExistingQuestionResponse(input_id) always targets
+     * the correct row.
      */
     public function updateOrCreateQuestionResponse(
         \stdClass $surveyheroQuestionResponse,

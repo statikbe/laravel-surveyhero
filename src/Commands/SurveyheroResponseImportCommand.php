@@ -46,6 +46,7 @@ class SurveyheroResponseImportCommand extends Command
 
         foreach ($surveys as $survey) {
             /* @var SurveyContract $survey */
+            $this->line(sprintf("→ Importing responses for '%s' (surveyhero_id: %d)...", $survey->name, $survey->surveyhero_id));
             try {
                 if ($refreshResponses) {
                     $survey->survey_last_imported = null;
@@ -63,15 +64,11 @@ class SurveyheroResponseImportCommand extends Command
             }
 
             if ($importInfo->hasUnimportedQuestions()) {
-                $this->info(sprintf('%d questions could not imported!', count($importInfo->getUnimportedQuestions())));
-                $rows = array_map(null, array_keys($importInfo->getUnimportedQuestions()), $importInfo->getUnimportedQuestions());
-                $this->table(['Surveyhero ID', 'Info'], $rows);
+                $this->displayUnimportedTable($importInfo->getUnimportedQuestions(), '%d questions could not imported!');
             }
 
             if ($importInfo->hasUnimportedAnswers()) {
-                $this->info('Not all answers are mapped:');
-                $rows = array_map(null, array_keys($importInfo->getUnimportedAnswers()), $importInfo->getUnimportedAnswers());
-                $this->table(['Surveyhero ID', 'Info'], $rows);
+                $this->displayUnimportedTable($importInfo->getUnimportedAnswers(), '%d answers could not imported, probably because they are not mapped!');
             }
 
             $this->comment("Survey '$survey->name' imported!");
@@ -88,5 +85,16 @@ class SurveyheroResponseImportCommand extends Command
         app(SurveyheroRegistrar::class)->getSurveyQuestionResponseClass()::truncate();
         app(SurveyheroRegistrar::class)->getSurveyResponseClass()::truncate();
         Schema::enableForeignKeyConstraints();
+    }
+
+    private function displayUnimportedTable(array $unimportedMsgs, string $message): void
+    {
+        $this->info(sprintf($message, count($unimportedMsgs)));
+
+        $rows = collect($unimportedMsgs)
+            ->map(fn ($info, $id) => [$id, $info])
+            ->values()
+            ->all();
+        $this->table(['Surveyhero ID', 'Info'], $rows);
     }
 }

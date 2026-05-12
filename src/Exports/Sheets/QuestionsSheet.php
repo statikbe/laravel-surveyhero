@@ -2,6 +2,7 @@
 
 namespace Statikbe\Surveyhero\Exports\Sheets;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -42,6 +43,9 @@ class QuestionsSheet implements FromQuery, ShouldAutoSize, WithHeadings, WithMap
         return $this;
     }
 
+    /**
+     * @return HasMany
+     */
     public function query()
     {
         return $this->survey->surveyQuestions();

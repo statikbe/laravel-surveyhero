@@ -2,6 +2,7 @@
 
 namespace Statikbe\Surveyhero\Exports\Sheets;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -43,6 +44,9 @@ class AnswersSheet implements FromQuery, ShouldAutoSize, WithHeadings, WithMappi
         return $this;
     }
 
+    /**
+     * @return Builder
+     */
     public function query()
     {
         $questionTable = config('surveyhero.table_names.survey_questions');

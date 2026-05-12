@@ -5,6 +5,7 @@ namespace Statikbe\Surveyhero\Services\Factories\ResponseCreator;
 use Statikbe\Surveyhero\Contracts\SurveyAnswerContract;
 use Statikbe\Surveyhero\Contracts\SurveyQuestionResponseContract;
 use Statikbe\Surveyhero\Contracts\SurveyResponseContract;
+use Statikbe\Surveyhero\Exceptions\QuestionNotImportedException;
 use Statikbe\Surveyhero\Services\SurveyMappingService;
 use Statikbe\Surveyhero\SurveyheroRegistrar;
 
@@ -26,6 +27,12 @@ class InputsResponseCreator extends AbstractQuestionResponseCreator
 
         foreach ($surveyheroQuestionResponse->inputs as $inputAnswer) {
             $subquestionMapping = $mappingService->getSubquestionMapping($inputAnswer->input_id, $questionMapping);
+
+            // ChoiceTableResponseCreator has the same latent issue (pre-existing).
+            if (empty($subquestionMapping) || ! isset($subquestionMapping['question_id'])) {
+                throw QuestionNotImportedException::create((int) $inputAnswer->input_id, "No subquestion mapping found for input_id {$inputAnswer->input_id}");
+            }
+
             $surveyQuestion = $this->findSurveyQuestion($inputAnswer->input_id);
 
             $rawValue = match ($inputAnswer->answer->type) {

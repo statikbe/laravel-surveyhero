@@ -19,7 +19,7 @@ function makeFileApiAnswer(int $elementId, string $path): stdClass
     ];
 }
 
-it('stores the file path as converted_string_value', function () {
+it('stores the full file URL as converted_string_value', function () {
     $survey = Survey::factory()->create(['surveyhero_id' => 1234567]);
     SurveyQuestion::factory()->create([
         'survey_id' => $survey->id,
@@ -39,7 +39,7 @@ it('stores the file path as converted_string_value', function () {
 
     expect(SurveyQuestionResponse::count())->toBe(1);
     $qr = SurveyQuestionResponse::first();
-    expect($qr->surveyAnswer->converted_string_value)->toBe('/v1/download/element/1387752/response/3875825');
+    expect($qr->surveyAnswer->converted_string_value)->toBe('https://api.surveyhero.com/v1/download/element/1387752/response/3875825');
 });
 
 it('updates the existing response on re-import', function () {

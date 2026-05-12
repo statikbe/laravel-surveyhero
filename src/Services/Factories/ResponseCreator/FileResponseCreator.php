@@ -5,6 +5,7 @@ namespace Statikbe\Surveyhero\Services\Factories\ResponseCreator;
 use Statikbe\Surveyhero\Contracts\SurveyAnswerContract;
 use Statikbe\Surveyhero\Contracts\SurveyQuestionResponseContract;
 use Statikbe\Surveyhero\Contracts\SurveyResponseContract;
+use Statikbe\Surveyhero\SurveyheroConfig;
 use Statikbe\Surveyhero\SurveyheroRegistrar;
 
 class FileResponseCreator extends AbstractQuestionResponseCreator
@@ -27,10 +28,15 @@ class FileResponseCreator extends AbstractQuestionResponseCreator
             return $this->createSurveyQuestionResponseData($surveyQuestion, $response, null);
         }
 
+        $apiUrl = (new SurveyheroConfig)->getApiUrl();
+        $scheme = parse_url($apiUrl, PHP_URL_SCHEME);
+        $host = parse_url($apiUrl, PHP_URL_HOST);
+        $fileUrl = ($scheme && $host) ? "{$scheme}://{$host}{$filePath}" : $filePath;
+
         $surveyAnswer = $this->fetchOrCreateInputAnswer(
             $surveyQuestion,
             SurveyAnswerContract::CONVERTED_TYPE_STRING,
-            $filePath
+            $fileUrl
         );
 
         $responseData = $this->createSurveyQuestionResponseData($surveyQuestion, $response, $surveyAnswer);

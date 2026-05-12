@@ -64,12 +64,14 @@ class SurveyheroResponseImportCommand extends Command
 
             if ($importInfo->hasUnimportedQuestions()) {
                 $this->info(sprintf('%d questions could not imported!', count($importInfo->getUnimportedQuestions())));
-                $this->table(['Surveyhero ID', 'Info'], $importInfo->getUnimportedQuestions());
+                $rows = array_map(null, array_keys($importInfo->getUnimportedQuestions()), $importInfo->getUnimportedQuestions());
+                $this->table(['Surveyhero ID', 'Info'], $rows);
             }
 
             if ($importInfo->hasUnimportedAnswers()) {
                 $this->info('Not all answers are mapped:');
-                $this->table(['Surveyhero ID', 'Info'], $importInfo->getUnimportedAnswers());
+                $rows = array_map(null, array_keys($importInfo->getUnimportedAnswers()), $importInfo->getUnimportedAnswers());
+                $this->table(['Surveyhero ID', 'Info'], $rows);
             }
 
             $this->comment("Survey '$survey->name' imported!");

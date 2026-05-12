@@ -21,10 +21,16 @@ class FileResponseCreator extends AbstractQuestionResponseCreator
     {
         $existingResponse = $this->findExistingQuestionResponse($questionMapping['question_id'], $response);
         $surveyQuestion = $this->findSurveyQuestion($surveyheroQuestionResponse->element_id);
+
+        $filePath = $surveyheroQuestionResponse->file->path ?? null;
+        if ($filePath === null) {
+            return $this->createSurveyQuestionResponseData($surveyQuestion, $response, null);
+        }
+
         $surveyAnswer = $this->fetchOrCreateInputAnswer(
             $surveyQuestion,
             SurveyAnswerContract::CONVERTED_TYPE_STRING,
-            $surveyheroQuestionResponse->file->path
+            $filePath
         );
 
         $responseData = $this->createSurveyQuestionResponseData($surveyQuestion, $response, $surveyAnswer);

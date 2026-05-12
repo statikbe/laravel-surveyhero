@@ -23,6 +23,7 @@ class ChoiceListQuestionAndAnswerCreator extends AbstractQuestionAndAnswerCreato
     public function updateOrCreateQuestionAndAnswer(SurveyElementDTO $question, SurveyContract $survey, string $lang): SurveyQuestionContract|array
     {
         $surveyQuestion = $this->updateOrCreateQuestion($survey, $lang, $question->element_id, $question->question->question_text);
+        $questionMapping = (new SurveyMappingService)->getQuestionMappingForSurvey($survey, $question->element_id);
 
         foreach ($question->question->choice_list->choices as $choice) {
             $responseData = [
@@ -33,7 +34,6 @@ class ChoiceListQuestionAndAnswerCreator extends AbstractQuestionAndAnswerCreato
                 ],
             ];
 
-            $questionMapping = (new SurveyMappingService)->getQuestionMappingForSurvey($survey, $question->element_id);
             $mappedChoice = $this->getChoiceMapping($choice->choice_id, $question->element_id, $questionMapping);
 
             $this->setChoiceAndConvertToDataType($mappedChoice, $questionMapping['mapped_data_type'], $responseData, $choice);

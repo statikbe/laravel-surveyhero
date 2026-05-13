@@ -1,0 +1,8 @@
+{
+    "statusCode": 200,
+    "headers": {
+        "Content-Type": "application/json"
+    },
+    "data": "{\"elements\":[{\"element_id\":555001,\"type\":\"question\",\"question\":{\"question_id\":555001,\"type\":\"image_choice_list\",\"question_text\":\"Pick an image:\",\"image_choice_list\":{\"choices\":[{\"choice_id\":13509100,\"label\":\"Option A\",\"image\":{\"url\":\"https://cdn.surveyhero.com/images/a.jpg\"}},{\"choice_id\":13509101,\"label\":\"Option B\",\"image\":{\"url\":\"https://cdn.surveyhero.com/images/b.jpg\"}}]},\"settings\":{\"is_required\":false}}}]}",
+    "context": []
+}

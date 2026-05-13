@@ -95,7 +95,7 @@ it('skips unsupported question types and records them in skipped_question_types'
 
     $mapping = $service->map($survey);
 
-    expect($mapping['skipped_question_types'])->toContain('image_choice_list')
+    expect($mapping['skipped_question_types'])->toContain('ranking')
         ->and($mapping['questions'])->toHaveKey(1000002)
         ->and($mapping['questions'])->not->toHaveKey(1000007);
 });

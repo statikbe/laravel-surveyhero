@@ -1,0 +1,8 @@
+{
+    "statusCode": 200,
+    "headers": {
+        "Content-Type": "application/json"
+    },
+    "data": "{\"elements\":[{\"element_id\":1387752,\"type\":\"question\",\"question\":{\"question_id\":1387752,\"type\":\"file_upload\",\"question_text\":\"Please upload your image here:\",\"file_upload\":{\"max_file_size_in_mb\":25,\"accepted_file_types\":[\"gif\",\"jpg\",\"jpeg\",\"png\"]},\"settings\":{\"is_required\":false}}}]}",
+    "context": []
+}

@@ -1,0 +1,8 @@
+{
+    "statusCode": 200,
+    "headers": {
+        "Content-Type": "application/json"
+    },
+    "data": "{\"response_id\":3875825,\"status\":\"completed\",\"started_on\":\"2024-06-01T10:00:00+00:00\",\"last_updated_on\":\"2024-06-01T11:00:00+00:00\",\"language\":{\"code\":\"en\"},\"link_parameters\":{},\"answers\":[{\"element_id\":1387752,\"question_text\":\"Please upload your image here:\",\"type\":\"file\",\"file\":{\"name\":\"Galapagos.jpg\",\"size\":480447,\"path\":\"/v1/download/element/1387752/response/3875825\"}}]}",
+    "context": []
+}

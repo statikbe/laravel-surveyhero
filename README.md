@@ -35,9 +35,9 @@ php artisan migrate
 **NB:** If you want to customise the default data model, first edit the configuration file, see the 
 [Data Model Customisation section](#data-model-customisation).
 
-## Upgrading to V2
+## Upgrading
 
-The data model changed in v2, so [an upgrade guide](UPGRADING.md) is available.
+An [upgrade guide](UPGRADING.md) is available for breaking changes between major versions.
 
 ## Data model
 
@@ -248,6 +248,8 @@ php artisan surveyhero:map --generateConfig
 
 #### Summary of currently supported question types and their mapping structure:
 
+> **Unsupported question types** are skipped during import — no exception is thrown and a warning is logged instead.
+
 #### Text input
 
 ```php
@@ -331,6 +333,59 @@ A choice table is a Likert scale type of question with a set of rows or subquest
 subquestion with its own `question_id` and `field`. So each subquestion will become a `SurveyQuestionResponse` record.
 The `answer_mapping` operates identically to [Choice List](#choice-list). You can also specify an `answer_mapping` for
 a specific question, in case the mapping differs for that question, see `question_id` 13509165.
+
+#### Image choice list
+
+```php
+1000003 => [
+    'question_id' => 1000003,
+    'type' => 'image_choice_list',
+    'field' => 'question_3',
+    'answer_mapping' => [
+        13509100 => 1,
+        13509101 => 2,
+        13509102 => 3,
+    ],
+    'mapped_data_type' => 'int',
+],
+```
+
+An image choice list works identically to a [Choice List](#choice-list). The images displayed to respondents are
+stored in Surveyhero and are not imported; only the selected choice ID is mapped.
+
+#### File upload
+
+```php
+1000004 => [
+    'question_id' => 1000004,
+    'type' => 'file_upload',
+    'field' => 'question_4',
+    'mapped_data_type' => 'string',
+],
+```
+
+A file upload question stores the full URL to the uploaded file (prepended with the Surveyhero API base URL) as a
+`string` in `converted_string_value`. No `answer_mapping` is needed. The file name and size are not stored; use the
+URL to retrieve them via the Surveyhero API if needed.
+
+#### Input list
+
+```php
+1000005 => [
+    'question_id' => 1000005,
+    'type' => 'input_list',
+    'mapped_data_type' => 'string',
+    'subquestion_mapping' => [
+        1745983 => ['question_id' => 1745983, 'field' => 'contact_name'],
+        1745984 => ['question_id' => 1745984, 'field' => 'contact_address'],
+    ],
+],
+```
+
+An input list is a group of free-text (or numeric) inputs under one question. Each input is imported as a separate
+`SurveyQuestion` row, keyed by its `input_id`. The `subquestion_mapping` structure mirrors
+[Choice Table](#choice-table), but without an `answer_mapping` — answers are stored as free-text values.
+Set `mapped_data_type` to `int` when the input list accepts numbers, otherwise use `string`.
 
 ### Import questions and answers
 
@@ -535,7 +590,7 @@ The following events are implemented:
 
 - ~~Add more commands to manage webhooks~~
 - Add more default indices to the migration.
-- Support more Surveyhero question types.
+- ~~Support more Surveyhero question types.~~ (added: `image_choice_list`, `file_upload`, `input_list`)
 - Support more converted value data types, e.g. double.
 - A command to check the `question_mapping` configuration to validate if:
   - there are no double field names

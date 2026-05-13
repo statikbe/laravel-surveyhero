@@ -1,0 +1,8 @@
+{
+    "statusCode": 200,
+    "headers": {
+        "Content-Type": "application/json"
+    },
+    "data": "{\"elements\":[{\"element_id\":667012,\"type\":\"question\",\"question\":{\"question_id\":667012,\"type\":\"input_list\",\"question_text\":\"Please enter your contact details:\",\"input_list\":{\"accepts\":{\"type\":\"text\",\"text\":{\"max_number_of_characters\":null}},\"inputs\":[{\"input_id\":1745983,\"label\":\"First and last name\"},{\"input_id\":1745984,\"label\":\"Street address\"},{\"input_id\":1745985,\"label\":\"Postal code and city\"}]},\"settings\":{\"is_required\":false}}}]}",
+    "context": []
+}

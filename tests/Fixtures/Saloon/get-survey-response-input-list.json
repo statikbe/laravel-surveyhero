@@ -1,0 +1,8 @@
+{
+    "statusCode": 200,
+    "headers": {
+        "Content-Type": "application/json"
+    },
+    "data": "{\"response_id\":9002,\"status\":\"completed\",\"started_on\":\"2024-06-01T10:00:00+00:00\",\"last_updated_on\":\"2024-06-01T11:00:00+00:00\",\"language\":{\"code\":\"en\"},\"link_parameters\":{},\"answers\":[{\"element_id\":667012,\"question_text\":\"Please enter your contact details:\",\"type\":\"inputs\",\"inputs\":[{\"input_id\":1745983,\"label\":\"First and last name\",\"answer\":{\"type\":\"text\",\"text\":\"John Smith\"}},{\"input_id\":1745985,\"label\":\"Postal code and city\",\"answer\":{\"type\":\"text\",\"text\":\"8008 Zürich\"}}]}]}",
+    "context": []
+}

@@ -619,6 +619,7 @@ You can post an issue and provide a pull request. Thanks!
 ## Credits
 
 - [Sten Govaerts](https://github.com/sten)
+- [Zias van Nes](https://github.com/vanneszias)
 - [Robbe Reygel](https://github.com/RobbeStatik)
 - [Marie Drieghe](https://github.com/madriegh)
 - [All Contributors](https://github.com/statikbe/laravel-surveyhero/graphs/contributors)

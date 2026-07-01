@@ -4,6 +4,9 @@ on:
   release:
     types: [released]
 
+permissions:
+  contents: write
+
 jobs:
   update:
     runs-on: ubuntu-latest
@@ -13,6 +16,9 @@ jobs:
         uses: actions/checkout@v6
         with:
           ref: main
+          # Admin PAT so the push to protected main is accepted (enforce_admins is off).
+          # git-auto-commit-action reuses these persisted credentials for the push.
+          token: ${{ secrets.CHANGELOG_PAT }}
 
       - name: Update Changelog
         uses: stefanzweifel/changelog-updater-action@v1

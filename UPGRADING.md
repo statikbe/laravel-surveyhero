@@ -1,5 +1,84 @@
 # Upgrading
 
+## From v3 to v4
+
+v4 upgrades `maatwebsite/excel` from 3.1 to 4.0. Laravel-Excel 4 requires PHP 8.3+ and
+Laravel 12+, so this package's minimum requirements move with it.
+
+### 1. Raise your PHP and Laravel versions — **High Impact**
+
+| | v3 | v4 |
+| --- | --- | --- |
+| PHP | 8.1 – 8.4 | 8.3 – 8.5 |
+| Laravel | 10 – 13 | 12 – 13 |
+| `maatwebsite/excel` | ^3.1 | ^4.0 |
+| `phpoffice/phpspreadsheet` | ^1.30 | ^5.8 |
+
+If you are on PHP 8.1/8.2 or Laravel 10/11, upgrade those first. Staying on
+`maatwebsite/excel` 3.1 is not an option on PHP 8.5: `phpoffice/phpspreadsheet` 1.x
+declares `"php": ">=7.4.0 <8.5.0"`, which is what blocks PHP 8.5 today.
+
+### 2. Add return types to custom export sheets — **High Impact**
+
+Laravel-Excel 4 declares native types on every concern. If you pass your own sheets to
+`SurveyExport::setSheets()`, or extend the package's sheets, update your signatures:
+
+```php
+// Before (v3)
+public function query() { ... }
+public function collection() { ... }
+public function map($row): array { ... }
+
+// After (v4)
+public function query(): Builder|EloquentBuilder|Relation { ... }
+public function collection(): Enumerable { ... }
+public function map(mixed $row): array { ... }
+```
+
+Other common ones: `headings(): array`, `title(): string`, `array(): array`,
+`registerEvents(): array`.
+
+### 3. Implement the `Export` marker on classes using `WithMultipleSheets` — **Medium Impact**
+
+`Maatwebsite\Excel\Concerns\Export` is new in v4. A class that only implements
+`WithMultipleSheets` (no data-source concern of its own) must now implement it
+explicitly, and every sheet it returns must implement `Export` or `Import`:
+
+```php
+use Maatwebsite\Excel\Concerns\Export;
+
+class MySurveyExport extends \Statikbe\Surveyhero\Exports\SurveyExport implements Export
+{
+    // ...
+}
+```
+
+The package's own `SurveyExport` already does this.
+
+### 4. Review direct PhpSpreadsheet usage — **Medium Impact**
+
+`phpoffice/phpspreadsheet` jumps from 1.30 to 5.x. Code that only touches Laravel-Excel's
+own API is unaffected, but review anything that reaches into PhpSpreadsheet directly:
+`WithEvents` listeners (`$event->sheet->getDelegate()`), `WithCharts` / `WithDrawings`,
+custom value binders, and direct use of `NumberFormat`, `Style` or `Coordinate`. See the
+[PhpSpreadsheet changelog](https://github.com/PHPOffice/PhpSpreadsheet/blob/master/CHANGELOG.md)
+for the 2.0 – 5.0 breaking changes.
+
+### 5. Register the Excel service provider in package tests — **Low Impact**
+
+Only relevant if you run this package's test suite or a testbench app that does not
+auto-discover providers: add `Maatwebsite\Excel\ExcelServiceProvider::class` to your
+`getPackageProviders()`.
+
+### 6. Response export rows are now ordered deterministically — **Low Impact**
+
+`AnswersSheet::query()` and `QuestionsSheet::query()` now append an `orderBy('id')`.
+Laravel-Excel walks `FromQuery` exports with `LIMIT`/`OFFSET` chunking, which silently
+duplicates and drops rows when the query has no unique sort. If you relied on the previous
+(undefined) row order, note that answers and questions are now emitted in primary-key order.
+
+---
+
 ## From v2 to v3
 
 ### 1. Remove `use HasFactory` from custom models (PHP 8.2 fatal) — **High Impact**

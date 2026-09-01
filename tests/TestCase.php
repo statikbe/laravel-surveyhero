@@ -4,6 +4,7 @@ namespace Statikbe\Surveyhero\Tests;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Maatwebsite\Excel\ExcelServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 use Saloon\Http\Faking\MockClient;
 use Saloon\MockConfig;
@@ -47,6 +48,7 @@ class TestCase extends Orchestra
     protected function getPackageProviders($app)
     {
         return [
+            ExcelServiceProvider::class,
             SurveyheroServiceProvider::class,
         ];
     }

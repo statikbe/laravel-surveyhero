@@ -44,11 +44,9 @@ class AnswersSheet implements FromQuery, ShouldAutoSize, WithHeadings, WithMappi
         return $this;
     }
 
-    /**
-     * @return Builder
-     */
-    public function query()
+    public function query(): Builder
     {
+        $answerTable = config('surveyhero.table_names.survey_answers');
         $questionTable = config('surveyhero.table_names.survey_questions');
         $surveyTable = config('surveyhero.table_names.surveys');
 
@@ -56,7 +54,8 @@ class AnswersSheet implements FromQuery, ShouldAutoSize, WithHeadings, WithMappi
             ->join($questionTable['name'], $questionTable['name'].'.id', '=', $questionTable['foreign_key'])
             ->where($surveyTable['foreign_key'], '=', $this->survey->id)
             ->whereNotNull('surveyhero_answer_id')
-            ->with('surveyQuestion');
+            ->with('surveyQuestion')
+            ->orderBy($answerTable['name'].'.id');
     }
 
     public function headings(): array
@@ -78,7 +77,7 @@ class AnswersSheet implements FromQuery, ShouldAutoSize, WithHeadings, WithMappi
     /**
      * @param  SurveyAnswerContract  $surveyAnswer
      */
-    public function map($surveyAnswer): array
+    public function map(mixed $surveyAnswer): array
     {
         $data = [
             $surveyAnswer->surveyQuestion->surveyhero_question_id,

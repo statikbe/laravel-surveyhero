@@ -2,6 +2,7 @@
 
 namespace Statikbe\Surveyhero\Exports\Sheets;
 
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromCollection;
@@ -30,7 +31,10 @@ class ResponsesSheet implements FromCollection, ShouldAutoSize, WithHeadings, Wi
         $this->title = null;
     }
 
-    public function collection()
+    /**
+     * @return Collection<int|string, array<int, mixed>>
+     */
+    public function collection(): Collection
     {
         $query = $this->query();
         $responses = $query->get();
@@ -44,7 +48,7 @@ class ResponsesSheet implements FromCollection, ShouldAutoSize, WithHeadings, Wi
         });
     }
 
-    public function query()
+    public function query(): Builder
     {
         $surveyTable = config('surveyhero.table_names.surveys');
         $questionTable = config('surveyhero.table_names.survey_questions');
@@ -113,6 +117,9 @@ class ResponsesSheet implements FromCollection, ShouldAutoSize, WithHeadings, Wi
         return $this;
     }
 
+    /**
+     * @return array<int, mixed>
+     */
     private function transposeResponse(Collection $responses, int $key): array
     {
         $responseData = [

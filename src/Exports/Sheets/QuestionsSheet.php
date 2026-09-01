@@ -43,12 +43,9 @@ class QuestionsSheet implements FromQuery, ShouldAutoSize, WithHeadings, WithMap
         return $this;
     }
 
-    /**
-     * @return HasMany
-     */
-    public function query()
+    public function query(): HasMany
     {
-        return $this->survey->surveyQuestions();
+        return $this->survey->surveyQuestions()->orderBy('id');
     }
 
     public function headings(): array
@@ -68,7 +65,7 @@ class QuestionsSheet implements FromQuery, ShouldAutoSize, WithHeadings, WithMap
     /**
      * @param  SurveyQuestionContract  $surveyQuestion
      */
-    public function map($surveyQuestion): array
+    public function map(mixed $surveyQuestion): array
     {
         $data = [
             $surveyQuestion->surveyhero_question_id,

@@ -2,6 +2,13 @@
 
 All notable changes to `laravel-surveyhero` will be documented in this file.
 
+## v4.0.0 - 2026-09-01
+
+Upgrade phpoffice/phpspreadsheet
+Support for php 8.5
+
+**Full Changelog**: https://github.com/statikbe/laravel-surveyhero/compare/v3.0.1...v4.0.0
+
 ## v1.4.2 - 2022-11-17
 
 Fixed collector retrieval in webhook controller

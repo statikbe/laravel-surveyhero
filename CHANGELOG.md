@@ -2,6 +2,14 @@
 
 All notable changes to `laravel-surveyhero` will be documented in this file.
 
+## v4.0.1 - 2026-09-09
+
+### What's Changed
+
+* throw InvalidConfigurationException with a … by @vanneszias in https://github.com/statikbe/laravel-surveyhero/pull/43
+
+**Full Changelog**: https://github.com/statikbe/laravel-surveyhero/compare/v4.0.0...v4.0.1
+
 ## v4.1.0 - 2026-09-09
 
 Validate the essential configuration and fail with a clear message instead of a cryptic `TypeError` deeper in the stack.

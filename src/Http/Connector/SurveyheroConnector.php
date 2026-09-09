@@ -14,6 +14,8 @@ use Saloon\RateLimitPlugin\Limit;
 use Saloon\RateLimitPlugin\Stores\LaravelCacheStore;
 use Saloon\RateLimitPlugin\Traits\HasRateLimits;
 use Saloon\Traits\Plugins\AcceptsJson;
+use Statikbe\Surveyhero\Exceptions\InvalidConfigurationException;
+use Statikbe\Surveyhero\SurveyheroConfig;
 
 class SurveyheroConnector extends Connector
 {
@@ -22,15 +24,26 @@ class SurveyheroConnector extends Connector
 
     public function resolveBaseUrl(): string
     {
-        return config('surveyhero.api_url') ?: 'https://api.surveyhero.com/v1/';
+        return $this->surveyheroConfig()->getApiUrl();
     }
 
+    /**
+     * @throws InvalidConfigurationException when the API credentials are not configured.
+     */
     protected function defaultAuth(): BasicAuthenticator
     {
+        $config = $this->surveyheroConfig();
+        $config->validateApiCredentials();
+
         return new BasicAuthenticator(
-            config('surveyhero.api_username'),
-            config('surveyhero.api_password')
+            (string) $config->getApiUsername(),
+            (string) $config->getApiPassword()
         );
+    }
+
+    private function surveyheroConfig(): SurveyheroConfig
+    {
+        return new SurveyheroConfig;
     }
 
     protected function resolveLimits(): array

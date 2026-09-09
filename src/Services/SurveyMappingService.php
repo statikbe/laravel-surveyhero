@@ -3,6 +3,7 @@
 namespace Statikbe\Surveyhero\Services;
 
 use Statikbe\Surveyhero\Contracts\SurveyContract;
+use Statikbe\Surveyhero\Exceptions\InvalidConfigurationException;
 use Statikbe\Surveyhero\Exceptions\QuestionNotMappedException;
 use Statikbe\Surveyhero\Exceptions\SurveyNotMappedException;
 use Statikbe\Surveyhero\Http\SurveyheroClient;
@@ -110,17 +111,26 @@ class SurveyMappingService extends AbstractSurveyheroAPIService
      * Returns the survey mapping from the configuration for the given survey.
      *
      *
-     * @throws SurveyNotMappedException
+     * @throws InvalidConfigurationException when the question mapping config is missing or malformed.
+     * @throws SurveyNotMappedException when the config contains no mapping for this survey.
      */
     public function getSurveyMappingFromConfig(SurveyContract $survey): ?array
     {
-        try {
-            $foundSurveys = array_filter($this->questionMapping, function ($surveyMapping, $key) use ($survey) {
-                return $surveyMapping['survey_id'] == $survey->surveyhero_id;
-            }, ARRAY_FILTER_USE_BOTH);
-        } catch (\Exception $exception) {
-            throw SurveyNotMappedException::create($survey, 'The question mapping configuration is not well-formed.');
+        if (empty($this->questionMapping)) {
+            throw InvalidConfigurationException::missingQuestionMapping();
         }
+
+        foreach ($this->questionMapping as $key => $surveyMapping) {
+            if (! is_array($surveyMapping) || ! isset($surveyMapping['survey_id'])) {
+                throw InvalidConfigurationException::malformedQuestionMapping(
+                    sprintf('the mapping with key "%s" has no "survey_id".', $key)
+                );
+            }
+        }
+
+        $foundSurveys = array_filter($this->questionMapping, function ($surveyMapping) use ($survey) {
+            return $surveyMapping['survey_id'] == $survey->surveyhero_id;
+        });
 
         if (! empty($foundSurveys)) {
             $mapping = reset($foundSurveys);

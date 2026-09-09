@@ -5,6 +5,7 @@ namespace Statikbe\Surveyhero\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Schema;
 use Statikbe\Surveyhero\Contracts\SurveyContract;
+use Statikbe\Surveyhero\Exceptions\InvalidConfigurationException;
 use Statikbe\Surveyhero\Exceptions\ResponseCreatorNotImplemented;
 use Statikbe\Surveyhero\Exceptions\SurveyNotMappedException;
 use Statikbe\Surveyhero\Services\Info\ResponseImportInfo;
@@ -57,7 +58,7 @@ class SurveyheroResponseImportCommand extends Command
                 $this->error("{$exception->getMessage()} Survey '$survey->name' with Surveyhero ID $survey->surveyhero_id");
 
                 return self::FAILURE;
-            } catch (ResponseCreatorNotImplemented $exception) {
+            } catch (ResponseCreatorNotImplemented|InvalidConfigurationException $exception) {
                 $this->error($exception->getMessage());
 
                 return self::FAILURE;

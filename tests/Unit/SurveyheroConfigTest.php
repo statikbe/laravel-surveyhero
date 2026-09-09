@@ -1,5 +1,6 @@
 <?php
 
+use Statikbe\Surveyhero\Exceptions\InvalidConfigurationException;
 use Statikbe\Surveyhero\SurveyheroConfig;
 
 it('returns the configured API URL', function () {
@@ -70,4 +71,27 @@ it('returns an empty array for link parameters mapping when not configured', fun
     config()->set('surveyhero.surveyhero_link_parameters_mapping', null);
 
     expect((new SurveyheroConfig)->getLinkParametersMapping())->toBe([]);
+});
+
+it('does not throw when the API credentials are configured', function () {
+    config()->set('surveyhero.api_username', 'my-user');
+    config()->set('surveyhero.api_password', 'my-pass');
+
+    (new SurveyheroConfig)->validateApiCredentials();
+})->throwsNoExceptions();
+
+it('throws a configuration exception when the API credentials are missing', function () {
+    config()->set('surveyhero.api_username', null);
+    config()->set('surveyhero.api_password', null);
+
+    expect(fn () => (new SurveyheroConfig)->validateApiCredentials())
+        ->toThrow(InvalidConfigurationException::class, 'surveyhero.api_username and surveyhero.api_password are empty');
+});
+
+it('throws a configuration exception when the API credentials are blank strings', function () {
+    config()->set('surveyhero.api_username', '  ');
+    config()->set('surveyhero.api_password', 'my-pass');
+
+    expect(fn () => (new SurveyheroConfig)->validateApiCredentials())
+        ->toThrow(InvalidConfigurationException::class, 'surveyhero.api_username is empty');
 });

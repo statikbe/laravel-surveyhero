@@ -122,6 +122,20 @@ SURVEYHERO_API_PASSWORD=qwertyuiopasdfghjklzxcvbnm
 You can overwrite the default table names and Eloquent model classes, if needed check the 
 [Data Model Customisation section](#data-model-customisation).
 
+### Configuration validation
+
+The package validates the configuration it needs before it does an API request and throws a
+`Statikbe\Surveyhero\Exceptions\InvalidConfigurationException` with an explanatory message when something essential is
+missing:
+
+- `surveyhero.api_username` and `surveyhero.api_password` (env `SURVEYHERO_API_USERNAME` and `SURVEYHERO_API_PASSWORD`)
+  are required to authenticate every API request.
+- `surveyhero.question_mapping` needs to contain at least one survey mapping, and every mapping needs a `survey_id`,
+  before responses can be imported. See [Question and collector mapping](#question-and-collector-mapping).
+
+A survey that is not present in the question mapping still throws the more specific
+`Statikbe\Surveyhero\Exceptions\SurveyNotMappedException`.
+
 ### Rate limiting
 
 The HTTP client automatically respects Surveyhero's rate limits. When the API returns a `429 Too Many Requests` response, the connector sleeps until the `Retry-After` header elapses (or for the configured fallback duration if no header is provided).

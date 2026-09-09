@@ -2,6 +2,19 @@
 
 All notable changes to `laravel-surveyhero` will be documented in this file.
 
+## v4.1.0 - 2026-09-09
+
+Validate the essential configuration and fail with a clear message instead of a cryptic `TypeError` deeper in the stack.
+
+- The API credentials (`surveyhero.api_username` / `surveyhero.api_password`) are validated before every API request.
+- The question mapping (`surveyhero.question_mapping`) is validated to be present and to have a `survey_id` on every
+  entry before responses are imported.
+- Both throw the new `Statikbe\Surveyhero\Exceptions\InvalidConfigurationException`, which names the config key, the
+  environment variable and the `vendor:publish` command needed to fix it. A survey that is simply absent from the
+  mapping keeps throwing the more specific `SurveyNotMappedException`.
+
+**Full Changelog**: https://github.com/statikbe/laravel-surveyhero/compare/v4.0.0...v4.1.0
+
 ## v4.0.0 - 2026-09-01
 
 Upgrade phpoffice/phpspreadsheet

@@ -1,6 +1,7 @@
 <?php
 
 use Saloon\Http\Faking\MockResponse;
+use Statikbe\Surveyhero\Exceptions\InvalidConfigurationException;
 use Statikbe\Surveyhero\Exceptions\SurveyNotMappedException;
 use Statikbe\Surveyhero\Http\Requests\GetSurveyCollectorsRequest;
 use Statikbe\Surveyhero\Http\Requests\GetSurveyQuestionsRequest;
@@ -98,4 +99,24 @@ it('skips unsupported question types and records them in skipped_question_types'
     expect($mapping['skipped_question_types'])->toContain('ranking')
         ->and($mapping['questions'])->toHaveKey(1000002)
         ->and($mapping['questions'])->not->toHaveKey(1000007);
+});
+
+it('throws a configuration exception when the question mapping config is empty', function () {
+    config()->set('surveyhero.question_mapping', []);
+    $survey = Survey::factory()->create(['surveyhero_id' => 1234567]);
+    $service = new SurveyMappingService;
+
+    expect(fn () => $service->getSurveyMappingFromConfig($survey))
+        ->toThrow(InvalidConfigurationException::class, 'surveyhero.question_mapping is empty');
+});
+
+it('throws a configuration exception when a survey mapping has no survey_id', function () {
+    config()->set('surveyhero.question_mapping', [
+        'first' => ['questions' => []],
+    ]);
+    $survey = Survey::factory()->create(['surveyhero_id' => 1234567]);
+    $service = new SurveyMappingService;
+
+    expect(fn () => $service->getSurveyMappingFromConfig($survey))
+        ->toThrow(InvalidConfigurationException::class, 'the mapping with key "first" has no "survey_id"');
 });

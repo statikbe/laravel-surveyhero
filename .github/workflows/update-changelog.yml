@@ -12,8 +12,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Intentional: the checkout persists CHANGELOG_PAT in .git/config (persist-credentials
+      # is left at its default of true) because git-auto-commit-action pushes with that
+      # persisted credential. The push to protected main relies on it to bypass branch
+      # protection, so do not set persist-credentials: false here. The PAT should be a
+      # fine-grained token limited to this repository with contents: write only.
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: main
           # Admin PAT so the push to protected main is accepted (enforce_admins is off).
@@ -21,13 +26,13 @@ jobs:
           token: ${{ secrets.CHANGELOG_PAT }}
 
       - name: Update Changelog
-        uses: stefanzweifel/changelog-updater-action@v1
+        uses: stefanzweifel/changelog-updater-action@a938690fad7edf25368f37e43a1ed1b34303eb36 # v1.12.0
         with:
           latest-version: ${{ github.event.release.name }}
           release-notes: ${{ github.event.release.body }}
 
       - name: Commit updated CHANGELOG
-        uses: stefanzweifel/git-auto-commit-action@v7
+        uses: stefanzweifel/git-auto-commit-action@d0b01107b5db882071f96de5dd4b54961ea93f4c # v7.2.1
         with:
           branch: main
           commit_message: Update CHANGELOG

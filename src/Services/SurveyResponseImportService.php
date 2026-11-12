@@ -13,6 +13,7 @@ use Statikbe\Surveyhero\Exceptions\AnswerNotMappedException;
 use Statikbe\Surveyhero\Exceptions\QuestionNotImportedException;
 use Statikbe\Surveyhero\Exceptions\ResponseCreatorNotImplemented;
 use Statikbe\Surveyhero\Exceptions\SurveyNotMappedException;
+use Statikbe\Surveyhero\Exceptions\UnwantedResponseNotImportedException;
 use Statikbe\Surveyhero\Http\DTO\SurveyResponseAnswersDTO;
 use Statikbe\Surveyhero\Http\SurveyheroClient;
 use Statikbe\Surveyhero\Services\Factories\ResponseCreator\ChoicesResponseCreator;
@@ -65,7 +66,13 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
             Log::debug('[surveyhero] Survey '.$survey->surveyhero_id.': fetched '.count($responses).' response(s).');
 
             foreach ($responses as $response) {
-                $responseImportInfo->addInfo($this->importSurveyResponse($response->response_id, $survey, $surveyQuestionMapping));
+                try {
+                    $responseImportInfo->addInfo($this->importSurveyResponse($response->response_id, $survey, $surveyQuestionMapping));
+                } catch (UnwantedResponseNotImportedException $ex) {
+                    // Should not happen, since only the configured collectors are requested, but one unexpected
+                    // response must not abort the whole import.
+                    Log::warning('[surveyhero] Skipping response '.$response->response_id.': '.$ex->getMessage(), is_array($ex->responseData) ? $ex->responseData : []);
+                }
             }
 
             // update new survey last updated timestamp:
@@ -92,6 +99,8 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
      *
      * @throws ResponseCreatorNotImplemented
      * @throws SurveyNotMappedException
+     * @throws UnwantedResponseNotImportedException when the response fetched from the API does not belong to the
+     *                                              survey or to one of its configured collectors.
      */
     public function importSurveyResponse($responseId, SurveyContract $survey, ?array $surveyQuestionMapping = null): ?ResponseImportInfo
     {
@@ -102,7 +111,14 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
         }
 
         $responseAnswers = $this->client->getSurveyResponseAnswers($survey->surveyhero_id, $responseId);
+        if ($responseAnswers) {
+            $this->verifyResponseBelongsToSurvey($responseAnswers, $survey);
+        }
+
         if ($responseAnswers && $survey->doesResponseNeedsToBeUpdated($responseAnswers->last_updated_on->toIso8601String())) {
+            // From here on, only trust the response ID that the Surveyhero API returned.
+            $responseId = $responseAnswers->response_id;
+
             // do not import already imported data that is not updated.
             /* @var SurveyResponseContract $existingResponseRecord */
             $existingResponseRecord = app(SurveyheroRegistrar::class)->getSurveyResponseClass()::where('surveyhero_id', $responseId)->first();
@@ -112,7 +128,16 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
                 return null;
             }
 
-            $surveyResponse = $this->createOrUpdateSurveyResponse($responseAnswers, $survey, $existingResponseRecord);
+            $surveyResponse = $this->createOrUpdateSurveyResponse($responseAnswers, $survey);
+
+            // We found no record, yet did not create one: a parallel import of the same response (e.g. a duplicate
+            // webhook delivery) inserted it in between. That import also stores the answers and dispatches the
+            // event, so doing it here as well would violate the unique index on the question responses.
+            if (! $existingResponseRecord && ! $surveyResponse->wasRecentlyCreated) {
+                Log::debug('[surveyhero] Skipping response '.$responseId.': it is being imported by a parallel request.');
+
+                return null;
+            }
 
             foreach ($this->parseResponseAnswers($responseAnswers->answers) as $answer) {
                 $questionMapping = $this->surveyMappingService->getQuestionMapping($surveyQuestionMapping, $answer->element_id);
@@ -161,10 +186,41 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
         return $importInfo;
     }
 
-    private function createOrUpdateSurveyResponse(SurveyResponseAnswersDTO $surveyheroResponse, SurveyContract $survey, ?SurveyResponseContract $existingResponse): SurveyResponseContract
+    /**
+     * Checks the response fetched from the Surveyhero API, so a webhook call cannot get a response imported into the
+     * wrong survey or from a collector that is not configured.
+     *
+     * @throws UnwantedResponseNotImportedException
+     * @throws SurveyNotMappedException
+     */
+    private function verifyResponseBelongsToSurvey(SurveyResponseAnswersDTO $responseAnswers, SurveyContract $survey): void
+    {
+        $ids = [
+            'survey_id' => $responseAnswers->survey_id,
+            'collector_id' => $responseAnswers->collector_id,
+            'response_id' => $responseAnswers->response_id,
+        ];
+
+        // The single-response endpoint is scoped by survey and does not always return survey_id (the DTO then has 0).
+        if ($responseAnswers->survey_id !== 0 && $responseAnswers->survey_id !== (int) $survey->surveyhero_id) {
+            throw UnwantedResponseNotImportedException::create(
+                $ids + ['expected_survey_id' => (int) $survey->surveyhero_id],
+                'The response fetched from Surveyhero belongs to another survey.'
+            );
+        }
+
+        $collectors = array_map('intval', $survey->getCollectors());
+        if (count($collectors) > 0 && ! in_array($responseAnswers->collector_id, $collectors, true)) {
+            throw UnwantedResponseNotImportedException::create(
+                $ids + ['configured_collectors' => $collectors],
+                'The response fetched from Surveyhero does not belong to a configured collector.'
+            );
+        }
+    }
+
+    private function createOrUpdateSurveyResponse(SurveyResponseAnswersDTO $surveyheroResponse, SurveyContract $survey): SurveyResponseContract
     {
         $responseData = [
-            'surveyhero_id' => $surveyheroResponse->response_id,
             'survey_id' => $survey->id,
             'survey_language' => optional($surveyheroResponse->language)->code,
             'survey_completed' => $surveyheroResponse->status == self::SURVEYHERO_STATUS_COMPLETED,
@@ -195,8 +251,10 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
             $responseData['resume_link'] = $resumeLink;
         }
 
+        // Match on the unique surveyhero_id: updateOrCreate() retries as an update when a concurrent request inserted
+        // the same response first (it catches the UniqueConstraintViolationException via createOrFirst()).
         return app(SurveyheroRegistrar::class)->getSurveyResponseClass()::updateOrCreate([
-            'id' => $existingResponse->id ?? null,
+            'surveyhero_id' => $surveyheroResponse->response_id,
         ], $responseData);
     }
 

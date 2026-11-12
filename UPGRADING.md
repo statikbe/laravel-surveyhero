@@ -1,5 +1,137 @@
 # Upgrading
 
+## From v4 to v5
+
+v5 secures the webhook. Surveyhero does not sign webhook calls, so until now anyone who knew the
+webhook URL could make the package fetch and import responses. The webhook now requires a shared
+secret in its URL, and the import checks the response it fetches from the Surveyhero API.
+
+### 1. Set a webhook secret — **High Impact**
+
+Add a long random secret to your `.env` file, e.g. from `openssl rand -hex 32`:
+
+```
+SURVEYHERO_WEBHOOK_SECRET=your-long-random-value
+```
+
+If you published `config/surveyhero.php`, add the new key:
+
+```php
+// config/surveyhero.php
+'webhook_secret' => env('SURVEYHERO_WEBHOOK_SECRET'),
+```
+
+The webhook fails closed: until the secret is set, every call is rejected with `403`, so no
+responses are imported via the webhook. Responses you miss can be imported afterwards with
+`php artisan surveyhero:import-responses`.
+
+### 2. Re-create your webhooks — **High Impact**
+
+The token is part of the webhook URL. `Surveyhero::webhookRoutes()` now registers
+`POST /process-surveyhero-response-completed/{token}` instead of
+`POST /process-surveyhero-response-completed`, so the webhooks configured on Surveyhero point to
+a URL that no longer exists. Delete them and create them again:
+
+```shell
+php artisan surveyhero:list-webhooks --survey=12345
+php artisan surveyhero:delete-webhook --survey=12345 --webhook=2553
+php artisan surveyhero:add-webhooks --eventType=response.completed
+```
+
+`--url` is now optional for `surveyhero:add-webhooks`: without it, the URL is built from the
+`surveyhero_response_webhook` route with the secret as token.
+
+If you register the route yourself, add the `{token}` parameter:
+
+```php
+Route::post('/process-surveyhero-response-completed/{token}', [SurveyheroWebhookController::class, 'handleResponseCompletedWebhook'])
+    ->name('surveyhero_response_webhook');
+```
+
+A route without `{token}` keeps working if the webhook URL passes the token as query parameter
+(`?token=...`). The check runs in the `VerifySurveyheroWebhookToken` middleware, which the
+controller attaches to itself, so it also applies to routes you register yourself.
+
+### 3. Controllers extending `SurveyheroWebhookController` — **Medium Impact**
+
+- The controller no longer extends `Illuminate\Routing\Controller`; it implements
+  `Illuminate\Routing\Controllers\HasMiddleware` to attach the token middleware. If your
+  subclass calls `$this->middleware(...)` in its constructor, move that to a static
+  `middleware()` method and merge in `parent::middleware()`:
+
+  ```php
+  public static function middleware(): array
+  {
+      return [...parent::middleware(), 'my-middleware'];
+  }
+  ```
+
+- `handlePreImport()` and `handlePostImport()` keep their signatures. The `survey_id`,
+  `collector_id` and `response_id` in `$responseData` are now validated as positive integers and
+  cast to `int`. A payload with other values gets a `400`.
+- `isValidResponseData()` now takes `mixed` and returns `bool`. Update the signature if you
+  override it.
+- The catch-all now catches `\Throwable` instead of `\Exception`.
+
+### 4. Changed webhook replies — **Low Impact**
+
+Only relevant if something reads the webhook's replies, e.g. your tests or monitoring:
+
+| Case | v4 | v5 |
+| --- | --- | --- |
+| Secret missing, token missing or wrong | (no check) | `403` `{"error":"Forbidden."}` |
+| Unknown survey | `200` `{"message":"Response survey_id does not match imported survey. ..."}` | `200` `{"message":"Response not imported."}` |
+| Collector not configured | `200` `{"message":"Response collector does not match configured collectors. ..."}` | `200` `{"message":"Response not imported."}` |
+| Import exception | `500` `{"error":"Import exception: <message>"}` | `500` `{"error":"Import failed."}` |
+
+The reason a response was not imported is still logged. Invalid payloads are no longer logged in
+full (they contain respondent data such as email and IP address); only the IDs are logged.
+
+### 5. The import checks the response fetched from the API — **Medium Impact**
+
+`SurveyResponseImportService::importSurveyResponse()` now verifies the response it fetches from
+the Surveyhero API, not only the webhook payload:
+
+- if the API returns a `survey_id`, it must match the survey's `surveyhero_id`;
+- if the survey has collectors (from the `collectors` in `question_mapping`, or the survey's
+  `collector_ids`), the response's `collector_id` must be one of them.
+
+Otherwise it throws `UnwantedResponseNotImportedException`. The webhook answers that with
+`200` `{"message":"Response not imported."}`; `importSurveyResponses()` (and so
+`surveyhero:import-responses`) logs and skips the response instead of aborting the run. If you
+call `importSurveyResponse()` yourself, catch the exception.
+
+Because the collectors are checked, `importSurveyResponse()` now needs the survey in the
+`question_mapping` config, also when you pass the question mapping as argument. Otherwise it
+throws `SurveyNotMappedException`.
+
+`UnwantedResponseNotImportedException::create()` now actually sets `$responseData`; it used to
+assign a dynamic property instead.
+
+### 6. Responses are matched on `surveyhero_id` — **Low Impact**
+
+The import looks up and upserts responses by the `response_id` the API returned, and
+`updateOrCreate()` now matches on `surveyhero_id` (the unique key) instead of the primary key of
+a previously found row. Two webhook calls for the same new response no longer fail with a
+unique-constraint error: the second one updates the row the first one created. No action is
+needed, unless your custom response model drops the unique index on `surveyhero_id` from the
+`create_unique_surveyhero_id_indices` migration.
+
+### 7. Exports neutralise spreadsheet formulas — **Low Impact**
+
+Respondents control the text of their answers, so a value such as `=HYPERLINK(...)` used to
+become a live formula in the export. Values starting with `=`, `+`, `-`, `@`, tab or carriage
+return are now stored as text in XLSX, and get a leading `'` in CSV output. Plain signed
+numbers such as `-5` stay numeric.
+
+If you pass custom sheets to `SurveyExport::setSheets()`, add
+`Maatwebsite\Excel\Concerns\WithCustomValueBinder` plus the
+`Statikbe\Surveyhero\Exports\Concerns\BindsValuesSafely` trait to them. Sheets that skip this
+are still covered by the export-level binder in XLSX, but only sheets using the trait get the
+CSV `'` prefix.
+
+---
+
 ## From v3 to v4
 
 v4 upgrades `maatwebsite/excel` from 3.1 to 4.0. Laravel-Excel 4 requires PHP 8.3+ and

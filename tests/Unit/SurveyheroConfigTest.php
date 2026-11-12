@@ -95,3 +95,15 @@ it('throws a configuration exception when the API credentials are blank strings'
     expect(fn () => (new SurveyheroConfig)->validateApiCredentials())
         ->toThrow(InvalidConfigurationException::class, 'surveyhero.api_username is empty');
 });
+
+it('returns the configured webhook secret', function () {
+    config()->set('surveyhero.webhook_secret', 'a-long-random-secret');
+
+    expect((new SurveyheroConfig)->getWebhookSecret())->toBe('a-long-random-secret');
+});
+
+it('returns null for a missing or empty webhook secret', function (?string $secret) {
+    config()->set('surveyhero.webhook_secret', $secret);
+
+    expect((new SurveyheroConfig)->getWebhookSecret())->toBeNull();
+})->with([null, '', '   ']);

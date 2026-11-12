@@ -6,14 +6,18 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithCustomValueBinder;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Statikbe\Surveyhero\Contracts\SurveyContract;
 use Statikbe\Surveyhero\Contracts\SurveyQuestionContract;
+use Statikbe\Surveyhero\Exports\Concerns\BindsValuesSafely;
 
-class QuestionsSheet implements FromQuery, ShouldAutoSize, WithHeadings, WithMapping, WithTitle
+class QuestionsSheet implements FromQuery, ShouldAutoSize, WithCustomValueBinder, WithHeadings, WithMapping, WithTitle
 {
+    use BindsValuesSafely;
+
     private SurveyContract $survey;
 
     private array $locales;

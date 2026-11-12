@@ -14,6 +14,9 @@ use Statikbe\Surveyhero\Services\SurveyResponseImportService;
 it('marks response incomplete when answer has no question mapping', function () {
     Event::fake();
 
+    // The import verifies the fetched response's collector, which needs the survey in the config mapping.
+    config()->push('surveyhero.question_mapping', ['survey_id' => 12345, 'questions' => []]);
+
     $survey = Survey::factory()->create([
         'surveyhero_id' => 12345,
         'survey_last_imported' => null,

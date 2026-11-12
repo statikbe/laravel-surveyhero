@@ -51,6 +51,16 @@ class SurveyheroConfig
         }
     }
 
+    /**
+     * The shared secret that authenticates Surveyhero webhook calls, or null when it is not configured.
+     */
+    public function getWebhookSecret(): ?string
+    {
+        $secret = config('surveyhero.webhook_secret');
+
+        return filled($secret) ? (string) $secret : null;
+    }
+
     public function getRateLimitFallbackSeconds(): int
     {
         return (int) (config('surveyhero.rate_limit_fallback_seconds') ?? 60);

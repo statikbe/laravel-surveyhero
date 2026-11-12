@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Event;
 use Saloon\Http\Faking\MockResponse;
 use Statikbe\Surveyhero\Events\SurveyResponseImported;
 use Statikbe\Surveyhero\Events\SurveyResponseIncompletelyImported;
+use Statikbe\Surveyhero\Exceptions\UnwantedResponseNotImportedException;
 use Statikbe\Surveyhero\Http\Requests\GetSurveyResponseAnswersRequest;
 use Statikbe\Surveyhero\Http\Requests\GetSurveyResponsesRequest;
 use Statikbe\Surveyhero\Http\SurveyheroClient;
@@ -220,4 +221,74 @@ it('imports input_list response as separate question responses per input', funct
     // fixture has 2 inputs → 2 question responses
     expect(SurveyQuestionResponse::count())->toBe(2);
     expect(SurveyResponse::where('surveyhero_id', 9002)->exists())->toBeTrue();
+});
+
+it('rejects a fetched response from a collector that is not configured', function () {
+    [$apiClient] = $this->makeSurveyheroClient([
+        GetSurveyResponseAnswersRequest::class => MockResponse::make([
+            'response_id' => 9001,
+            'collector_id' => 1111111,
+            'started_on' => '2024-06-01T10:00:00+00:00',
+            'last_updated_on' => '2024-06-01T11:00:00+00:00',
+            'status' => 'completed',
+            'answers' => [],
+        ]),
+    ]);
+    $service = new SurveyResponseImportService($apiClient, new SurveyMappingService($apiClient));
+    $survey = Survey::factory()->create(['surveyhero_id' => 1234567]);
+
+    expect(fn () => $service->importSurveyResponse(9001, $survey, [['question_id' => 1, 'type' => 'text']]))
+        ->toThrow(function (UnwantedResponseNotImportedException $ex) {
+            expect($ex->responseData)->toMatchArray([
+                'collector_id' => 1111111,
+                'response_id' => 9001,
+                'configured_collectors' => [9876543],
+            ]);
+        });
+
+    expect(SurveyResponse::count())->toBe(0);
+});
+
+it('skips a response from an unexpected collector during a bulk import instead of aborting', function () {
+    [$apiClient] = $this->makeSurveyheroClient([
+        GetSurveyResponsesRequest::class => MockResponse::make(['responses' => [
+            ['response_id' => 9001, 'collector_id' => 9876543, 'status' => 'completed', 'started_on' => '2024-06-01T10:00:00+00:00', 'last_updated_on' => '2024-06-01T11:00:00+00:00'],
+            ['response_id' => 9002, 'collector_id' => 9876543, 'status' => 'completed', 'started_on' => '2024-06-01T10:00:00+00:00', 'last_updated_on' => '2024-06-01T11:00:00+00:00'],
+        ]]),
+        GetSurveyResponseAnswersRequest::class => function ($pendingRequest) {
+            $responseId = (int) last(explode('/', $pendingRequest->getRequest()->resolveEndpoint()));
+
+            return MockResponse::make([
+                'response_id' => $responseId,
+                // the second response unexpectedly comes back from another collector
+                'collector_id' => $responseId === 9001 ? 9876543 : 1111111,
+                'started_on' => '2024-06-01T10:00:00+00:00',
+                'last_updated_on' => '2024-06-01T11:00:00+00:00',
+                'status' => 'completed',
+                'answers' => [],
+            ]);
+        },
+    ]);
+    $service = new SurveyResponseImportService($apiClient, new SurveyMappingService($apiClient));
+    $survey = createSurveyWithQuestions();
+
+    $info = $service->importSurveyResponses($survey);
+
+    expect($info->getTotalResponsesImported())->toBe(1)
+        ->and(SurveyResponse::pluck('surveyhero_id')->all())->toBe([9001]);
+});
+
+it('updates the existing row matched on surveyhero_id when re-importing an incomplete response', function () {
+    $survey = createSurveyWithQuestions();
+    $existing = SurveyResponse::factory()->create([
+        'survey_id' => $survey->id,
+        'surveyhero_id' => 9001,
+        'survey_completed' => false,
+    ]);
+
+    $this->service->importSurveyResponse(9001, $survey);
+
+    expect(SurveyResponse::count())->toBe(1)
+        ->and(SurveyResponse::sole()->id)->toBe($existing->id)
+        ->and(SurveyResponse::sole()->survey_completed)->toBeTruthy();
 });

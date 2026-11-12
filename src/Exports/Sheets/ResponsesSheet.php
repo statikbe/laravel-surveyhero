@@ -7,12 +7,16 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithCustomValueBinder;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Statikbe\Surveyhero\Contracts\SurveyContract;
+use Statikbe\Surveyhero\Exports\Concerns\BindsValuesSafely;
 
-class ResponsesSheet implements FromCollection, ShouldAutoSize, WithHeadings, WithTitle
+class ResponsesSheet implements FromCollection, ShouldAutoSize, WithCustomValueBinder, WithHeadings, WithTitle
 {
+    use BindsValuesSafely;
+
     private SurveyContract $survey;
 
     private array $linkParameters;

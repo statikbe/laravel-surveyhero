@@ -117,6 +117,19 @@ unique-constraint error: the second one updates the row the first one created. N
 needed, unless your custom response model drops the unique index on `surveyhero_id` from the
 `create_unique_surveyhero_id_indices` migration.
 
+### 7. Exports neutralise spreadsheet formulas — **Low Impact**
+
+Respondents control the text of their answers, so a value such as `=HYPERLINK(...)` used to
+become a live formula in the export. Values starting with `=`, `+`, `-`, `@`, tab or carriage
+return are now stored as text in XLSX, and get a leading `'` in CSV output. Plain signed
+numbers such as `-5` stay numeric.
+
+If you pass custom sheets to `SurveyExport::setSheets()`, add
+`Maatwebsite\Excel\Concerns\WithCustomValueBinder` plus the
+`Statikbe\Surveyhero\Exports\Concerns\BindsValuesSafely` trait to them. Sheets that skip this
+are still covered by the export-level binder in XLSX, but only sheets using the trait get the
+CSV `'` prefix.
+
 ---
 
 ## From v3 to v4

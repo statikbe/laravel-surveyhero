@@ -31,6 +31,16 @@ return [
     'api_password' => env('SURVEYHERO_API_PASSWORD'),
 
     /**
+     * The shared secret that authenticates incoming Surveyhero webhook calls.
+     *
+     * Surveyhero does not sign webhooks, so this secret is put in the webhook URL as a token
+     * (e.g. /process-surveyhero-response-completed/{token}) and compared on every call.
+     * Use a long random value, e.g. `openssl rand -hex 32`. While it is not set, the webhook
+     * rejects every call with a 403.
+     */
+    'webhook_secret' => env('SURVEYHERO_WEBHOOK_SECRET'),
+
+    /**
      * To allow you to override the default models that this package provides, in case you want to add other fields,
      * relationships or functions to the survey related models, you can define your own Eloquent Models here for each
      * data model.

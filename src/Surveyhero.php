@@ -9,7 +9,7 @@ class Surveyhero
 {
     public function webhookRoutes(): void
     {
-        Route::post('/process-surveyhero-response-completed', [SurveyheroWebhookController::class, 'handleResponseCompletedWebhook'])
+        Route::post('/process-surveyhero-response-completed/{token}', [SurveyheroWebhookController::class, 'handleResponseCompletedWebhook'])
             ->name('surveyhero_response_webhook');
     }
 }

@@ -119,6 +119,12 @@ SURVEYHERO_API_USERNAME=1234567890
 SURVEYHERO_API_PASSWORD=qwertyuiopasdfghjklzxcvbnm
 ```
 
+If you use [webhooks](#surveyhero-webhooks), also set a webhook secret, see [Securing the webhook](#securing-the-webhook):
+
+```
+SURVEYHERO_WEBHOOK_SECRET=a-long-random-value
+```
+
 You can overwrite the default table names and Eloquent model classes, if needed check the 
 [Data Model Customisation section](#data-model-customisation).
 
@@ -532,7 +538,19 @@ We have implemented part of the [Surveyhero webhook](https://developer.surveyher
 With the command below you can add a webhook to your Survey:
 
 ```shell 
-php artisan surveyhero:add-webhooks --eventType=response.completed --url=https://webhook.site/complete-response
+php artisan surveyhero:add-webhooks --eventType=response.completed
+```
+
+Without `--url`, the command points the webhook to the package's `surveyhero_response_webhook` route (see
+[Webhook handlers](#webhook-handlers)), with your webhook secret as token. It fails when `SURVEYHERO_WEBHOOK_SECRET` is
+not set or the route is not registered. The URL is built with Laravel's `route()` helper, so make sure `APP_URL` is your
+public URL when you run it.
+
+You can also pass the URL yourself; it is then used as-is. Remember to include the token if it points to this package's
+webhook controller:
+
+```shell 
+php artisan surveyhero:add-webhooks --eventType=response.completed --url=https://example.com/api/my-surveyhero-webhook?token=your-secret
 ```
 
 ### List webhooks
@@ -556,22 +574,58 @@ php artisan surveyhero:delete-webhook --survey=12345 --webhook=2553
 We have also implemented a default controller (`SurveyheroWebhookController.php`) to handle the webhook responses. Currently, it only supports the 
 `response.completed` [type](https://developer.surveyhero.com/api/#webhooks-event-types).
 
-You can add this in a route to your `api.php` file, like so:
-
-```php 
-use Statikbe\Surveyhero\Http\Controllers\Api\SurveyheroWebhookController;
-
-Route::post('/process-surveyhero-response-completed', [SurveyheroWebhookController::class, 'handleResponseCompletedWebhook'])
-    ->name('surveyhero_response_webhook');
-```
-
-There is also a convenience function on the facade so you can also just include this in your `api.php`:
+The easiest way to register it is the convenience function on the facade, in your `api.php`:
 
 ```php 
 use Statikbe\Surveyhero\Facades\Surveyhero;
 
 Surveyhero::webhookRoutes();
 ```
+
+This registers `POST /process-surveyhero-response-completed/{token}` with the name `surveyhero_response_webhook`.
+You can also register the route yourself, like so:
+
+```php 
+use Statikbe\Surveyhero\Http\Controllers\Api\SurveyheroWebhookController;
+
+Route::post('/process-surveyhero-response-completed/{token}', [SurveyheroWebhookController::class, 'handleResponseCompletedWebhook'])
+    ->name('surveyhero_response_webhook');
+```
+
+The controller checks the token itself, so it is also checked on a route you register yourself. If your route has no
+`{token}` parameter, the token is read from the `token` query parameter (e.g. `/my-webhook?token=...`). If you extend
+the controller and override its static `middleware()` method, merge in `parent::middleware()`.
+
+The webhook replies with:
+
+- `403` and `{"error":"Forbidden."}` when the webhook secret is not configured or the token is missing or wrong.
+- `400` when `data.survey_id`, `data.collector_id` or `data.response_id` is not a positive integer.
+- `200` and `{"message":"Response imported."}` when the response is imported.
+- `200` and `{"message":"Response not imported."}` when the package or your `handlePreImport()` decides not to import
+  the response: an unknown survey, a collector that is not configured, or an `UnwantedResponseNotImportedException`.
+  The reason is only logged, so callers cannot find out which surveys or collectors exist.
+- `500` and `{"error":"Import failed."}` when the import throws. The exception is reported, not returned.
+
+After fetching the response from the Surveyhero API, the import checks that it belongs to the survey and, when collectors
+are configured, to one of those collectors. It trusts the API's data over the IDs in the webhook payload.
+
+### Securing the webhook
+
+Surveyhero does not sign its webhook calls, and a webhook can only be configured with a URL. So the package authenticates
+webhook calls with a shared secret in that URL:
+
+1. Set `SURVEYHERO_WEBHOOK_SECRET` in your `.env` file to a long random value, for example the output of
+   `php artisan tinker --execute="echo Str::random(48)"` or `openssl rand -hex 32`. Until it is set, the webhook rejects
+   every call with a `403`.
+2. Create the webhooks with `php artisan surveyhero:add-webhooks`, which puts the secret in the webhook URL.
+
+Keep in mind that the token is part of the URL, so it is visible in the webhook list on Surveyhero (and the output of
+`surveyhero:list-webhooks`) and can end up in web server, proxy or load balancer access logs. Treat those as sensitive,
+or strip the token from your access logs.
+
+To rotate the secret, change `SURVEYHERO_WEBHOOK_SECRET`, then delete the existing webhooks with
+`surveyhero:delete-webhook` and create them again with `surveyhero:add-webhooks`. Calls to the old URL are rejected from
+the moment the new secret is live.
 
 ## Data export
 

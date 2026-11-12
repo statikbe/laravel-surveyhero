@@ -130,6 +130,15 @@ class SurveyResponseImportService extends AbstractSurveyheroAPIService
 
             $surveyResponse = $this->createOrUpdateSurveyResponse($responseAnswers, $survey);
 
+            // We found no record, yet did not create one: a parallel import of the same response (e.g. a duplicate
+            // webhook delivery) inserted it in between. That import also stores the answers and dispatches the
+            // event, so doing it here as well would violate the unique index on the question responses.
+            if (! $existingResponseRecord && ! $surveyResponse->wasRecentlyCreated) {
+                Log::debug('[surveyhero] Skipping response '.$responseId.': it is being imported by a parallel request.');
+
+                return null;
+            }
+
             foreach ($this->parseResponseAnswers($responseAnswers->answers) as $answer) {
                 $questionMapping = $this->surveyMappingService->getQuestionMapping($surveyQuestionMapping, $answer->element_id);
                 if (! empty($questionMapping)) {

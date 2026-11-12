@@ -2,14 +2,18 @@
 
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Saloon\Http\Faking\MockResponse;
+use Statikbe\Surveyhero\Events\SurveyResponseImported;
+use Statikbe\Surveyhero\Events\SurveyResponseIncompletelyImported;
 use Statikbe\Surveyhero\Exceptions\UnwantedResponseNotImportedException;
 use Statikbe\Surveyhero\Facades\Surveyhero;
 use Statikbe\Surveyhero\Http\Controllers\Api\SurveyheroWebhookController;
 use Statikbe\Surveyhero\Http\Requests\GetSurveyResponseAnswersRequest;
 use Statikbe\Surveyhero\Models\Survey;
+use Statikbe\Surveyhero\Models\SurveyQuestionResponse;
 use Statikbe\Surveyhero\Models\SurveyResponse;
 use Statikbe\Surveyhero\Services\SurveyResponseImportService;
 use Statikbe\Surveyhero\Tests\Support\RejectingWebhookController;
@@ -279,7 +283,9 @@ describe('importing', function () {
         expect(SurveyResponse::where('surveyhero_id', 9001)->count())->toBe(1);
     });
 
-    it('updates the row when a concurrent request inserted the same response first', function () {
+    it('leaves the answers and the event to a concurrent request that inserted the same response first', function () {
+        Event::fake([SurveyResponseImported::class, SurveyResponseIncompletelyImported::class]);
+
         // Simulate a parallel webhook call that inserts the row after both of our lookups (the import service's and
         // the one inside updateOrCreate()), so our own insert hits the unique index on surveyhero_id.
         $lookups = 0;
@@ -308,6 +314,11 @@ describe('importing', function () {
         expect($response->surveyhero_id)->toBe(9001)
             ->and($response->survey_language)->toBe('en')
             ->and($response->survey_completed)->toBeTruthy();
+
+        // The parallel request owns the rest of the import, so this one adds no answers and fires no event.
+        expect(SurveyQuestionResponse::count())->toBe(0);
+        Event::assertNotDispatched(SurveyResponseImported::class);
+        Event::assertNotDispatched(SurveyResponseIncompletelyImported::class);
     });
 
     it('returns a generic error without the exception message when the import fails', function () {
